@@ -1,0 +1,27 @@
+import type { NextConfig } from "next";
+
+const nextConfig: NextConfig = {
+  typescript: {
+    ignoreBuildErrors: true,
+  },
+  reactStrictMode: false,
+  allowedDevOrigins: [
+    '024d18db-e60e-4fdf-b9b4-45c3fe257216-00-1fx487qejsupw.picard.replit.dev',
+    '.picard.replit.dev',
+    '.replit.dev',
+  ],
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'images.unsplash.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'html.tailus.io',
+      },
+    ],
+  },
+};
+
+export default nextConfig;

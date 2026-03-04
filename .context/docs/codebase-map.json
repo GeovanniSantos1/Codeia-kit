@@ -1,0 +1,1890 @@
+{
+  "version": "1.0.0",
+  "generated": "2026-01-19T17:51:05.197Z",
+  "stack": {
+    "primaryLanguage": "typescript",
+    "languages": [
+      "javascript",
+      "typescript"
+    ],
+    "frameworks": [
+      "nextjs"
+    ],
+    "buildTools": [],
+    "testFrameworks": [
+      "vitest",
+      "playwright"
+    ],
+    "packageManager": "npm",
+    "isMonorepo": false,
+    "hasDocker": false,
+    "hasCI": false
+  },
+  "structure": {
+    "totalFiles": 302,
+    "topDirectories": [
+      {
+        "name": "components.json",
+        "fileCount": 1
+      },
+      {
+        "name": "doc",
+        "fileCount": 34
+      },
+      {
+        "name": "eslint.config.mjs",
+        "fileCount": 1
+      },
+      {
+        "name": "next-env.d.ts",
+        "fileCount": 1
+      },
+      {
+        "name": "next.config.ts",
+        "fileCount": 1
+      },
+      {
+        "name": "package-lock.json",
+        "fileCount": 1
+      },
+      {
+        "name": "package.json",
+        "fileCount": 1
+      },
+      {
+        "name": "playwright.config.ts",
+        "fileCount": 1
+      },
+      {
+        "name": "postcss.config.mjs",
+        "fileCount": 1
+      },
+      {
+        "name": "prisma",
+        "fileCount": 31
+      },
+      {
+        "name": "public",
+        "fileCount": 8
+      },
+      {
+        "name": "README.md",
+        "fileCount": 1
+      },
+      {
+        "name": "scripts",
+        "fileCount": 4
+      },
+      {
+        "name": "src",
+        "fileCount": 205
+      },
+      {
+        "name": "tailwind.config.ts",
+        "fileCount": 1
+      },
+      {
+        "name": "tests",
+        "fileCount": 8
+      },
+      {
+        "name": "tsconfig.json",
+        "fileCount": 1
+      },
+      {
+        "name": "vitest.config.ts",
+        "fileCount": 1
+      }
+    ],
+    "languageDistribution": [
+      {
+        "extension": ".ts",
+        "count": 113
+      },
+      {
+        "extension": ".tsx",
+        "count": 111
+      },
+      {
+        "extension": ".md",
+        "count": 35
+      },
+      {
+        "extension": ".js",
+        "count": 16
+      },
+      {
+        "extension": ".mjs",
+        "count": 6
+      },
+      {
+        "extension": ".json",
+        "count": 5
+      },
+      {
+        "extension": ".png",
+        "count": 5
+      },
+      {
+        "extension": ".prisma",
+        "count": 2
+      },
+      {
+        "extension": ".node",
+        "count": 2
+      },
+      {
+        "extension": ".webmanifest",
+        "count": 1
+      }
+    ]
+  },
+  "architecture": {
+    "layers": [
+      {
+        "name": "Config",
+        "description": "Configuration and constants",
+        "directories": [
+          ".",
+          "tests\\e2e",
+          "src\\hooks"
+        ],
+        "symbolCount": 3,
+        "dependsOn": []
+      },
+      {
+        "name": "Utils",
+        "description": "Shared utilities and helpers",
+        "directories": [
+          "src\\lib",
+          "src\\lib\\storage",
+          "src\\lib\\queries",
+          "src\\lib\\onboarding",
+          "src\\lib\\credits",
+          "src\\lib\\clerk",
+          "src\\lib\\asaas",
+          "src\\components\\plans",
+          "src\\components\\admin\\plans",
+          "prisma\\generated\\client\\runtime"
+        ],
+        "symbolCount": 99,
+        "dependsOn": [
+          "Controllers"
+        ]
+      },
+      {
+        "name": "Controllers",
+        "description": "Request handling and routing",
+        "directories": [
+          "src\\lib",
+          "src\\hooks",
+          "src\\lib\\logging",
+          "src\\app\\api\\upload",
+          "src\\app\\api\\checkout",
+          "src\\app\\api\\webhooks\\users",
+          "src\\app\\api\\webhooks\\clerk",
+          "src\\app\\api\\webhooks\\asaas",
+          "src\\app\\api\\subscription\\status",
+          "src\\app\\api\\subscription\\cancel",
+          "src\\app\\api\\public\\plans",
+          "src\\app\\api\\credits\\settings",
+          "src\\app\\api\\credits\\me",
+          "src\\app\\api\\ai\\image",
+          "src\\app\\api\\ai\\chat",
+          "src\\app\\api\\admin\\verify",
+          "src\\app\\api\\admin\\users",
+          "src\\app\\api\\admin\\usage",
+          "src\\app\\api\\admin\\storage",
+          "src\\app\\api\\admin\\settings",
+          "src\\app\\api\\admin\\plans",
+          "src\\app\\api\\admin\\dashboard",
+          "src\\app\\api\\admin\\credits",
+          "src\\app\\api\\admin\\backfill-credits",
+          "src\\app\\api\\webhooks\\asaas\\test",
+          "src\\app\\api\\webhooks\\asaas\\debug",
+          "src\\app\\api\\ai\\openrouter\\models",
+          "src\\app\\api\\admin\\users\\[id]",
+          "src\\app\\api\\admin\\users\\sync",
+          "src\\app\\api\\admin\\users\\invite",
+          "src\\app\\api\\admin\\users\\invitations",
+          "src\\app\\api\\admin\\storage\\[id]",
+          "src\\app\\api\\admin\\plans\\[clerkId]",
+          "src\\app\\api\\admin\\plans\\refresh-pricing",
+          "src\\app\\api\\admin\\health\\credits-enum",
+          "src\\app\\api\\admin\\credits\\[id]",
+          "src\\app\\api\\admin\\clerk\\plans",
+          "src\\app\\api\\admin\\users\\[id]\\credits",
+          "src\\app\\api\\admin\\users\\[id]\\activate",
+          "src\\app\\api\\admin\\users\\invitations\\[id]\\revoke",
+          "src\\app\\api\\admin\\users\\invitations\\[id]\\resend"
+        ],
+        "symbolCount": 104,
+        "dependsOn": []
+      },
+      {
+        "name": "Components",
+        "description": "UI components and views",
+        "directories": [
+          "src\\hooks",
+          "src\\components\\plans",
+          "src\\components\\ai-chat",
+          "src\\components\\admin\\plans",
+          "src\\components",
+          "src\\components\\ui",
+          "src\\components\\providers",
+          "src\\components\\navigation",
+          "src\\components\\marketing",
+          "src\\components\\credits",
+          "src\\components\\chat",
+          "src\\components\\charts",
+          "src\\components\\billing",
+          "src\\components\\app",
+          "src\\components\\analytics",
+          "src\\components\\admin",
+          "src\\app\\subscribe",
+          "src\\app\\admin",
+          "src\\app\\(public)",
+          "src\\components\\admin\\onboarding",
+          "src\\app\\admin\\users",
+          "src\\app\\admin\\storage",
+          "src\\app\\admin\\usage",
+          "src\\app\\admin\\settings",
+          "src\\app\\admin\\onboarding",
+          "src\\app\\admin\\credits",
+          "src\\app\\(protected)\\dashboard",
+          "src\\app\\(protected)\\billing",
+          "src\\app\\(protected)\\ai-chat",
+          "src\\app\\admin\\settings\\features",
+          "src\\app\\admin\\settings\\plans",
+          "src\\app\\(public)\\sign-up\\[[...sign-up]]",
+          "src\\app\\(public)\\sign-in\\[[...sign-in]]"
+        ],
+        "symbolCount": 140,
+        "dependsOn": [
+          "Models"
+        ]
+      },
+      {
+        "name": "Repositories",
+        "description": "Data access and persistence",
+        "directories": [
+          "src\\contexts",
+          "src\\components\\ui"
+        ],
+        "symbolCount": 8,
+        "dependsOn": []
+      },
+      {
+        "name": "Models",
+        "description": "Data structures and domain objects",
+        "directories": [
+          "src\\components\\ai-chat"
+        ],
+        "symbolCount": 2,
+        "dependsOn": []
+      }
+    ],
+    "patterns": [],
+    "entryPoints": [
+      "src\\lib\\storage\\index.ts",
+      "src\\components\\plans\\index.ts",
+      "src\\components\\ai-chat\\index.ts",
+      "src\\components\\admin\\plans\\index.ts",
+      "prisma\\generated\\client\\index.js"
+    ]
+  },
+  "symbols": {
+    "classes": [
+      {
+        "name": "ApiError",
+        "kind": "class",
+        "file": "src\\lib\\api-client.ts",
+        "line": 6,
+        "exported": true
+      },
+      {
+        "name": "AsaasClient",
+        "kind": "class",
+        "file": "src\\lib\\asaas\\client.ts",
+        "line": 26,
+        "exported": true
+      },
+      {
+        "name": "Decimal",
+        "kind": "class",
+        "file": "prisma\\generated\\client\\runtime\\index-browser.d.ts",
+        "line": 44,
+        "exported": true
+      },
+      {
+        "name": "InsufficientCreditsError",
+        "kind": "class",
+        "file": "src\\lib\\credits\\errors.ts",
+        "line": 1,
+        "exported": true
+      },
+      {
+        "name": "ReplitAppStorage",
+        "kind": "class",
+        "file": "src\\lib\\storage\\replit.ts",
+        "line": 8,
+        "exported": true
+      },
+      {
+        "name": "VercelBlobStorage",
+        "kind": "class",
+        "file": "src\\lib\\storage\\vercel-blob.ts",
+        "line": 7,
+        "exported": true
+      },
+      {
+        "name": "AnyNull",
+        "kind": "class",
+        "file": "prisma\\generated\\client\\runtime\\index-browser.d.ts",
+        "line": 1,
+        "exported": false
+      },
+      {
+        "name": "DbNull",
+        "kind": "class",
+        "file": "prisma\\generated\\client\\runtime\\index-browser.d.ts",
+        "line": 17,
+        "exported": false
+      },
+      {
+        "name": "JsonNull",
+        "kind": "class",
+        "file": "prisma\\generated\\client\\runtime\\index-browser.d.ts",
+        "line": 302,
+        "exported": false
+      },
+      {
+        "name": "NullTypesEnumValue",
+        "kind": "class",
+        "file": "prisma\\generated\\client\\runtime\\index-browser.d.ts",
+        "line": 326,
+        "exported": false
+      },
+      {
+        "name": "PrismaClient",
+        "kind": "class",
+        "file": "prisma\\generated\\client\\index-browser.js",
+        "line": 274,
+        "exported": false,
+        "description": "This is a stub Prisma Client that will error at runtime if called."
+      },
+      {
+        "name": "Q",
+        "kind": "class",
+        "file": "prisma\\generated\\client\\query_engine_bg.js",
+        "line": 2,
+        "exported": false
+      },
+      {
+        "name": "SimpleCache",
+        "kind": "class",
+        "file": "src\\lib\\cache.ts",
+        "line": 7,
+        "exported": false
+      }
+    ],
+    "interfaces": [
+      {
+        "name": "AdminSettings",
+        "kind": "interface",
+        "file": "src\\hooks\\use-admin-settings.ts",
+        "line": 6,
+        "exported": true
+      },
+      {
+        "name": "BreadcrumbItem",
+        "kind": "interface",
+        "file": "src\\contexts\\page-metadata.tsx",
+        "line": 5,
+        "exported": true
+      },
+      {
+        "name": "ClerkPlanFeature",
+        "kind": "interface",
+        "file": "src\\lib\\clerk\\commerce-plan-types.ts",
+        "line": 8,
+        "exported": true
+      },
+      {
+        "name": "ClerkPlanMoney",
+        "kind": "interface",
+        "file": "src\\lib\\clerk\\commerce-plan-types.ts",
+        "line": 1,
+        "exported": true
+      },
+      {
+        "name": "ClerkPlanNormalized",
+        "kind": "interface",
+        "file": "src\\lib\\clerk\\commerce-plan-types.ts",
+        "line": 16,
+        "exported": true
+      },
+      {
+        "name": "ClerkPlansResponse",
+        "kind": "interface",
+        "file": "src\\hooks\\use-admin-plans.ts",
+        "line": 33,
+        "exported": true
+      },
+      {
+        "name": "Config",
+        "kind": "interface",
+        "file": "prisma\\generated\\client\\runtime\\index-browser.d.ts",
+        "line": 31,
+        "exported": true
+      },
+      {
+        "name": "CreditBalance",
+        "kind": "interface",
+        "file": "src\\hooks\\admin\\use-admin-credits.ts",
+        "line": 7,
+        "exported": true
+      },
+      {
+        "name": "CreditData",
+        "kind": "interface",
+        "file": "src\\hooks\\use-credits.ts",
+        "line": 23,
+        "exported": true
+      },
+      {
+        "name": "CreditsParams",
+        "kind": "interface",
+        "file": "src\\hooks\\admin\\use-admin-credits.ts",
+        "line": 31,
+        "exported": true
+      },
+      {
+        "name": "CreditsResponse",
+        "kind": "interface",
+        "file": "src\\hooks\\use-credits.ts",
+        "line": 51,
+        "exported": true
+      },
+      {
+        "name": "CreditsResponse",
+        "kind": "interface",
+        "file": "src\\hooks\\admin\\use-admin-credits.ts",
+        "line": 21,
+        "exported": true
+      },
+      {
+        "name": "DashboardStats",
+        "kind": "interface",
+        "file": "src\\hooks\\use-dashboard.ts",
+        "line": 6,
+        "exported": true
+      },
+      {
+        "name": "EnvChecklistItem",
+        "kind": "interface",
+        "file": "src\\lib\\onboarding\\env-check.ts",
+        "line": 3,
+        "exported": true
+      },
+      {
+        "name": "GenerateImageParams",
+        "kind": "interface",
+        "file": "src\\hooks\\use-ai-image.ts",
+        "line": 7,
+        "exported": true
+      },
+      {
+        "name": "GenerateImageResponse",
+        "kind": "interface",
+        "file": "src\\hooks\\use-ai-image.ts",
+        "line": 15,
+        "exported": true
+      },
+      {
+        "name": "Invitation",
+        "kind": "interface",
+        "file": "src\\hooks\\admin\\use-admin-invitations.ts",
+        "line": 7,
+        "exported": true
+      },
+      {
+        "name": "InvitationsResponse",
+        "kind": "interface",
+        "file": "src\\hooks\\admin\\use-admin-invitations.ts",
+        "line": 16,
+        "exported": true
+      },
+      {
+        "name": "OpenRouterModel",
+        "kind": "interface",
+        "file": "src\\hooks\\use-openrouter-models.ts",
+        "line": 6,
+        "exported": true
+      },
+      {
+        "name": "OpenRouterModelsResponse",
+        "kind": "interface",
+        "file": "src\\hooks\\use-openrouter-models.ts",
+        "line": 11,
+        "exported": true
+      },
+      {
+        "name": "PageMetadata",
+        "kind": "interface",
+        "file": "src\\contexts\\page-metadata.tsx",
+        "line": 10,
+        "exported": true
+      },
+      {
+        "name": "Plan",
+        "kind": "interface",
+        "file": "src\\hooks\\use-admin-plans.ts",
+        "line": 7,
+        "exported": true
+      },
+      {
+        "name": "PlansResponse",
+        "kind": "interface",
+        "file": "src\\hooks\\use-admin-plans.ts",
+        "line": 29,
+        "exported": true
+      },
+      {
+        "name": "PublicPlan",
+        "kind": "interface",
+        "file": "src\\hooks\\use-public-plans.ts",
+        "line": 6,
+        "exported": true
+      },
+      {
+        "name": "StorageItem",
+        "kind": "interface",
+        "file": "src\\hooks\\use-storage.ts",
+        "line": 6,
+        "exported": true
+      },
+      {
+        "name": "StorageParams",
+        "kind": "interface",
+        "file": "src\\hooks\\use-storage.ts",
+        "line": 17,
+        "exported": true
+      },
+      {
+        "name": "StorageProvider",
+        "kind": "interface",
+        "file": "src\\lib\\storage\\types.ts",
+        "line": 19,
+        "exported": true
+      },
+      {
+        "name": "StorageResponse",
+        "kind": "interface",
+        "file": "src\\hooks\\use-storage.ts",
+        "line": 25,
+        "exported": true
+      },
+      {
+        "name": "SubscriptionPlan",
+        "kind": "interface",
+        "file": "src\\lib\\clerk\\subscription-utils.ts",
+        "line": 3,
+        "exported": true
+      },
+      {
+        "name": "SubscriptionStatus",
+        "kind": "interface",
+        "file": "src\\hooks\\use-subscription.ts",
+        "line": 6,
+        "exported": true
+      },
+      {
+        "name": "UploadItem",
+        "kind": "interface",
+        "file": "src\\components\\ai-chat\\FileAttachments.tsx",
+        "line": 5,
+        "exported": true
+      },
+      {
+        "name": "UploadOptions",
+        "kind": "interface",
+        "file": "src\\lib\\storage\\types.ts",
+        "line": 12,
+        "exported": true
+      },
+      {
+        "name": "UploadResult",
+        "kind": "interface",
+        "file": "src\\lib\\storage\\types.ts",
+        "line": 4,
+        "exported": true
+      },
+      {
+        "name": "UsageData",
+        "kind": "interface",
+        "file": "src\\hooks\\use-usage.ts",
+        "line": 6,
+        "exported": true
+      },
+      {
+        "name": "UsageHistoryParams",
+        "kind": "interface",
+        "file": "src\\hooks\\use-usage-history.ts",
+        "line": 18,
+        "exported": true
+      },
+      {
+        "name": "UsageHistoryResponse",
+        "kind": "interface",
+        "file": "src\\hooks\\use-usage-history.ts",
+        "line": 26,
+        "exported": true
+      },
+      {
+        "name": "UsageParams",
+        "kind": "interface",
+        "file": "src\\hooks\\use-usage.ts",
+        "line": 23,
+        "exported": true
+      },
+      {
+        "name": "UsageRecord",
+        "kind": "interface",
+        "file": "src\\hooks\\use-usage-history.ts",
+        "line": 6,
+        "exported": true
+      },
+      {
+        "name": "User",
+        "kind": "interface",
+        "file": "src\\hooks\\admin\\use-admin-users.ts",
+        "line": 7,
+        "exported": true
+      },
+      {
+        "name": "UsersParams",
+        "kind": "interface",
+        "file": "src\\hooks\\admin\\use-admin-users.ts",
+        "line": 33,
+        "exported": true
+      },
+      {
+        "name": "UsersResponse",
+        "kind": "interface",
+        "file": "src\\hooks\\admin\\use-admin-users.ts",
+        "line": 23,
+        "exported": true
+      },
+      {
+        "name": "AdminDevModeContextValue",
+        "kind": "interface",
+        "file": "src\\contexts\\admin-dev-mode.tsx",
+        "line": 5,
+        "exported": false
+      },
+      {
+        "name": "AnimationProps",
+        "kind": "interface",
+        "file": "src\\components\\ui\\component.tsx",
+        "line": 191,
+        "exported": false
+      },
+      {
+        "name": "AsaasCallback",
+        "kind": "interface",
+        "file": "src\\lib\\asaas\\client.ts",
+        "line": 10,
+        "exported": false
+      },
+      {
+        "name": "AsaasCustomer",
+        "kind": "interface",
+        "file": "src\\lib\\asaas\\client.ts",
+        "line": 3,
+        "exported": false
+      },
+      {
+        "name": "AsaasPayment",
+        "kind": "interface",
+        "file": "src\\app\\api\\webhooks\\asaas\\route.ts",
+        "line": 17,
+        "exported": false
+      },
+      {
+        "name": "AsaasSubscription",
+        "kind": "interface",
+        "file": "src\\lib\\asaas\\client.ts",
+        "line": 15,
+        "exported": false
+      },
+      {
+        "name": "AsaasWebhookEvent",
+        "kind": "interface",
+        "file": "src\\app\\api\\webhooks\\asaas\\route.ts",
+        "line": 31,
+        "exported": false
+      },
+      {
+        "name": "ButtonProps",
+        "kind": "interface",
+        "file": "src\\components\\ui\\button.tsx",
+        "line": 50,
+        "exported": false
+      },
+      {
+        "name": "CacheEntry",
+        "kind": "interface",
+        "file": "src\\lib\\cache.ts",
+        "line": 1,
+        "exported": false
+      }
+    ],
+    "functions": [
+      {
+        "name": "addUserCredits",
+        "kind": "function",
+        "file": "src\\lib\\credits\\validate-credits.ts",
+        "line": 99,
+        "exported": true
+      },
+      {
+        "name": "AdminChrome",
+        "kind": "function",
+        "file": "src\\components\\admin\\admin-chrome.tsx",
+        "line": 8,
+        "exported": true
+      },
+      {
+        "name": "AdminDevModeProvider",
+        "kind": "function",
+        "file": "src\\contexts\\admin-dev-mode.tsx",
+        "line": 12,
+        "exported": true
+      },
+      {
+        "name": "AdminLayout",
+        "kind": "function",
+        "file": "src\\app\\admin\\layout.tsx",
+        "line": 9,
+        "exported": true
+      },
+      {
+        "name": "AdminOnboardingPage",
+        "kind": "function",
+        "file": "src\\app\\admin\\onboarding\\page.tsx",
+        "line": 9,
+        "exported": true
+      },
+      {
+        "name": "AdminSettingsPage",
+        "kind": "function",
+        "file": "src\\app\\admin\\settings\\page.tsx",
+        "line": 8,
+        "exported": true
+      },
+      {
+        "name": "AdminTopbar",
+        "kind": "function",
+        "file": "src\\components\\admin\\admin-topbar.tsx",
+        "line": 6,
+        "exported": true
+      },
+      {
+        "name": "AIStarter",
+        "kind": "function",
+        "file": "src\\components\\marketing\\ai-starter.tsx",
+        "line": 6,
+        "exported": true
+      },
+      {
+        "name": "apiClient",
+        "kind": "function",
+        "file": "src\\lib\\api-client.ts",
+        "line": 20,
+        "exported": true
+      },
+      {
+        "name": "AppShell",
+        "kind": "function",
+        "file": "src\\components\\app\\app-shell.tsx",
+        "line": 10,
+        "exported": true
+      },
+      {
+        "name": "buildPlanTiers",
+        "kind": "function",
+        "file": "src\\components\\plans\\plan-tier-config.tsx",
+        "line": 84,
+        "exported": true
+      },
+      {
+        "name": "cn",
+        "kind": "function",
+        "file": "src\\lib\\utils.ts",
+        "line": 5,
+        "exported": true
+      },
+      {
+        "name": "CookieConsent",
+        "kind": "function",
+        "file": "src\\components\\app\\cookie-consent.tsx",
+        "line": 20,
+        "exported": true
+      },
+      {
+        "name": "CpfModal",
+        "kind": "function",
+        "file": "src\\components\\billing\\cpf-modal.tsx",
+        "line": 51,
+        "exported": true
+      },
+      {
+        "name": "createAuthErrorResponse",
+        "kind": "function",
+        "file": "src\\lib\\auth-utils.ts",
+        "line": 21,
+        "exported": true
+      },
+      {
+        "name": "createErrorResponse",
+        "kind": "function",
+        "file": "src\\lib\\api-auth.ts",
+        "line": 79,
+        "exported": true
+      },
+      {
+        "name": "createSuccessResponse",
+        "kind": "function",
+        "file": "src\\lib\\api-auth.ts",
+        "line": 72,
+        "exported": true
+      },
+      {
+        "name": "createUnauthorizedResponse",
+        "kind": "function",
+        "file": "src\\lib\\api-auth.ts",
+        "line": 65,
+        "exported": true
+      },
+      {
+        "name": "DashboardPage",
+        "kind": "function",
+        "file": "src\\app\\(protected)\\dashboard\\page.tsx",
+        "line": 7,
+        "exported": true
+      },
+      {
+        "name": "deductCredits",
+        "kind": "function",
+        "file": "src\\lib\\credits\\validate-credits.ts",
+        "line": 56,
+        "exported": true
+      },
+      {
+        "name": "deductCreditsForFeature",
+        "kind": "function",
+        "file": "src\\lib\\credits\\deduct.ts",
+        "line": 39,
+        "exported": true
+      },
+      {
+        "name": "DevModeBanner",
+        "kind": "function",
+        "file": "src\\components\\admin\\dev-mode-banner.tsx",
+        "line": 7,
+        "exported": true
+      },
+      {
+        "name": "DropdownTriggerButton",
+        "kind": "function",
+        "file": "src\\components\\ui\\dropdown-trigger-button.tsx",
+        "line": 11,
+        "exported": true
+      },
+      {
+        "name": "FeatureCostsPage",
+        "kind": "function",
+        "file": "src\\app\\admin\\settings\\features\\page.tsx",
+        "line": 13,
+        "exported": true
+      },
+      {
+        "name": "Features",
+        "kind": "function",
+        "file": "src\\components\\marketing\\features.tsx",
+        "line": 36,
+        "exported": true
+      },
+      {
+        "name": "fetchCommercePlans",
+        "kind": "function",
+        "file": "src\\lib\\clerk\\commerce-plans.ts",
+        "line": 230,
+        "exported": true
+      },
+      {
+        "name": "formatCurrency",
+        "kind": "function",
+        "file": "src\\components\\plans\\pricing-utils.ts",
+        "line": 32,
+        "exported": true
+      },
+      {
+        "name": "generateApiKey",
+        "kind": "function",
+        "file": "src\\lib\\utils.ts",
+        "line": 9,
+        "exported": true
+      },
+      {
+        "name": "GET",
+        "kind": "function",
+        "file": "src\\app\\api\\webhooks\\asaas\\test\\route.ts",
+        "line": 4,
+        "exported": true
+      },
+      {
+        "name": "GET",
+        "kind": "function",
+        "file": "src\\app\\api\\webhooks\\asaas\\debug\\route.ts",
+        "line": 11,
+        "exported": true
+      },
+      {
+        "name": "getActivePlansSorted",
+        "kind": "function",
+        "file": "src\\lib\\queries\\plans.ts",
+        "line": 27,
+        "exported": true
+      },
+      {
+        "name": "getApiLogMinimumStatus",
+        "kind": "function",
+        "file": "src\\lib\\logger.ts",
+        "line": 73,
+        "exported": true
+      },
+      {
+        "name": "getBasePlanCredits",
+        "kind": "function",
+        "file": "src\\lib\\credits\\settings.ts",
+        "line": 53,
+        "exported": true
+      },
+      {
+        "name": "getCacheKey",
+        "kind": "function",
+        "file": "src\\lib\\cache.ts",
+        "line": 70,
+        "exported": true
+      },
+      {
+        "name": "getCreditsForPrice",
+        "kind": "function",
+        "file": "src\\lib\\clerk\\credit-packs.ts",
+        "line": 15,
+        "exported": true
+      },
+      {
+        "name": "getEffectiveFeatureCosts",
+        "kind": "function",
+        "file": "src\\lib\\credits\\settings.ts",
+        "line": 18,
+        "exported": true
+      },
+      {
+        "name": "getEffectivePlanCredits",
+        "kind": "function",
+        "file": "src\\lib\\credits\\settings.ts",
+        "line": 34,
+        "exported": true
+      },
+      {
+        "name": "getEnvChecklist",
+        "kind": "function",
+        "file": "src\\lib\\onboarding\\env-check.ts",
+        "line": 103,
+        "exported": true
+      },
+      {
+        "name": "getEnvChecklistSummary",
+        "kind": "function",
+        "file": "src\\lib\\onboarding\\env-check.ts",
+        "line": 159,
+        "exported": true
+      },
+      {
+        "name": "getFeatureCost",
+        "kind": "function",
+        "file": "src\\lib\\credits\\settings.ts",
+        "line": 29,
+        "exported": true
+      },
+      {
+        "name": "getPlanCredits",
+        "kind": "function",
+        "file": "src\\lib\\credits\\settings.ts",
+        "line": 41,
+        "exported": true
+      },
+      {
+        "name": "getPlanOptions",
+        "kind": "function",
+        "file": "src\\lib\\credits\\settings.ts",
+        "line": 48,
+        "exported": true
+      },
+      {
+        "name": "getRawAdminSettings",
+        "kind": "function",
+        "file": "src\\lib\\credits\\settings.ts",
+        "line": 8,
+        "exported": true
+      },
+      {
+        "name": "getStorageProvider",
+        "kind": "function",
+        "file": "src\\lib\\storage\\index.ts",
+        "line": 14,
+        "exported": true
+      },
+      {
+        "name": "getStorageProviderName",
+        "kind": "function",
+        "file": "src\\lib\\storage\\index.ts",
+        "line": 57,
+        "exported": true
+      },
+      {
+        "name": "getUserCredits",
+        "kind": "function",
+        "file": "src\\lib\\credits\\validate-credits.ts",
+        "line": 8,
+        "exported": true
+      },
+      {
+        "name": "getUserFromClerkId",
+        "kind": "function",
+        "file": "src\\lib\\auth-utils.ts",
+        "line": 6,
+        "exported": true
+      },
+      {
+        "name": "getUserPlanDetails",
+        "kind": "function",
+        "file": "src\\lib\\clerk\\subscription-utils.ts",
+        "line": 97,
+        "exported": true
+      },
+      {
+        "name": "getUserUsageHistory",
+        "kind": "function",
+        "file": "src\\lib\\credits\\track-usage.ts",
+        "line": 67,
+        "exported": true
+      },
+      {
+        "name": "getUserUsageSummary",
+        "kind": "function",
+        "file": "src\\lib\\credits\\track-usage.ts",
+        "line": 84,
+        "exported": true
+      }
+    ],
+    "types": [
+      {
+        "name": "AdminSettingsPayload",
+        "kind": "type",
+        "file": "src\\lib\\credits\\settings.ts",
+        "line": 4,
+        "exported": true
+      },
+      {
+        "name": "AnalyticsConfig",
+        "kind": "type",
+        "file": "src\\lib\\brand-config.ts",
+        "line": 14,
+        "exported": true
+      },
+      {
+        "name": "AutocompleteItem",
+        "kind": "type",
+        "file": "src\\components\\ui\\autocomplete.tsx",
+        "line": 10,
+        "exported": true
+      },
+      {
+        "name": "BillingPeriod",
+        "kind": "type",
+        "file": "src\\components\\plans\\pricing-utils.ts",
+        "line": 3,
+        "exported": true
+      },
+      {
+        "name": "BillingPlan",
+        "kind": "type",
+        "file": "src\\components\\admin\\plans\\types.ts",
+        "line": 4,
+        "exported": true
+      },
+      {
+        "name": "BillingType",
+        "kind": "type",
+        "file": "src\\components\\billing\\cpf-modal.tsx",
+        "line": 18,
+        "exported": true
+      },
+      {
+        "name": "ChatMessage",
+        "kind": "type",
+        "file": "src\\components\\chat\\message-bubble.tsx",
+        "line": 11,
+        "exported": true
+      },
+      {
+        "name": "ClerkEnvKey",
+        "kind": "type",
+        "file": "src\\lib\\onboarding\\env-check.ts",
+        "line": 19,
+        "exported": true
+      },
+      {
+        "name": "ClerkPlan",
+        "kind": "type",
+        "file": "src\\hooks\\use-admin-plans.ts",
+        "line": 27,
+        "exported": true
+      },
+      {
+        "name": "Constructor",
+        "kind": "type",
+        "file": "prisma\\generated\\client\\runtime\\index-browser.d.ts",
+        "line": 24,
+        "exported": true
+      },
+      {
+        "name": "CTAAction",
+        "kind": "type",
+        "file": "src\\components\\plans\\cta-button.tsx",
+        "line": 5,
+        "exported": true
+      },
+      {
+        "name": "EnvCategory",
+        "kind": "type",
+        "file": "src\\lib\\onboarding\\env-check.ts",
+        "line": 1,
+        "exported": true
+      },
+      {
+        "name": "FeatureKey",
+        "kind": "type",
+        "file": "src\\lib\\credits\\feature-config.ts",
+        "line": 10,
+        "exported": true
+      },
+      {
+        "name": "Instance",
+        "kind": "type",
+        "file": "prisma\\generated\\client\\runtime\\index-browser.d.ts",
+        "line": 25,
+        "exported": true
+      },
+      {
+        "name": "Modulo",
+        "kind": "type",
+        "file": "prisma\\generated\\client\\runtime\\index-browser.d.ts",
+        "line": 27,
+        "exported": true
+      },
+      {
+        "name": "OperationType",
+        "kind": "type",
+        "file": "src\\hooks\\use-credits.ts",
+        "line": 8,
+        "exported": true
+      },
+      {
+        "name": "PlanCta",
+        "kind": "type",
+        "file": "src\\components\\plans\\plan-tier-config.tsx",
+        "line": 11,
+        "exported": true
+      },
+      {
+        "name": "PlanDisplay",
+        "kind": "type",
+        "file": "src\\components\\plans\\plan-types.ts",
+        "line": 7,
+        "exported": true
+      },
+      {
+        "name": "PlanFeature",
+        "kind": "type",
+        "file": "src\\components\\plans\\plan-tier-config.tsx",
+        "line": 5,
+        "exported": true
+      },
+      {
+        "name": "PlanFeatureDisplay",
+        "kind": "type",
+        "file": "src\\components\\plans\\plan-types.ts",
+        "line": 1,
+        "exported": true
+      },
+      {
+        "name": "PlanFeatureForm",
+        "kind": "type",
+        "file": "src\\components\\admin\\plans\\types.ts",
+        "line": 26,
+        "exported": true
+      },
+      {
+        "name": "PlanOption",
+        "kind": "type",
+        "file": "src\\lib\\credits\\settings.ts",
+        "line": 46,
+        "exported": true
+      },
+      {
+        "name": "PlanTierView",
+        "kind": "type",
+        "file": "src\\components\\plans\\plan-tier-config.tsx",
+        "line": 17,
+        "exported": true
+      },
+      {
+        "name": "Rounding",
+        "kind": "type",
+        "file": "prisma\\generated\\client\\runtime\\index-browser.d.ts",
+        "line": 26,
+        "exported": true
+      },
+      {
+        "name": "StorageProviderType",
+        "kind": "type",
+        "file": "src\\lib\\storage\\types.ts",
+        "line": 45,
+        "exported": true
+      },
+      {
+        "name": "SyncPreview",
+        "kind": "type",
+        "file": "src\\components\\admin\\plans\\types.ts",
+        "line": 33,
+        "exported": true
+      },
+      {
+        "name": "TextareaProps",
+        "kind": "type",
+        "file": "src\\components\\ui\\textarea.tsx",
+        "line": 5,
+        "exported": true
+      },
+      {
+        "name": "Value",
+        "kind": "type",
+        "file": "prisma\\generated\\client\\runtime\\index-browser.d.ts",
+        "line": 28,
+        "exported": true
+      },
+      {
+        "name": "Action",
+        "kind": "type",
+        "file": "src\\hooks\\use-toast.ts",
+        "line": 38,
+        "exported": false
+      },
+      {
+        "name": "ActionType",
+        "kind": "type",
+        "file": "src\\hooks\\use-toast.ts",
+        "line": 36,
+        "exported": false
+      },
+      {
+        "name": "AnimatedGroupProps",
+        "kind": "type",
+        "file": "src\\components\\ui\\animated-group.tsx",
+        "line": 19,
+        "exported": false
+      },
+      {
+        "name": "AnimationPreset",
+        "kind": "type",
+        "file": "src\\components\\ui\\component.tsx",
+        "line": 132,
+        "exported": false
+      },
+      {
+        "name": "Args",
+        "kind": "type",
+        "file": "prisma\\generated\\client\\runtime\\index-browser.d.ts",
+        "line": 5,
+        "exported": false
+      },
+      {
+        "name": "AsaasEventType",
+        "kind": "type",
+        "file": "src\\app\\api\\webhooks\\asaas\\route.ts",
+        "line": 8,
+        "exported": false
+      },
+      {
+        "name": "AssistantMessage",
+        "kind": "type",
+        "file": "src\\app\\api\\ai\\image\\route.ts",
+        "line": 18,
+        "exported": false
+      },
+      {
+        "name": "AutocompleteProps",
+        "kind": "type",
+        "file": "src\\components\\ui\\autocomplete.tsx",
+        "line": 12,
+        "exported": false
+      },
+      {
+        "name": "BillingPeriod",
+        "kind": "type",
+        "file": "src\\components\\plans\\pricing-header.tsx",
+        "line": 6,
+        "exported": false
+      },
+      {
+        "name": "BillingPeriod",
+        "kind": "type",
+        "file": "src\\components\\plans\\billing-period-toggle.tsx",
+        "line": 5,
+        "exported": false
+      },
+      {
+        "name": "BillingPeriodToggleProps",
+        "kind": "type",
+        "file": "src\\components\\plans\\billing-period-toggle.tsx",
+        "line": 7,
+        "exported": false
+      },
+      {
+        "name": "BillingPlan",
+        "kind": "type",
+        "file": "src\\components\\admin\\plans\\plans-table.tsx",
+        "line": 32,
+        "exported": false
+      },
+      {
+        "name": "BillingPlan",
+        "kind": "type",
+        "file": "src\\components\\admin\\plans\\plan-edit-drawer.tsx",
+        "line": 40,
+        "exported": false
+      },
+      {
+        "name": "ChatCompletionsResponse",
+        "kind": "type",
+        "file": "src\\app\\api\\ai\\image\\route.ts",
+        "line": 28,
+        "exported": false
+      },
+      {
+        "name": "Choice",
+        "kind": "type",
+        "file": "src\\app\\api\\ai\\image\\route.ts",
+        "line": 24,
+        "exported": false
+      },
+      {
+        "name": "CpfModalProps",
+        "kind": "type",
+        "file": "src\\components\\billing\\cpf-modal.tsx",
+        "line": 20,
+        "exported": false
+      },
+      {
+        "name": "CTAButtonProps",
+        "kind": "type",
+        "file": "src\\components\\plans\\cta-button.tsx",
+        "line": 11,
+        "exported": false
+      },
+      {
+        "name": "Exact",
+        "kind": "type",
+        "file": "prisma\\generated\\client\\runtime\\index-browser.d.ts",
+        "line": 290,
+        "exported": false
+      },
+      {
+        "name": "ExpandablePropsBase",
+        "kind": "type",
+        "file": "src\\components\\ui\\component.tsx",
+        "line": 49,
+        "exported": false
+      },
+      {
+        "name": "Feature",
+        "kind": "type",
+        "file": "src\\components\\plans\\feature-list.tsx",
+        "line": 4,
+        "exported": false
+      },
+      {
+        "name": "FeatureCosts",
+        "kind": "type",
+        "file": "src\\app\\admin\\settings\\features\\page.tsx",
+        "line": 11,
+        "exported": false
+      },
+      {
+        "name": "FeatureListProps",
+        "kind": "type",
+        "file": "src\\components\\plans\\feature-list.tsx",
+        "line": 10,
+        "exported": false
+      }
+    ],
+    "enums": []
+  },
+  "publicAPI": [
+    {
+      "name": "addUserCredits",
+      "kind": "function",
+      "file": "src\\lib\\credits\\validate-credits.ts",
+      "line": 99,
+      "exported": true
+    },
+    {
+      "name": "AdminChrome",
+      "kind": "function",
+      "file": "src\\components\\admin\\admin-chrome.tsx",
+      "line": 8,
+      "exported": true
+    },
+    {
+      "name": "AdminDevModeProvider",
+      "kind": "function",
+      "file": "src\\contexts\\admin-dev-mode.tsx",
+      "line": 12,
+      "exported": true
+    },
+    {
+      "name": "AdminLayout",
+      "kind": "function",
+      "file": "src\\app\\admin\\layout.tsx",
+      "line": 9,
+      "exported": true
+    },
+    {
+      "name": "AdminOnboardingPage",
+      "kind": "function",
+      "file": "src\\app\\admin\\onboarding\\page.tsx",
+      "line": 9,
+      "exported": true
+    },
+    {
+      "name": "AdminSettings",
+      "kind": "interface",
+      "file": "src\\hooks\\use-admin-settings.ts",
+      "line": 6,
+      "exported": true
+    },
+    {
+      "name": "AdminSettingsPage",
+      "kind": "function",
+      "file": "src\\app\\admin\\settings\\page.tsx",
+      "line": 8,
+      "exported": true
+    },
+    {
+      "name": "AdminSettingsPayload",
+      "kind": "type",
+      "file": "src\\lib\\credits\\settings.ts",
+      "line": 4,
+      "exported": true
+    },
+    {
+      "name": "AdminTopbar",
+      "kind": "function",
+      "file": "src\\components\\admin\\admin-topbar.tsx",
+      "line": 6,
+      "exported": true
+    },
+    {
+      "name": "AIStarter",
+      "kind": "function",
+      "file": "src\\components\\marketing\\ai-starter.tsx",
+      "line": 6,
+      "exported": true
+    },
+    {
+      "name": "AnalyticsConfig",
+      "kind": "type",
+      "file": "src\\lib\\brand-config.ts",
+      "line": 14,
+      "exported": true
+    },
+    {
+      "name": "apiClient",
+      "kind": "function",
+      "file": "src\\lib\\api-client.ts",
+      "line": 20,
+      "exported": true
+    },
+    {
+      "name": "ApiError",
+      "kind": "class",
+      "file": "src\\lib\\api-client.ts",
+      "line": 6,
+      "exported": true
+    },
+    {
+      "name": "AppShell",
+      "kind": "function",
+      "file": "src\\components\\app\\app-shell.tsx",
+      "line": 10,
+      "exported": true
+    },
+    {
+      "name": "AsaasClient",
+      "kind": "class",
+      "file": "src\\lib\\asaas\\client.ts",
+      "line": 26,
+      "exported": true
+    },
+    {
+      "name": "AutocompleteItem",
+      "kind": "type",
+      "file": "src\\components\\ui\\autocomplete.tsx",
+      "line": 10,
+      "exported": true
+    },
+    {
+      "name": "BillingPeriod",
+      "kind": "type",
+      "file": "src\\components\\plans\\pricing-utils.ts",
+      "line": 3,
+      "exported": true
+    },
+    {
+      "name": "BillingPlan",
+      "kind": "type",
+      "file": "src\\components\\admin\\plans\\types.ts",
+      "line": 4,
+      "exported": true
+    },
+    {
+      "name": "BillingType",
+      "kind": "type",
+      "file": "src\\components\\billing\\cpf-modal.tsx",
+      "line": 18,
+      "exported": true
+    },
+    {
+      "name": "BreadcrumbItem",
+      "kind": "interface",
+      "file": "src\\contexts\\page-metadata.tsx",
+      "line": 5,
+      "exported": true
+    },
+    {
+      "name": "buildPlanTiers",
+      "kind": "function",
+      "file": "src\\components\\plans\\plan-tier-config.tsx",
+      "line": 84,
+      "exported": true
+    },
+    {
+      "name": "ChatMessage",
+      "kind": "type",
+      "file": "src\\components\\chat\\message-bubble.tsx",
+      "line": 11,
+      "exported": true
+    },
+    {
+      "name": "ClerkEnvKey",
+      "kind": "type",
+      "file": "src\\lib\\onboarding\\env-check.ts",
+      "line": 19,
+      "exported": true
+    },
+    {
+      "name": "ClerkPlan",
+      "kind": "type",
+      "file": "src\\hooks\\use-admin-plans.ts",
+      "line": 27,
+      "exported": true
+    },
+    {
+      "name": "ClerkPlanFeature",
+      "kind": "interface",
+      "file": "src\\lib\\clerk\\commerce-plan-types.ts",
+      "line": 8,
+      "exported": true
+    },
+    {
+      "name": "ClerkPlanMoney",
+      "kind": "interface",
+      "file": "src\\lib\\clerk\\commerce-plan-types.ts",
+      "line": 1,
+      "exported": true
+    },
+    {
+      "name": "ClerkPlanNormalized",
+      "kind": "interface",
+      "file": "src\\lib\\clerk\\commerce-plan-types.ts",
+      "line": 16,
+      "exported": true
+    },
+    {
+      "name": "ClerkPlansResponse",
+      "kind": "interface",
+      "file": "src\\hooks\\use-admin-plans.ts",
+      "line": 33,
+      "exported": true
+    },
+    {
+      "name": "cn",
+      "kind": "function",
+      "file": "src\\lib\\utils.ts",
+      "line": 5,
+      "exported": true
+    },
+    {
+      "name": "Config",
+      "kind": "interface",
+      "file": "prisma\\generated\\client\\runtime\\index-browser.d.ts",
+      "line": 31,
+      "exported": true
+    },
+    {
+      "name": "Constructor",
+      "kind": "type",
+      "file": "prisma\\generated\\client\\runtime\\index-browser.d.ts",
+      "line": 24,
+      "exported": true
+    },
+    {
+      "name": "CookieConsent",
+      "kind": "function",
+      "file": "src\\components\\app\\cookie-consent.tsx",
+      "line": 20,
+      "exported": true
+    },
+    {
+      "name": "CpfModal",
+      "kind": "function",
+      "file": "src\\components\\billing\\cpf-modal.tsx",
+      "line": 51,
+      "exported": true
+    },
+    {
+      "name": "createAuthErrorResponse",
+      "kind": "function",
+      "file": "src\\lib\\auth-utils.ts",
+      "line": 21,
+      "exported": true
+    },
+    {
+      "name": "createErrorResponse",
+      "kind": "function",
+      "file": "src\\lib\\api-auth.ts",
+      "line": 79,
+      "exported": true
+    },
+    {
+      "name": "createSuccessResponse",
+      "kind": "function",
+      "file": "src\\lib\\api-auth.ts",
+      "line": 72,
+      "exported": true
+    },
+    {
+      "name": "createUnauthorizedResponse",
+      "kind": "function",
+      "file": "src\\lib\\api-auth.ts",
+      "line": 65,
+      "exported": true
+    },
+    {
+      "name": "CreditBalance",
+      "kind": "interface",
+      "file": "src\\hooks\\admin\\use-admin-credits.ts",
+      "line": 7,
+      "exported": true
+    },
+    {
+      "name": "CreditData",
+      "kind": "interface",
+      "file": "src\\hooks\\use-credits.ts",
+      "line": 23,
+      "exported": true
+    },
+    {
+      "name": "CreditsParams",
+      "kind": "interface",
+      "file": "src\\hooks\\admin\\use-admin-credits.ts",
+      "line": 31,
+      "exported": true
+    },
+    {
+      "name": "CreditsResponse",
+      "kind": "interface",
+      "file": "src\\hooks\\use-credits.ts",
+      "line": 51,
+      "exported": true
+    },
+    {
+      "name": "CreditsResponse",
+      "kind": "interface",
+      "file": "src\\hooks\\admin\\use-admin-credits.ts",
+      "line": 21,
+      "exported": true
+    },
+    {
+      "name": "CTAAction",
+      "kind": "type",
+      "file": "src\\components\\plans\\cta-button.tsx",
+      "line": 5,
+      "exported": true
+    },
+    {
+      "name": "DashboardPage",
+      "kind": "function",
+      "file": "src\\app\\(protected)\\dashboard\\page.tsx",
+      "line": 7,
+      "exported": true
+    },
+    {
+      "name": "DashboardStats",
+      "kind": "interface",
+      "file": "src\\hooks\\use-dashboard.ts",
+      "line": 6,
+      "exported": true
+    },
+    {
+      "name": "Decimal",
+      "kind": "class",
+      "file": "prisma\\generated\\client\\runtime\\index-browser.d.ts",
+      "line": 44,
+      "exported": true
+    },
+    {
+      "name": "deductCredits",
+      "kind": "function",
+      "file": "src\\lib\\credits\\validate-credits.ts",
+      "line": 56,
+      "exported": true
+    },
+    {
+      "name": "deductCreditsForFeature",
+      "kind": "function",
+      "file": "src\\lib\\credits\\deduct.ts",
+      "line": 39,
+      "exported": true
+    },
+    {
+      "name": "DevModeBanner",
+      "kind": "function",
+      "file": "src\\components\\admin\\dev-mode-banner.tsx",
+      "line": 7,
+      "exported": true
+    },
+    {
+      "name": "DropdownTriggerButton",
+      "kind": "function",
+      "file": "src\\components\\ui\\dropdown-trigger-button.tsx",
+      "line": 11,
+      "exported": true
+    }
+  ],
+  "dependencies": {
+    "mostImported": [
+      {
+        "file": "C:\\Users\\danon\\Documents\\Works\\starter-kit-with-asaas-mainzip\\prisma\\generated\\client/index.js",
+        "importedBy": 6
+      },
+      {
+        "file": "C:\\Users\\danon\\Documents\\Works\\starter-kit-with-asaas-mainzip\\src\\lib\\storage\\types.ts",
+        "importedBy": 3
+      },
+      {
+        "file": "C:\\Users\\danon\\Documents\\Works\\starter-kit-with-asaas-mainzip\\src\\components\\admin\\plans\\types.ts",
+        "importedBy": 3
+      },
+      {
+        "file": "C:\\Users\\danon\\Documents\\Works\\starter-kit-with-asaas-mainzip\\src\\components\\plans\\plan-tier-config.tsx",
+        "importedBy": 2
+      },
+      {
+        "file": "C:\\Users\\danon\\Documents\\Works\\starter-kit-with-asaas-mainzip\\src\\components\\plans\\pricing-utils.ts",
+        "importedBy": 2
+      },
+      {
+        "file": "C:\\Users\\danon\\Documents\\Works\\starter-kit-with-asaas-mainzip\\src\\lib\\storage\\vercel-blob.ts",
+        "importedBy": 1
+      },
+      {
+        "file": "C:\\Users\\danon\\Documents\\Works\\starter-kit-with-asaas-mainzip\\src\\lib\\storage\\replit.ts",
+        "importedBy": 1
+      },
+      {
+        "file": "C:\\Users\\danon\\Documents\\Works\\starter-kit-with-asaas-mainzip\\src\\lib\\credits\\feature-config.ts",
+        "importedBy": 1
+      },
+      {
+        "file": "C:\\Users\\danon\\Documents\\Works\\starter-kit-with-asaas-mainzip\\src\\lib\\credits\\errors.ts",
+        "importedBy": 1
+      },
+      {
+        "file": "C:\\Users\\danon\\Documents\\Works\\starter-kit-with-asaas-mainzip\\src\\lib\\clerk\\commerce-plan-types.ts",
+        "importedBy": 1
+      },
+      {
+        "file": "C:\\Users\\danon\\Documents\\Works\\starter-kit-with-asaas-mainzip\\src\\lib\\asaas\\config.ts",
+        "importedBy": 1
+      },
+      {
+        "file": "C:\\Users\\danon\\Documents\\Works\\starter-kit-with-asaas-mainzip\\src\\components\\theme-provider.tsx",
+        "importedBy": 1
+      },
+      {
+        "file": "C:\\Users\\danon\\Documents\\Works\\starter-kit-with-asaas-mainzip\\src\\app\\globals.css",
+        "importedBy": 1
+      },
+      {
+        "file": "C:\\Users\\danon\\Documents\\Works\\starter-kit-with-asaas-mainzip\\src\\components\\plans\\billing-period-toggle.tsx",
+        "importedBy": 1
+      },
+      {
+        "file": "C:\\Users\\danon\\Documents\\Works\\starter-kit-with-asaas-mainzip\\src\\components\\plans\\price-display.tsx",
+        "importedBy": 1
+      },
+      {
+        "file": "C:\\Users\\danon\\Documents\\Works\\starter-kit-with-asaas-mainzip\\src\\components\\plans\\feature-list.tsx",
+        "importedBy": 1
+      },
+      {
+        "file": "C:\\Users\\danon\\Documents\\Works\\starter-kit-with-asaas-mainzip\\src\\components\\plans\\cta-button.tsx",
+        "importedBy": 1
+      },
+      {
+        "file": "C:\\Users\\danon\\Documents\\Works\\starter-kit-with-asaas-mainzip\\src\\components\\plans\\plan-types.ts",
+        "importedBy": 1
+      },
+      {
+        "file": "C:\\Users\\danon\\Documents\\Works\\starter-kit-with-asaas-mainzip\\src\\components\\plans\\pricing-header.tsx",
+        "importedBy": 1
+      },
+      {
+        "file": "C:\\Users\\danon\\Documents\\Works\\starter-kit-with-asaas-mainzip\\src\\components\\plans\\pricing-card.tsx",
+        "importedBy": 1
+      }
+    ]
+  },
+  "stats": {
+    "totalSymbols": 563,
+    "exportedSymbols": 201,
+    "analysisTimeMs": 1362
+  }
+}

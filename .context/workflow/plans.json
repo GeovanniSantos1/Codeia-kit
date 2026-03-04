@@ -1,0 +1,14 @@
+{
+  "active": [
+    {
+      "slug": "fix-breaking-changes-upgrade",
+      "path": "plans/fix-breaking-changes-upgrade.md",
+      "title": "Fix Breaking Changes Upgrade",
+      "summary": "Fix type errors and runtime issues caused by Next.js 15, Prisma, and Vercel Blob updates.",
+      "linkedAt": "2026-01-22T22:10:11.038Z",
+      "status": "active"
+    }
+  ],
+  "completed": [],
+  "primary": "fix-breaking-changes-upgrade"
+}
