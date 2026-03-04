@@ -6,9 +6,9 @@ const nextConfig: NextConfig = {
   },
   reactStrictMode: false,
   allowedDevOrigins: [
-    '024d18db-e60e-4fdf-b9b4-45c3fe257216-00-1fx487qejsupw.picard.replit.dev',
-    '.picard.replit.dev',
-    '.replit.dev',
+    '*.replit.dev',
+    '*.repl.co',
+    '*.picard.replit.dev',
   ],
   images: {
     remotePatterns: [
