@@ -17,6 +17,7 @@ import {
 import {
   Sidebar,
   SidebarContent,
+  SidebarFooter,
   SidebarGroup,
   SidebarGroupContent,
   SidebarGroupLabel,
@@ -142,18 +143,18 @@ export function AdminSidebar() {
         </SidebarGroup>
       </SidebarContent>
 
-      <div className="border-t border-border/60 p-3">
+      <SidebarFooter>
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton asChild tooltip="Voltar ao LoanManager">
-              <Link href="/dashboard" className="flex items-center gap-2 text-muted-foreground hover:text-foreground">
-                <ArrowLeft className="h-4 w-4" />
+              <Link href="/dashboard">
+                <ArrowLeft />
                 <span>Voltar ao LoanManager</span>
               </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
-      </div>
+      </SidebarFooter>
 
       <SidebarRail />
     </Sidebar>

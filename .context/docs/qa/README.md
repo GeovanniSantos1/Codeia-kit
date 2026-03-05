@@ -1,8 +1,8 @@
 # Q&A Index
 
-Project type: **web-app**
+Project type: **loan-management-saas**
 
-Generated: 2026-01-19T17:51:25.314Z
+Updated: 2026-03-04
 
 ## Getting-started
 
