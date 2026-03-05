@@ -5,6 +5,7 @@ import type { ElementType } from "react";
 import { usePathname } from "next/navigation";
 import {
   Activity,
+  ArrowLeft,
   CreditCard,
   LayoutDashboard,
   HeartPlus,
@@ -140,6 +141,20 @@ export function AdminSidebar() {
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
+
+      <div className="border-t border-border/60 p-3">
+        <SidebarMenu>
+          <SidebarMenuItem>
+            <SidebarMenuButton asChild tooltip="Voltar ao LoanManager">
+              <Link href="/dashboard" className="flex items-center gap-2 text-muted-foreground hover:text-foreground">
+                <ArrowLeft className="h-4 w-4" />
+                <span>Voltar ao LoanManager</span>
+              </Link>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+        </SidebarMenu>
+      </div>
+
       <SidebarRail />
     </Sidebar>
   );

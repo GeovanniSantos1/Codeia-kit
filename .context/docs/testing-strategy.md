@@ -4,62 +4,68 @@ name: testing-strategy
 description: Test frameworks, patterns, coverage requirements, and quality gates
 category: testing
 generated: 2026-01-19
+updated: 2026-03-04
 status: filled
 scaffoldVersion: "2.0.0"
 ---
 
 # Testing Strategy
 
-## Testing Strategy
-We employ a "Testing Trophy" approach: a solid base of static analysis (Typescript/Lint), a layer of unit tests for business logic, integration tests for API boundaries, and a targeted set of E2E tests for critical user journeys. This ensures confidence in deployments without slowing down development.
+## Overview
+We employ a "Testing Trophy" approach: static analysis (TypeScript/ESLint), unit tests for business logic, integration tests for API boundaries, and targeted E2E tests for critical user journeys.
 
 ## Test Types
-- **Static Analysis**:
-  - **Tool**: TypeScript & ESLint.
-  - **Focus**: Type safety, syntax errors, and potential bugs.
-  - **Gate**: Must pass before any other tests run.
 
-- **Unit Tests**:
-  - **Framework**: Vitest.
-  - **Files**: `src/**/*.spec.ts` (co-located or in `tests/unit`).
-  - **Focus**: Pure functions in `src/lib`, Hooks in `src/hooks`, and independent Components.
-  - **Mocking**: Extensive mocking of external dependencies (Clerk, Asaas, DB).
+### Static Analysis
+- **Tools**: TypeScript & ESLint
+- **Focus**: Type safety, syntax errors, potential bugs
+- **Gate**: Must pass before other tests run
 
-- **Integration Tests**:
-  - **Framework**: Vitest (using a test DB environment or mocks).
-  - **Files**: `tests/unit/api/**/*.spec.ts`.
-  - **Focus**: API Route handlers (`POST /api/subscribe`). Verifies that the Controller calls the Service and returns the correct Response.
+### Unit Tests
+- **Framework**: Vitest 4.0.7
+- **Files**: `src/**/*.spec.ts` or `tests/unit/**/*.spec.ts`
+- **Focus**: Pure functions in `src/lib` (especially `src/lib/loans/calculations.ts`), hooks, and independent components
+- **Mocking**: External dependencies (Clerk, Asaas, Prisma) via `vi.mock()`
+- **Key areas**: Loan interest calculation, installment generation, penalty calculation, credit validation/deduction
 
-- **E2E Tests**:
-  - **Framework**: Playwright.
-  - **Files**: `tests/e2e/**/*.spec.ts`.
-  - **Focus**: Critical paths: Sign Up, Upgrade Plan, Admin Dashboard. These run against a running dev server.
+### Integration Tests
+- **Framework**: Vitest
+- **Files**: `tests/unit/api/**/*.spec.ts`
+- **Focus**: API route handlers — verify controller-service-response chain
+- **Examples**: Loan creation, client CRUD, transaction recording
+
+### E2E Tests
+- **Framework**: Playwright 1.55.0
+- **Files**: `tests/e2e/**/*.spec.ts`
+- **Focus**: Critical user paths: sign up, create loan, manage clients, view dashboard, admin panel
+- **Auth Bypass**: `E2E_AUTH_BYPASS=1` for testing without real Clerk sessions
 
 ## Running Tests
 ```bash
-# Run all unit/integration tests
-npm run test
+# Unit/integration tests
+npm run test:unit
 
-# Run unit tests in watch mode (for TDD)
-npm run test -- --watch
+# Unit tests in watch mode (TDD)
+npm run test:unit -- --watch
 
-# Run E2E tests (headless)
+# E2E tests (headless)
 npm run test:e2e
 
-# Run E2E tests with UI
+# E2E tests with UI
 npx playwright test --ui
 
-# Check coverage
-npm run test -- --coverage
+# Coverage report
+npm run test:unit -- --coverage
 ```
 
 ## Quality Gates
-- **CI/CD**: All tests run on Pull Request.
-- **Coverage**: Aim for >80% coverage on `src/lib` (Business Logic). Lower coverage is acceptable for UI glue code.
-- **Linting**: `npm run lint` must return 0 exit code.
-- **Build**: `npm run build` must succeed (verifies Typescript).
+- **CI/CD**: All tests run on Pull Request
+- **Coverage**: >80% on `src/lib` (business logic, especially loan calculations and credit system)
+- **Linting**: `npm run lint` must pass
+- **Build**: `npm run build` must succeed
+- **Type Check**: `npm run typecheck` must pass
 
 ## Troubleshooting
-- **Flaky Tests**: Often caused by race conditions in E2E. Use `await page.waitFor...` instead of fixed timeouts.
-- **Database**: Ensure the local test DB is migrated (`npx prisma migrate reset`).
-- **Timeouts**: If tests fail on CI but pass locally, increase the timeout config in `playwright.config.ts`.
+- **Flaky E2E**: Use `await page.waitFor...` instead of fixed timeouts
+- **Database**: Ensure test DB is migrated (`npm run db:reset`)
+- **Timeouts**: Increase timeout in `playwright.config.ts` for CI environments

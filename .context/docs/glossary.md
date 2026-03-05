@@ -1,48 +1,107 @@
 ---
 type: doc
 name: glossary
-description: Project terminology, type definitions, domain entities, and business rules
+description: Project terminology, type definitions, domain entities, and business rules for the Loan Management System
 category: glossary
 generated: 2026-01-19
+updated: 2026-03-04
 status: filled
 scaffoldVersion: "2.0.0"
 ---
 
 # Glossary & Domain Concepts
 
-## Glossary & Domain Concepts
-This document defines the key terms and concepts used throughout the project. It serves as a shared vocabulary for developers, designers, and stakeholders.
+## Core Domain Models
 
-## Type Definitions
-- **[User](src/hooks/admin/use-admin-users.ts)**: A registered user in the system, synced from Clerk.
-- **[CreditData](src/hooks/use-credits.ts)**: Represents the user's credit balance and transaction history.
-- **[BillingPlan](src/components/admin/plans/types.ts)**: A subscription tier (e.g., Free, Pro) with pricing and features.
-- **[AsaasSubscription](src/lib/asaas/client.ts)**: A recurring payment agreement managed by Asaas.
+### Loan (Empréstimo)
+A financial agreement where a user lends money to a client. Contains principal amount, interest rate, installment count, interval, penalty rate, and status.
+
+### Client (Cliente)
+A borrower/debtor who receives loans. Contains personal info (name, CPF, WhatsApp), banking details (PIX, bank, agency, account), and additional fields (mother's name, address, reserve, credit line, notes).
+
+### Installment (Parcela)
+An individual payment within a loan. Auto-generated when a loan is created. Contains number, due date, amount, paid amount, paid date, penalty, and status.
+
+### Transaction (Transação)
+A financial record of money movement. Typed as ENTRADA (income) or SAIDA (expense). Linked to a user, optionally to a client and loan.
+
+### User (Usuário)
+A registered user synced from Clerk. Contains auth info, Asaas customer IDs, current plan, and billing period.
+
+### Plan (Plano)
+A subscription tier with pricing (monthly/yearly in BRL), credit allocation, features, and display configuration (badge, highlight, CTA).
+
+### CreditBalance (Saldo de Créditos)
+Per-user credit account tracking remaining credits for AI features. Linked to usage history.
 
 ## Enumerations
-- **[BillingPeriod](src/components/plans/pricing-utils.ts)**: `MONTHLY` | `YEARLY` - Frequency of subscription billing.
-- **[SubscriptionStatus](src/hooks/use-subscription.ts)**: `ACTIVE` | `OVERDUE` | `CANCELED` - The state of a user's subscription.
-- **[AsaasEventType](src/app/api/webhooks/asaas/route.ts)**: Webhook event types (e.g., `PAYMENT_RECEIVED`, `SUBSCRIPTION_CREATED`).
 
-## Core Terms
-- **Credits**: The internal currency used to consume AI features (Image Generation, Chat). Credits are purchased via one-time packs or monthly subscriptions.
-- **Organization**: (Future) A group of users sharing resources. currently, the system is User-centric.
-- **Webhook**: A server-to-server notification. We rely heavily on Clerk (User updates) and Asaas (Payment updates) webhooks.
-- **Metadata**: Custom data attached to Clerk users or Asaas subscriptions to link them (e.g., `clerkId` stored in Asaas).
+### LoanStatus
+- `ACTIVE` — Loan is ongoing with pending installments
+- `PAID_OFF` — All installments have been paid
+- `CANCELLED` — Loan was cancelled
+
+### InstallmentStatus
+- `PENDING` — Payment not yet due or awaiting payment
+- `PAID` — Payment received
+- `OVERDUE` — Past due date without payment
+
+### PaymentInterval (Interval)
+- `DAILY` — Installments due every day
+- `WEEKLY` — Installments due every 7 days
+- `BIWEEKLY` — Installments due every 14 days
+- `MONTHLY` — Installments due every 30 days
+
+### TransactionType
+- `ENTRADA` — Income / money received
+- `SAIDA` — Expense / money paid out
+
+### OperationType (AI Credits)
+- `AI_TEXT_CHAT` — Text chat with AI (1 credit)
+- `AI_IMAGE_GENERATION` — Image generation (5 credits)
+
+### SubscriptionStatus
+- `ACTIVE` — Active subscription
+- `OVERDUE` — Payment overdue
+- `CANCELED` — Subscription cancelled
+
+### AsaasEventType
+- `PAYMENT_RECEIVED` — Payment confirmed
+- `SUBSCRIPTION_CREATED` — New subscription
+- `SUBSCRIPTION_DELETED` — Subscription cancelled
 
 ## Acronyms & Abbreviations
-- **PIX**: Instant payment system in Brazil (supported by Asaas).
-- **RSC**: React Server Components (Next.js 13+ feature).
-- **DTO**: Data Transfer Object.
-- **UI**: User Interface (specifically the `src/components/ui` library).
+- **CPF**: Cadastro de Pessoas Físicas (Brazilian individual tax ID)
+- **CNPJ**: Cadastro Nacional da Pessoa Jurídica (Brazilian company tax ID)
+- **PIX**: Brazilian instant payment system
+- **BRL**: Brazilian Real (currency)
+- **RSC**: React Server Components
+- **MRR**: Monthly Recurring Revenue
+- **ARR**: Annual Recurring Revenue
 
 ## Personas / Actors
-- **Subscriber**: A user who pays for a plan to get recurring credits.
-- **Admin**: A super-user with access to `/admin` to manage plans, view users, and troubleshoot payments.
-- **Guest**: An unauthenticated visitor exploring the landing page.
+- **Lender (Agiota/Emprestador)**: Authenticated user who creates and manages loans to clients
+- **Admin**: Super-user with access to `/admin` for managing plans, users, credits, and analytics
+- **Guest**: Unauthenticated visitor on the landing page
 
 ## Domain Rules & Invariants
-- **Credit Balance**: Cannot be negative. Operations verify balance *before* deduction.
-- **Unique Email**: A user email must be unique across the system (enforced by Clerk).
-- **Plan Features**: Access to certain AI models is gated by the active Plan (e.g., "Pro" gets GPT-4).
-- **Payment Currency**: All transactions are in BRL (Brazilian Real).
+- **Interest Calculation**: Simple interest: `principal * (interestRate / 100)`
+- **Total Debt**: `principal + interest`
+- **Installment Amount**: `totalDebt / installmentsCount`
+- **Penalty**: `penaltyPerDay * daysOverdue` applied to overdue installments
+- **Due Date Generation**: Based on interval (daily/weekly/biweekly/monthly) from loan date
+- **Credit Balance**: Cannot go negative. Validated before deduction
+- **Unique Email**: Enforced by Clerk
+- **Data Isolation**: All loan/client/transaction queries filter by `userId`
+- **Payment Currency**: All transactions in BRL (Brazilian Real)
+- **Asaas Minimum**: Subscriptions require minimum R$ 5.00
+- **CPF Required**: CPF/CNPJ validation required for Asaas checkout
+
+## Key Type Definitions
+- **[Client](../src/components/loans/types.ts)**: Borrower profile with contact and banking info
+- **[Loan](../prisma/schema.prisma)**: Loan agreement with interest, installments, status
+- **[Installment](../prisma/schema.prisma)**: Individual payment within a loan
+- **[Transaction](../prisma/schema.prisma)**: Financial income/expense record
+- **[User](../prisma/schema.prisma)**: Registered user with Clerk and Asaas integration
+- **[Plan](../prisma/schema.prisma)**: Subscription tier with pricing and features
+- **[CreditBalance](../prisma/schema.prisma)**: Per-user credit account
