@@ -3,6 +3,7 @@ import { auth } from "@clerk/nextjs/server";
 import { getUserFromClerkId } from "@/lib/auth-utils";
 import { db } from "@/lib/db";
 import { calculatePenalty, calculateDaysOverdue, decimalToNumber } from "@/lib/loans/calculations";
+import { InstallmentStatus } from "@prisma/client";
 import { z } from "zod";
 
 const payInstallmentSchema = z.object({
@@ -92,7 +93,7 @@ export async function PUT(
     if (!installment) {
       return NextResponse.json({ error: "Parcela não encontrada" }, { status: 404 });
     }
-    if (installment.status === "PAID") {
+    if (installment.status === InstallmentStatus.PAID) {
       return NextResponse.json({ error: "Parcela já paga" }, { status: 400 });
     }
 
@@ -100,21 +101,32 @@ export async function PUT(
     const daysOverdue = calculateDaysOverdue(installment.dueDate, paymentDate);
     const penalty = calculatePenalty(amount, decimalToNumber(loan.penaltyPerDay), daysOverdue);
     const totalDue = amount + Math.round(penalty * 100) / 100;
-
-    if (paidAmount < totalDue * 0.99) {
+    
+    // Valor já pago anteriormente (se houver pagamento parcial)
+    const previouslyPaid = installment.paidAmount ? decimalToNumber(installment.paidAmount) : 0;
+    const remainingBeforePayment = totalDue - previouslyPaid;
+    
+    // Validar que o pagamento não excede o valor restante (com tolerância de 1%)
+    if (paidAmount > remainingBeforePayment * 1.01) {
       return NextResponse.json(
-        { error: `Valor mínimo para pagamento: R$ ${totalDue.toFixed(2)}` },
+        { error: `Valor máximo para pagamento: R$ ${remainingBeforePayment.toFixed(2)}` },
         { status: 400 }
       );
     }
+
+    // Calcular novo total pago
+    const newTotalPaid = previouslyPaid + paidAmount;
+    const isFullyPaid = newTotalPaid >= totalDue * 0.99; // Tolerância de 1%
+    const remainingAmount = Math.max(0, totalDue - newTotalPaid);
+    const paymentPercentage = totalDue > 0 ? (newTotalPaid / totalDue) * 100 : 0;
 
     const result = await db.$transaction(async (tx) => {
       const updatedInstallment = await tx.installment.update({
         where: { id: installmentId },
         data: {
-          status: "PAID",
-          paidAt: paymentDate,
-          paidAmount,
+          status: isFullyPaid ? InstallmentStatus.PAID : InstallmentStatus.PARTIALLY_PAID,
+          paidAt: isFullyPaid ? paymentDate : installment.paidAt,
+          paidAmount: newTotalPaid,
           penalty: Math.round(penalty * 100) / 100,
         },
       });
@@ -127,12 +139,12 @@ export async function PUT(
           type: "ENTRADA",
           amount: paidAmount,
           date: paymentDate,
-          notes: `Pagamento parcela ${installment.number}/${loan.installmentsCount}`,
+          notes: `Pagamento ${isFullyPaid ? 'parcela' : 'parcial'} ${installment.number}/${loan.installmentsCount}`,
         },
       });
 
       const remainingCount = await tx.installment.count({
-        where: { loanId, status: { not: "PAID" } },
+        where: { loanId, status: { not: InstallmentStatus.PAID } },
       });
 
       if (remainingCount === 0) {
@@ -142,7 +154,13 @@ export async function PUT(
         });
       }
 
-      return { updatedInstallment, loanPaidOff: remainingCount === 0 };
+      return { 
+        updatedInstallment, 
+        loanPaidOff: remainingCount === 0,
+        isFullyPaid,
+        remainingAmount,
+        paymentPercentage
+      };
     });
 
     return NextResponse.json({
@@ -154,9 +172,18 @@ export async function PUT(
         penalty: decimalToNumber(result.updatedInstallment.penalty),
       },
       loanPaidOff: result.loanPaidOff,
+      isFullyPaid: result.isFullyPaid,
+      remainingAmount: result.remainingAmount,
+      paymentPercentage: Math.round(result.paymentPercentage * 100) / 100,
     });
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error paying installment:", error);
-    return NextResponse.json({ error: "Erro interno" }, { status: 500 });
+    console.error("Error details:", {
+      message: error?.message,
+      code: error?.code,
+      meta: error?.meta,
+      stack: error?.stack,
+    });
+    return NextResponse.json({ error: "Erro interno: " + (error?.message || "Unknown error") }, { status: 500 });
   }
 }

@@ -1,10 +1,11 @@
 ---
 type: agent
 name: Frontend Specialist
-description: Design and implement user interfaces
+description: Design and implement user interfaces for the Loan Management System
 agentType: frontend-specialist
 phases: [P, E]
 generated: 2026-01-19
+updated: 2026-03-04
 status: filled
 scaffoldVersion: "2.0.0"
 ---
@@ -12,60 +13,46 @@ scaffoldVersion: "2.0.0"
 # Frontend Specialist Agent Playbook
 
 ## Mission
-The Frontend Specialist Agent is the expert on the client-side experience. Engage this agent to implement complex UI components, ensure responsiveness, improve accessibility, and manage client-side state. Its goal is to create a seamless, beautiful, and fast user interface using Next.js, Tailwind CSS, and Radix UI.
+The Frontend Specialist Agent is the expert on the client-side experience. Engage this agent to implement loan management UI, dashboard visualizations, form components, and ensure responsiveness. Its goal is to create a seamless interface using Next.js, Tailwind CSS, and Radix UI.
 
 ## Responsibilities
-- **Component Development**: Build reusable UI components in `src/components`.
-- **Page Implementation**: Create layouts and pages in `src/app`.
-- **State Management**: Manage complex state using React Hooks (`src/hooks`).
-- **Styling**: Apply consistent styling using Tailwind CSS and `globals.css`.
-- **Accessibility**: Ensure all components meet WCAG standards (ARIA attributes, keyboard nav).
-- **Integration**: Connect UI to backend APIs using `src/lib/api-client.ts`.
+- **Component Development**: Build reusable UI components in `src/components`
+- **Page Implementation**: Create layouts and pages for loans, clients, transactions, alerts
+- **State Management**: Manage complex state using React Hooks and TanStack React Query
+- **Styling**: Apply consistent styling using Tailwind CSS
+- **Forms**: Implement forms with React Hook Form and Zod validation
+- **Charts**: Build analytics visualizations with Recharts
 
 ## Best Practices
-- **Mobile First**: Design for small screens first, then scale up.
-- **Client vs Server**: Use Server Components by default; add `use client` only for interactivity.
-- **Composition**: Build small, focused components and compose them into larger UIs.
-- **Performance**: Optimize images (`next/image`) and fonts (`next/font`).
-- **Shadcn/UI**: Follow the patterns established by the existing UI library (based on Radix UI).
-
-## Key Project Resources
-- [`Docs Index`](../docs/README.md)
-- [`Agent Handbook`](./README.md)
-- [`AGENTS.md`](../../AGENTS.md)
-- [`Contributor Guide`](../docs/development-workflow.md)
+- **Mobile First**: Design for small screens first, then scale up
+- **Client vs Server**: Use Server Components by default; add `use client` only for interactivity
+- **Composition**: Build small, focused components and compose them
+- **Performance**: Use `next/image` for images, `next/font` for fonts
+- **Shadcn/UI Pattern**: Follow existing Radix UI component patterns
 
 ## Repository Starting Points
-- `src/components/ui`: Core UI primitives (buttons, inputs, etc.).
-- `src/app`: Page routes and layouts.
-- `src/hooks`: Custom hooks.
-- `src/components`: Feature-specific components (e.g., `admin`, `billing`).
+- `src/components/ui/` — Base primitives (Button, Input, Card, Dialog, Tabs, Select)
+- `src/components/loans/` — Loan-specific components (LoanForm, InstallmentTable, ClientForm, DashboardMetrics)
+- `src/components/admin/` — Admin panel (AdminChrome, PlanEditDrawer, PlansTable)
+- `src/components/ai-chat/` — Chat UI (ChatHeader, ChatMessages, ChatInput, ModelSelector)
+- `src/components/billing/` — Billing (PlanGrid, CancelSubscriptionDialog, CpfModal)
+- `src/components/charts/` — Analytics (MrrBarChart, ArrBarChart, ChurnLineChart)
+- `src/app/(protected)/` — Protected page routes
 
 ## Key Files
 - **Global Styles**: `src/app/globals.css`
 - **Tailwind Config**: `tailwind.config.ts`
 - **Root Layout**: `src/app/layout.tsx`
-- **Theme Provider**: `src/components/theme-provider.tsx"
+- **Sidebar**: `src/components/app/` (Sidebar, Header, Footer)
 
-## Key Symbols for This Agent
-- **Components**: `Button`, `Input`, `Dialog`, `Sheet` (from `src/components/ui`)
-- **Hooks**: `useToast`, `useMobile`, `useCredits`
+## Key Symbols
+- **Components**: `Button`, `Input`, `Dialog`, `Sheet`, `Card`, `Tabs` (from `src/components/ui`)
+- **Hooks**: `useDashboard`, `useCredits`, `useChatLogic`
 - **Utils**: `cn` (class name merger)
 
-## Documentation Touchpoints
-- [`development-workflow.md`](../docs/development-workflow.md): UI contribution guidelines.
-- [`project-overview.md`](../docs/project-overview.md): Understand the user personas.
-- [`architecture.md`](../docs/architecture.md): Frontend architecture patterns.
-
 ## Collaboration Checklist
-1. **Design Review**: Understand the desired look and feel.
-2. **Component Check**: Check if a suitable component already exists in `src/components/ui`.
-3. **Implement**: Build the UI, ensuring responsiveness.
-4. **Connect**: Integrate with the backend (if needed).
-5. **Verify**: Test on different screen sizes and browsers.
-6. **A11y Check**: Tab through the interface to ensure keyboard accessibility.
-
-## Hand-off Notes
-- Note any new dependencies added.
-- Highlight complex state logic.
-- List any known browser-specific quirks.
+1. **Design Review**: Understand the desired UI
+2. **Component Check**: Check if suitable components exist in `src/components/ui`
+3. **Implement**: Build the UI with responsive design
+4. **Connect**: Integrate with backend APIs via hooks
+5. **Verify**: Test on different screen sizes

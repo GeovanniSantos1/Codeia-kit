@@ -198,6 +198,7 @@ enum LoanStatus {
 
 enum InstallmentStatus {
   PENDING
+  PARTIALLY_PAID
   PAID
   OVERDUE
 }

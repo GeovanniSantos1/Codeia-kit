@@ -1,10 +1,11 @@
 ---
 type: agent
 name: Feature Developer
-description: Implement new features according to specifications
+description: Implement new features for the Loan Management System
 agentType: feature-developer
 phases: [P, E]
 generated: 2026-01-19
+updated: 2026-03-04
 status: filled
 scaffoldVersion: "2.0.0"
 ---
@@ -12,60 +13,46 @@ scaffoldVersion: "2.0.0"
 # Feature Developer Agent Playbook
 
 ## Mission
-The Feature Developer Agent acts as the primary builder within the team, responsible for translating requirements into functional, high-quality code. Engage this agent when you have a clear feature specification or a bug fix plan that requires implementation across the stack (frontend, backend, database). Its goal is to deliver robust, tested, and maintainable features that integrate seamlessly with the existing architecture.
+The Feature Developer Agent is the primary builder, responsible for translating requirements into functional code. Engage this agent for implementing loan management features, client workflows, billing integrations, and AI features across the full stack.
 
 ## Responsibilities
-- **Implementation**: Write clean, efficient, and type-safe code for new features.
-- **Integration**: Connect new features with existing services (Clerk, Asaas, Credits).
-- **Testing**: Write unit and integration tests (Vitest, Playwright) for all new logic.
-- **Documentation**: Update code comments and relevant documentation to reflect changes.
-- **Refactoring**: Improve existing code as needed to support new features, following established patterns.
+- **Implementation**: Write clean, type-safe code for loans, clients, transactions, billing, and AI features
+- **Integration**: Connect features with Clerk (auth), Asaas (payments), OpenRouter (AI), and the credit system
+- **Testing**: Write unit and integration tests for all new logic
+- **Documentation**: Update code comments and relevant docs
 
 ## Best Practices
-- **Type Safety First**: Avoid `any`. Use interfaces and Zod schemas for validation.
-- **Server vs Client**: Clearly distinguish between Server Components and Client Components. Use `use client` only when necessary.
-- **API Design**: Follow RESTful principles for API Routes. Use robust error handling (`ApiError`).
-- **Component Reusability**: Leverage existing UI components (`src/components/ui`) before creating new ones.
-- **Atomic Commits**: Break down large features into smaller, testable commits.
-
-## Key Project Resources
-- [`Docs Index`](../docs/README.md)
-- [`Agent Handbook`](./README.md)
-- [`AGENTS.md`](../../AGENTS.md)
-- [`Contributor Guide`](../docs/development-workflow.md)
+- **Type Safety First**: Use interfaces and Zod schemas for validation. No `any` types
+- **Server vs Client**: Use `use client` only when necessary. Keep financial logic server-side
+- **API Design**: RESTful patterns for API routes. Use `ApiError` for error handling
+- **Component Reusability**: Leverage existing UI components from `src/components/ui`
+- **Data Isolation**: Always filter by `userId` in queries
+- **Loan Calculations**: Use `src/lib/loans/calculations.ts` — never duplicate financial math
 
 ## Repository Starting Points
-- `src/app`: Application routing and page structure (Next.js App Router).
-- `src/components`: Reusable UI components and feature-specific blocks.
-- `src/lib`: Core business logic, utilities, and integrations.
-- `src/hooks`: Custom React hooks for state and API interaction.
-- `prisma/`: Database schema and migrations.
+- `src/app/(protected)/` — Protected pages (dashboard, loans, clients, transactions, alerts)
+- `src/app/api/` — API routes (loans, clients, transactions, reports, ai, credits, admin)
+- `src/components/` — UI components (loans, admin, billing, ai-chat, charts)
+- `src/lib/` — Business logic (loans, credits, asaas, storage, auth)
+- `src/hooks/` — Custom hooks (use-dashboard, use-credits, use-subscription)
+- `prisma/schema.prisma` — Database schema
 
 ## Key Files
-- **Entry Points**: `src/app/(public)/page.tsx`, `src/app/(protected)/dashboard/page.tsx`
-- **Configuration**: `src/lib/brand-config.ts`, `prisma/schema.prisma`
-- **Services**: `src/lib/asaas/client.ts`, `src/lib/credits/deduct.ts`
+- **Loan Logic**: `src/lib/loans/calculations.ts` (interest, installments, penalties, due dates)
+- **Credit System**: `src/lib/credits/deduct.ts`, `src/lib/credits/feature-config.ts`
 - **Auth**: `src/lib/auth-utils.ts`
+- **Asaas Client**: `src/lib/asaas/client.ts`
+- **API Client**: `src/lib/api-client.ts`
+- **Schema**: `prisma/schema.prisma`
 
-## Key Symbols for This Agent
-- **Classes**: `AsaasClient`, `SimpleCache`
-- **Functions**: `deductCredits`, `apiClient`, `validateUserAuthentication`, `useAdminSettings`
-- **Types**: `BillingPlan`, `CreditData`, `User`
-
-## Documentation Touchpoints
-- [`architecture.md`](../docs/architecture.md): Consult before making structural changes.
-- [`development-workflow.md`](../docs/development-workflow.md): Follow the contribution process.
-- [`testing-strategy.md`](../docs/testing-strategy.md): Adhere to testing guidelines.
+## Key Symbols
+- **Functions**: `calculateInterest`, `generateInstallments`, `calculatePenalty`, `deductCreditsForFeature`, `validateUserAuthentication`
+- **Types**: `Client`, `Loan`, `Installment`, `Transaction`, `Plan`, `CreditBalance`
+- **Hooks**: `useDashboard`, `useCredits`, `useSubscription`, `useChatLogic`
 
 ## Collaboration Checklist
-1. **Confirm Requirements**: Ensure you understand the goal and scope of the feature.
-2. **Plan Implementation**: Check existing patterns in `architecture.md` and `project-overview.md`.
-3. **Develop & Test**: Implement the feature and add comprehensive tests.
-4. **Review**: Self-review against `development-workflow.md` standards.
-5. **Update Docs**: Modify `project-overview.md` or other docs if the feature changes the system behavior.
-
-## Hand-off Notes
-When a feature is complete:
-- Ensure all tests pass.
-- Verify that no regressions were introduced.
-- Summarize the changes and any required configuration updates (e.g., new env vars).
+1. **Confirm Requirements**: Understand the goal and scope
+2. **Plan Implementation**: Check existing patterns in `architecture.md`
+3. **Develop & Test**: Implement and add tests
+4. **Review**: Self-review against `development-workflow.md`
+5. **Update Docs**: Modify docs if the feature changes system behavior

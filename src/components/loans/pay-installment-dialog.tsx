@@ -12,6 +12,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Progress } from "@/components/ui/progress";
 import { formatCurrency, formatDate } from "@/lib/loans/calculations";
 
 type Installment = {
@@ -19,6 +20,7 @@ type Installment = {
   number: number;
   dueDate: string;
   amount: number;
+  paidAmount?: number | null;
   penalty: number;
   status: string;
 };
@@ -44,7 +46,10 @@ export function PayInstallmentDialog({
   React.useEffect(() => {
     if (installment && open) {
       const total = installment.amount + (installment.penalty || 0);
-      setPaidAmount(String(total));
+      const alreadyPaid = installment.paidAmount || 0;
+      const remaining = Math.max(0, total - alreadyPaid);
+      // Preenche com o valor restante por padrão
+      setPaidAmount(String(remaining.toFixed(2)));
       setPaidAt(new Date().toISOString().split("T")[0]);
     }
   }, [installment, open]);
@@ -52,6 +57,20 @@ export function PayInstallmentDialog({
   if (!installment) return null;
 
   const totalDue = installment.amount + (installment.penalty || 0);
+  const alreadyPaid = installment.paidAmount || 0;
+  const remaining = Math.max(0, totalDue - alreadyPaid);
+  const paymentPercentage = totalDue > 0 ? (alreadyPaid / totalDue) * 100 : 0;
+  const isPartiallyPaid = alreadyPaid > 0 && alreadyPaid < totalDue;
+
+  const handlePaidAmountChange = (value: string) => {
+    // Limita o valor ao máximo restante
+    const numValue = parseFloat(value) || 0;
+    if (numValue > remaining) {
+      setPaidAmount(remaining.toFixed(2));
+    } else {
+      setPaidAmount(value);
+    }
+  };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -64,6 +83,7 @@ export function PayInstallmentDialog({
         </DialogHeader>
 
         <div className="space-y-4">
+          {/* Resumo da parcela */}
           <div className="rounded-lg border p-3 space-y-1 text-sm">
             <div className="flex justify-between">
               <span className="text-muted-foreground">Valor da parcela:</span>
@@ -75,24 +95,60 @@ export function PayInstallmentDialog({
                 <span className="text-destructive">{formatCurrency(installment.penalty)}</span>
               </div>
             )}
-            <div className="flex justify-between font-semibold border-t pt-1">
-              <span>Total devido:</span>
-              <span>{formatCurrency(totalDue)}</span>
+            <div className="flex justify-between border-t pt-1">
+              <span className="text-muted-foreground">Total devido:</span>
+              <span className="font-medium">{formatCurrency(totalDue)}</span>
             </div>
           </div>
 
+          {/* Progresso do pagamento (só aparece se já houver pagamento parcial) */}
+          {isPartiallyPaid && (
+            <div className="rounded-lg border p-3 space-y-2">
+              <div className="flex justify-between text-sm">
+                <span className="text-muted-foreground">Valor já pago:</span>
+                <span className="text-emerald-600 font-medium">{formatCurrency(alreadyPaid)}</span>
+              </div>
+              <div className="flex justify-between text-sm">
+                <span className="text-muted-foreground">Restante:</span>
+                <span className="text-orange-600 font-medium">{formatCurrency(remaining)}</span>
+              </div>
+              <div className="space-y-1">
+                <div className="flex justify-between text-xs">
+                  <span className="text-muted-foreground">Progresso:</span>
+                  <span className="font-medium">{paymentPercentage.toFixed(1)}%</span>
+                </div>
+                <Progress value={paymentPercentage} className="h-2" />
+              </div>
+            </div>
+          )}
+
+          {/* Campo de valor a pagar */}
           <div className="space-y-2">
-            <Label htmlFor="paidAmount">Valor pago (R$)</Label>
+            <Label htmlFor="paidAmount">
+              Valor a pagar (R$)
+              {remaining > 0 && (
+                <span className="text-muted-foreground text-xs ml-2">
+                  (máx: {formatCurrency(remaining)})
+                </span>
+              )}
+            </Label>
             <Input
               id="paidAmount"
               type="number"
               step="0.01"
               min="0.01"
+              max={remaining}
               value={paidAmount}
-              onChange={(e) => setPaidAmount(e.target.value)}
+              onChange={(e) => handlePaidAmountChange(e.target.value)}
             />
+            {parseFloat(paidAmount) > remaining && (
+              <p className="text-xs text-destructive">
+                O valor não pode exceder {formatCurrency(remaining)}
+              </p>
+            )}
           </div>
 
+          {/* Campo de data */}
           <div className="space-y-2">
             <Label htmlFor="paidAt">Data do pagamento</Label>
             <Input
@@ -102,6 +158,32 @@ export function PayInstallmentDialog({
               onChange={(e) => setPaidAt(e.target.value)}
             />
           </div>
+
+          {/* Preview do resultado */}
+          {paidAmount && parseFloat(paidAmount) > 0 && parseFloat(paidAmount) <= remaining && (
+            <div className="rounded-lg bg-muted p-3 text-sm space-y-1">
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">Novo valor pago:</span>
+                <span className="font-medium">
+                  {formatCurrency(alreadyPaid + parseFloat(paidAmount))}
+                </span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">Que restará:</span>
+                <span className="font-medium">
+                  {formatCurrency(Math.max(0, remaining - parseFloat(paidAmount)))}
+                </span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">Status após pagamento:</span>
+                <span className="font-medium">
+                  {alreadyPaid + parseFloat(paidAmount) >= totalDue * 0.99
+                    ? "Pago"
+                    : "Pago Parcialmente"}
+                </span>
+              </div>
+            </div>
+          )}
         </div>
 
         <DialogFooter>
@@ -110,6 +192,7 @@ export function PayInstallmentDialog({
           </Button>
           <Button
             isLoading={isLoading}
+            disabled={!paidAmount || parseFloat(paidAmount) <= 0 || parseFloat(paidAmount) > remaining}
             onClick={() => {
               if (!paidAmount || !paidAt) return;
               onConfirm({

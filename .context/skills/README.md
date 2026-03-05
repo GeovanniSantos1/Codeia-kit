@@ -2,7 +2,7 @@
 
 On-demand expertise for AI agents. Skills are task-specific procedures that get activated when relevant.
 
-> Project: starter-kit-with-asaas-mainzip
+> Project: Loan Management System (Sistema de Gestão de Empréstimos)
 
 ## How Skills Work
 
@@ -19,13 +19,13 @@ On-demand expertise for AI agents. Skills are task-specific procedures that get 
 | [Commit Message](./commit-message/SKILL.md) | Generate commit messages following conventional commits with scope detection | E, C |
 | [Pr Review](./pr-review/SKILL.md) | Review pull requests against team standards and best practices | R, V |
 | [Code Review](./code-review/SKILL.md) | Review code quality, patterns, and best practices | R, V |
-| [Test Generation](./test-generation/SKILL.md) | Generate comprehensive test cases for code | E, V |
+| [Test Generation](./test-generation/SKILL.md) | Generate comprehensive test cases for loan calculations, API routes, and E2E flows | E, V |
 | [Documentation](./documentation/SKILL.md) | Generate and update technical documentation | P, C |
 | [Refactoring](./refactoring/SKILL.md) | Safe code refactoring with step-by-step approach | E |
-| [Bug Investigation](./bug-investigation/SKILL.md) | Systematic bug investigation and root cause analysis | E, V |
-| [Feature Breakdown](./feature-breakdown/SKILL.md) | Break down features into implementable tasks | P |
-| [Api Design](./api-design/SKILL.md) | Design RESTful APIs following best practices | P, R |
-| [Security Audit](./security-audit/SKILL.md) | Security review checklist for code and infrastructure | R, V |
+| [Bug Investigation](./bug-investigation/SKILL.md) | Systematic bug investigation for loan, billing, and auth issues | E, V |
+| [Feature Breakdown](./feature-breakdown/SKILL.md) | Break down loan management features into implementable tasks | P |
+| [Api Design](./api-design/SKILL.md) | Design RESTful APIs for loans, clients, transactions, and reports | P, R |
+| [Security Audit](./security-audit/SKILL.md) | Security review for data isolation, auth, and financial data protection | R, V |
 
 ## Creating Custom Skills
 
@@ -37,29 +37,6 @@ Create a new skill by adding a directory with a `SKILL.md` file:
     ├── SKILL.md          # Required: skill definition
     └── templates/        # Optional: helper resources
         └── checklist.md
-```
-
-### SKILL.md Format
-
-```yaml
----
-name: my-skill
-description: When to use this skill
-phases: [P, E, V]  # Optional: PREVC phases
-mode: false        # Optional: mode command?
----
-
-# My Skill
-
-## When to Use
-[Description of when this skill applies]
-
-## Instructions
-1. Step one
-2. Step two
-
-## Examples
-[Usage examples]
 ```
 
 ## PREVC Phase Mapping

@@ -1,14 +1,24 @@
 {
-  "active": [
+  "active": [],
+  "completed": [
     {
       "slug": "fix-breaking-changes-upgrade",
       "path": "plans/fix-breaking-changes-upgrade.md",
       "title": "Fix Breaking Changes Upgrade",
-      "summary": "Fix type errors and runtime issues caused by Next.js 15, Prisma, and Vercel Blob updates.",
+      "summary": "Fixed type errors and runtime issues caused by Next.js 15, Prisma, and Vercel Blob updates.",
       "linkedAt": "2026-01-22T22:10:11.038Z",
-      "status": "active"
+      "completedAt": "2026-01-22T22:26:50.785Z",
+      "status": "completed"
+    },
+    {
+      "slug": "loan-management-features",
+      "path": "plans/loan-management-features.md",
+      "title": "Loan Management Features",
+      "summary": "Implemented core loan management: clients, loans, installments, transactions, alerts, dashboard.",
+      "linkedAt": "2026-02-01T00:00:00.000Z",
+      "completedAt": "2026-03-01T00:00:00.000Z",
+      "status": "completed"
     }
   ],
-  "completed": [],
-  "primary": "fix-breaking-changes-upgrade"
+  "primary": null
 }

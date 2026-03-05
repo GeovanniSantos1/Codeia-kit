@@ -1,38 +1,75 @@
 ---
-name: Test Generation
-description: Generate comprehensive test cases for code
+name: test-generation
+description: Generate comprehensive test cases for loan calculations, API routes, and E2E flows
 ---
 
 # Test Generation Skill
 
 ## Testing Frameworks
-- **Unit**: Vitest (`npm run test`)
-- **E2E**: Playwright (`npm run test:e2e`)
+- **Unit**: Vitest 4.0.7 (`npm run test:unit`)
+- **E2E**: Playwright 1.55.0 (`npm run test:e2e`)
 
 ## File Organization
-- **Unit Tests**: Co-located with source or in `tests/unit`. Pattern: `filename.spec.ts`.
-- **E2E Tests**: Located in `tests/e2e`. Pattern: `feature-name.spec.ts`.
-- **Fixtures**: `tests/setup.ts` for global setup.
+- **Unit Tests**: `tests/unit/**/*.spec.ts` or co-located `src/**/*.spec.ts`
+- **E2E Tests**: `tests/e2e/**/*.spec.ts`
+- **Fixtures**: `tests/setup.ts` for global setup
+
+## Key Test Areas
+
+### Loan Calculations (High Priority)
+- `calculateInterest(principal, rate)` — simple interest formula
+- `calculateTotalDebt(principal, interest)` — sum
+- `calculateInstallmentAmount(totalDebt, count)` — division and rounding
+- `calculateDueDates(startDate, count, interval)` — date generation for all intervals
+- `calculatePenalty(penaltyPerDay, daysOverdue)` — penalty math
+- `generateInstallments(...)` — full installment generation
+
+### Credit System
+- `validateCreditsForFeature(userId, feature)` — balance checking
+- `deductCreditsForFeature(userId, feature)` — deduction
+- `refundCreditsForFeature(userId, feature)` — refund on failure
+
+### API Routes
+- Loan CRUD with auth and data isolation
+- Client CRUD with search and pagination
+- Transaction recording with type filtering
+- Report endpoints (dashboard, today, overdue)
 
 ## Mocking Strategy
-- **External APIs**: Mock Clerk and Asaas calls using `vi.mock()`. Do not make network requests in unit tests.
-- **Database**: Use a test database or mock Prisma client responses.
-- **Date/Time**: Use `vi.useFakeTimers()` for time-sensitive logic (subscriptions, credits expiry).
+- **Clerk/Asaas/OpenRouter**: `vi.mock()` — no network requests
+- **Database**: Mock Prisma client responses
+- **Date/Time**: `vi.useFakeTimers()` for overdue and penalty calculations
 
 ## Coverage Requirements
-- **Business Logic**: High coverage (>80%) for `src/lib/credits`, `src/lib/asaas`.
-- **Utils**: High coverage for `src/lib/utils.ts`.
-- **Critical Paths**: E2E tests must cover Sign Up, Login, Subscription Purchase, and Credit Usage.
+- **Business Logic**: >80% for `src/lib/loans/calculations.ts` and `src/lib/credits/`
+- **API Routes**: Test happy path + error cases for all CRUD endpoints
+- **Critical E2E Paths**: Sign up, create loan, manage clients, view dashboard
 
-## Example (Unit Test)
+## Example (Loan Calculation Test)
 ```typescript
-import { describe, it, expect, vi } from 'vitest';
-import { deductCredits } from '@/lib/credits/deduct';
+import { describe, it, expect } from 'vitest';
+import { calculateInterest, generateInstallments } from '@/lib/loans/calculations';
 
-describe('deductCredits', () => {
-  it('should throw if insufficient credits', async () => {
-    // Setup mocks
-    await expect(deductCredits(userId, 100)).rejects.toThrow();
+describe('calculateInterest', () => {
+  it('should calculate simple interest correctly', () => {
+    expect(calculateInterest(1000, 10)).toBe(100); // 1000 * 10/100
+  });
+
+  it('should handle zero interest rate', () => {
+    expect(calculateInterest(1000, 0)).toBe(0);
+  });
+});
+
+describe('generateInstallments', () => {
+  it('should generate correct number of installments', () => {
+    const installments = generateInstallments({
+      principal: 1000,
+      interestRate: 10,
+      count: 5,
+      interval: 'MONTHLY',
+      startDate: new Date('2026-01-01'),
+    });
+    expect(installments).toHaveLength(5);
   });
 });
 ```

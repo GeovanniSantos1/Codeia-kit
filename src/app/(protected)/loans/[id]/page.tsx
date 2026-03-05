@@ -141,13 +141,18 @@ export default function LoanDetailPage() {
   const totalDebt = principal + interest;
 
   const installments = installmentsData?.data || [];
+  // Conta parcelas totalmente pagas
   const paidCount = installments.filter((i: any) => i.status === "PAID").length;
-  const totalPaid = installments
-    .filter((i: any) => i.status === "PAID")
-    .reduce((sum: number, i: any) => sum + (i.paidAmount || i.amount), 0);
-  const totalRemaining = installments
-    .filter((i: any) => i.status !== "PAID")
-    .reduce((sum: number, i: any) => sum + i.amount + (i.penalty || 0), 0);
+  // Conta parcelas parcialmente pagas
+  const partiallyPaidCount = installments.filter((i: any) => i.status === "PARTIALLY_PAID" || (i.paidAmount && i.paidAmount > 0 && i.status !== "PAID")).length;
+  // Total pago considera tanto parcelas pagas quanto pagamentos parciais
+  const totalPaid = installments.reduce((sum: number, i: any) => sum + (i.paidAmount || 0), 0);
+  // Total restante considera o valor já pago em parcelas parciais
+  const totalRemaining = installments.reduce((sum: number, i: any) => {
+    const total = i.amount + (i.penalty || 0);
+    const paid = i.paidAmount || 0;
+    return sum + Math.max(0, total - paid);
+  }, 0);
 
   return (
     <div className="space-y-6">
@@ -198,7 +203,12 @@ export default function LoanDetailPage() {
           </CardHeader>
           <CardContent>
             <p className="text-xl font-bold text-emerald-600">{formatCurrency(totalPaid)}</p>
-            <p className="text-xs text-muted-foreground">{paidCount}/{loan.installmentsCount} parcelas</p>
+            <p className="text-xs text-muted-foreground">
+              {paidCount}/{loan.installmentsCount} parcelas
+              {partiallyPaidCount > 0 && (
+                <span className="text-amber-600 ml-1">({partiallyPaidCount} parcial)</span>
+              )}
+            </p>
           </CardContent>
         </Card>
         <Card>

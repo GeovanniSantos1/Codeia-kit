@@ -1,10 +1,11 @@
 ---
 type: agent
 name: Performance Optimizer
-description: Identify performance bottlenecks
+description: Identify and fix performance bottlenecks in the Loan Management System
 agentType: performance-optimizer
 phases: [E, V]
 generated: 2026-01-19
+updated: 2026-03-04
 status: filled
 scaffoldVersion: "2.0.0"
 ---
@@ -12,58 +13,39 @@ scaffoldVersion: "2.0.0"
 # Performance Optimizer Agent Playbook
 
 ## Mission
-The Performance Optimizer Agent is dedicated to making the application faster and more efficient. Engage this agent to analyze bundle sizes, reduce server response times, optimize database queries, and improve Core Web Vitals. Its goal is to ensure a snappy user experience and efficient resource usage.
+The Performance Optimizer Agent makes the application faster and more efficient. Engage this agent to optimize database queries, reduce API response times, improve bundle size, and enhance Core Web Vitals.
 
 ## Responsibilities
-- **Frontend Analysis**: Profile React rendering and identify unnecessary re-renders.
-- **Bundle Optimization**: Analyze build output and split large chunks.
-- **Backend Profiling**: Identify slow API routes and database queries.
-- **Caching Strategy**: Implement and tune caching (Redis/KV, HTTP headers).
-- **Asset Optimization**: Compress images and optimize font loading.
+- **Database Optimization**: Optimize Prisma queries for loan listings, dashboard reports, and installment lookups
+- **Frontend Analysis**: Identify unnecessary re-renders in loan forms, dashboard, and charts
+- **Bundle Optimization**: Analyze and reduce client-side JavaScript bundle
+- **Caching Strategy**: Improve in-memory caching and React Query configurations
+- **Asset Optimization**: Compress images and optimize font loading
 
-## Best Practices
-- **Measure First**: Don't optimize without data. Use Vercel Analytics or browser dev tools.
-- **LCP/CLS/INP**: Focus on Core Web Vitals metrics.
-- **Lazy Loading**: Defer loading of non-critical components and code.
-- **Memoization**: Use `useMemo` and `useCallback` judiciously to prevent re-renders.
-- **Database Indexing**: Ensure frequent queries are backed by DB indexes.
-
-## Key Project Resources
-- [`Docs Index`](../docs/README.md)
-- [`Agent Handbook`](./README.md)
-- [`AGENTS.md`](../../AGENTS.md)
-- [`Contributor Guide`](../docs/development-workflow.md)
+## Key Performance Areas
+- **Dashboard Queries**: Reports aggregate loan data — ensure proper indexes and efficient queries
+- **Loan Listings**: Paginated queries with filters (status, overdue) — avoid N+1 on installments
+- **Installment Calculations**: Batch installment generation on loan creation
+- **Chart Rendering**: Recharts visualizations (MRR, ARR, Churn) — lazy load when possible
+- **AI Chat Streaming**: Ensure smooth SSE streaming without blocking
 
 ## Repository Starting Points
-- `next.config.ts`: Build and optimization settings.
-- `src/lib/cache.ts`: Caching utility.
-- `prisma/schema.prisma`: Database schema (indexes).
-- `src/components`: UI components to optimize.
+- `src/app/api/reports/` — Dashboard report queries
+- `src/app/api/loans/` — Loan listing with filters
+- `prisma/schema.prisma` — Database indexes
+- `src/lib/cache.ts` — In-memory cache
+- `next.config.ts` — Build optimization settings
 
-## Key Files
-- **Cache Utils**: `src/lib/cache.ts`
-- **Database**: `src/lib/db.ts`
-- **Config**: `next.config.ts`
-
-## Key Symbols for This Agent
-- **Classes**: `SimpleCache`
-- **Functions**: `getCacheKey`
-- **Components**: `Image` (next/image), `Script` (next/script)
-
-## Documentation Touchpoints
-- [`architecture.md`](../docs/architecture.md): Update if architectural changes are made for performance (e.g., adding Redis).
-- [`tooling.md`](../docs/tooling.md): Add performance measurement scripts.
-- [`development-workflow.md`](../docs/development-workflow.md): Add performance budgets to CI.
+## Best Practices
+- **Measure First**: Use browser dev tools and query logging before optimizing
+- **Database Indexes**: Ensure indexes on `userId`, `clientId`, `loanId`, `dueDate`, `status`
+- **Lazy Loading**: Defer non-critical components (charts, AI chat)
+- **Memoization**: Use `useMemo` and `useCallback` judiciously
+- **Select Fields**: Use Prisma `select` to fetch only needed columns
 
 ## Collaboration Checklist
-1. **Benchmark**: Record baseline metrics (Lighthouse score, API latency).
-2. **Identify**: Pinpoint the bottleneck.
-3. **Hypothesize**: Propose a fix and expected improvement.
-4. **Implement**: Apply the optimization.
-5. **Verify**: Measure again to confirm the gain.
-6. **Regression Check**: Ensure no functionality broke.
-
-## Hand-off Notes
-- Report the "Before" and "After" metrics.
-- Explain the technique used (e.g., "Added index to users table").
-- Note any trade-offs (e.g., "Increased build time slightly").
+1. **Benchmark**: Record baseline metrics
+2. **Identify**: Pinpoint the bottleneck
+3. **Implement**: Apply the optimization
+4. **Verify**: Measure improvement
+5. **Regression Check**: Ensure no functionality broke
