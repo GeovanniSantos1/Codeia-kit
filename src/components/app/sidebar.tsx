@@ -16,6 +16,7 @@ import {
   AlertTriangle,
   Settings,
   DollarSign,
+  Shield,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -42,8 +43,22 @@ export const navigationItems = [
   { name: "Assinatura", href: "/billing", icon: CreditCard },
 ];
 
+const adminItem = { name: "Painel Admin", href: "/admin", icon: Shield };
+
 export function Sidebar({ collapsed, onToggle }: SidebarProps) {
   const pathname = usePathname();
+  const [isAdminUser, setIsAdminUser] = React.useState(false);
+
+  React.useEffect(() => {
+    fetch("/api/admin/verify")
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => {
+        if (data?.isAdmin) setIsAdminUser(true);
+      })
+      .catch(() => {});
+  }, []);
+
+  const allItems = isAdminUser ? [...navigationItems, adminItem] : navigationItems;
 
   return (
     <aside
@@ -77,7 +92,7 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
       
       <ScrollArea className="flex-1 min-h-0">
         <nav className="flex flex-col gap-1 p-2" aria-label="Navegação principal">
-          {navigationItems.map((item) => {
+          {allItems.map((item) => {
             const isActive = pathname === item.href || pathname.startsWith(item.href + "/");
             const link = (
               <Link

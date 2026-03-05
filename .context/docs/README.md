@@ -1,53 +1,46 @@
 ---
 type: doc
 name: README
-description: Documentation index and knowledge base entry point
+description: Documentation index and knowledge base entry point for the Loan Management System
 category: index
 generated: 2026-01-19
+updated: 2026-03-04
 status: filled
 scaffoldVersion: "2.0.0"
 ---
 
 # Documentation Index
 
-Welcome to the repository knowledge base. Start with the project overview, then dive into specific guides as needed.
+Welcome to the **Loan Management System** (Sistema de Gestão de Empréstimos) knowledge base. Start with the project overview, then dive into specific guides as needed.
 
 ## Core Guides
-- [Project Overview](./project-overview.md)
-- [Architecture Notes](./architecture.md)
-- [Development Workflow](./development-workflow.md)
-- [Testing Strategy](./testing-strategy.md)
-- [Glossary & Domain Concepts](./glossary.md)
-- [Security & Compliance Notes](./security.md)
-- [Tooling & Productivity Guide](./tooling.md)
+- [Project Overview](./project-overview.md) — What this app does, tech stack, features
+- [Architecture Notes](./architecture.md) — System design, layers, patterns, integrations
+- [Development Workflow](./development-workflow.md) — Branching, local dev, code review
+- [Testing Strategy](./testing-strategy.md) — Test frameworks, coverage, quality gates
+- [Glossary & Domain Concepts](./glossary.md) — Loan, Client, Installment, Transaction terms
+- [Security & Compliance Notes](./security.md) — Auth, secrets, LGPD, data protection
+- [Tooling & Productivity Guide](./tooling.md) — Scripts, IDE setup, tips
 
 ## Repository Snapshot
-- `components.json`
-- `doc/`
-- `eslint.config.mjs`
-- `next-env.d.ts`
-- `next.config.ts`
-- `package-lock.json`
-- `package.json`
-- `playwright.config.ts`
-- `postcss.config.mjs`
-- `prisma/`
-- `public/`
-- `README.md`
-- `scripts/`
-- `src/` — TypeScript source files and CLI entrypoints.
-- `tailwind.config.ts`
-- `tests/` — Automated tests and fixtures.
-- `tsconfig.json`
-- `vitest.config.ts`
+- `prisma/` — Database schema, migrations, generated client
+- `src/app/` — Next.js App Router (pages, API routes, layouts)
+- `src/components/` — ~134 React components (ui, loans, admin, ai-chat, billing, charts)
+- `src/lib/` — Business logic (loans, credits, asaas, storage, auth, queries)
+- `src/hooks/` — Custom React hooks (dashboard, credits, subscription, chat)
+- `src/contexts/` — React context providers
+- `tests/` — Unit (Vitest) and E2E (Playwright) tests
+- `public/` — Static assets
+- `package.json` — Dependencies and scripts
+- Configuration: `next.config.ts`, `tailwind.config.ts`, `tsconfig.json`, `vitest.config.ts`, `playwright.config.ts`
 
 ## Document Map
 | Guide | File | Primary Inputs |
 | --- | --- | --- |
-| Project Overview | `project-overview.md` | Roadmap, README, stakeholder notes |
-| Architecture Notes | `architecture.md` | ADRs, service boundaries, dependency graphs |
-| Development Workflow | `development-workflow.md` | Branching rules, CI config, contributing guide |
-| Testing Strategy | `testing-strategy.md` | Test configs, CI gates, known flaky suites |
-| Glossary & Domain Concepts | `glossary.md` | Business terminology, user personas, domain rules |
-| Security & Compliance Notes | `security.md` | Auth model, secrets management, compliance requirements |
-| Tooling & Productivity Guide | `tooling.md` | CLI scripts, IDE configs, automation workflows |
+| Project Overview | `project-overview.md` | App purpose, features, tech stack, entry points |
+| Architecture Notes | `architecture.md` | Layers, patterns, integrations, API surface |
+| Development Workflow | `development-workflow.md` | Branching, local dev, code review, CI |
+| Testing Strategy | `testing-strategy.md` | Vitest, Playwright, coverage, quality gates |
+| Glossary & Domain Concepts | `glossary.md` | Loan domain terms, enums, personas, business rules |
+| Security & Compliance Notes | `security.md` | Auth, RBAC, secrets, LGPD compliance |
+| Tooling & Productivity Guide | `tooling.md` | npm scripts, IDE config, Prisma Studio |
