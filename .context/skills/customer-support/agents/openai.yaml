@@ -1,0 +1,4 @@
+interface:
+  display_name: "Customer Support"
+  short_description: "Draft support replies that solve the issue clearly"
+  default_prompt: "Use $customer-support to identify the real customer problem, decide whether the case needs escalation, and draft the customer-facing reply."

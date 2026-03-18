@@ -26,25 +26,27 @@ On-demand expertise for AI agents. Skills are task-specific procedures that get 
 | [Feature Breakdown](./feature-breakdown/SKILL.md) | Break down loan management features into implementable tasks | P |
 | [Api Design](./api-design/SKILL.md) | Design RESTful APIs for loans, clients, transactions, and reports | P, R |
 | [Security Audit](./security-audit/SKILL.md) | Security review for data isolation, auth, and financial data protection | R, V |
+| [Customer Support](./customer-support/SKILL.md) | Draft customer-facing support replies and reusable response templates | E, C |
+| [Support Escalation](./support-escalation/SKILL.md) | Triage support cases and route escalations with the right urgency | P, E, C |
 
 ## Creating Custom Skills
 
 Create a new skill by adding a directory with a `SKILL.md` file:
 
-```
+```text
 .context/skills/
-└── my-skill/
-    ├── SKILL.md          # Required: skill definition
-    └── templates/        # Optional: helper resources
-        └── checklist.md
+`-- my-skill/
+    |-- SKILL.md          # Required: skill definition
+    `-- references/       # Optional: helper resources
+        `-- guide.md
 ```
 
 ## PREVC Phase Mapping
 
 | Phase | Name | Skills |
 |-------|------|--------|
-| P | Planning | feature-breakdown, documentation, api-design |
+| P | Planning | feature-breakdown, documentation, api-design, support-escalation |
 | R | Review | pr-review, code-review, api-design, security-audit |
-| E | Execution | commit-message, test-generation, refactoring, bug-investigation |
+| E | Execution | commit-message, test-generation, refactoring, bug-investigation, customer-support, support-escalation |
 | V | Validation | pr-review, code-review, test-generation, security-audit |
-| C | Confirmation | commit-message, documentation |
+| C | Confirmation | commit-message, documentation, customer-support, support-escalation |

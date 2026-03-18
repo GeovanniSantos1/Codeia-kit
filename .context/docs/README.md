@@ -4,7 +4,7 @@ name: README
 description: Documentation index and knowledge base entry point for the Loan Management System
 category: index
 generated: 2026-01-19
-updated: 2026-03-04
+updated: 2026-03-18
 status: filled
 scaffoldVersion: "2.0.0"
 ---
@@ -21,6 +21,11 @@ Welcome to the **Loan Management System** (Sistema de Gestão de Empréstimos) k
 - [Glossary & Domain Concepts](./glossary.md) — Loan, Client, Installment, Transaction terms
 - [Security & Compliance Notes](./security.md) — Auth, secrets, LGPD, data protection
 - [Tooling & Productivity Guide](./tooling.md) — Scripts, IDE setup, tips
+
+## AI Agent Resources
+- [Agent Handbook](../agents/README.md) - Role-based playbooks for implementation, review, and delivery
+- [Skills Index](../skills/README.md) - Task-specific procedures for support, review, testing, and documentation
+- [Customer Support Skill](../skills/customer-support/SKILL.md) - Draft customer replies, reuse templates, and decide when to escalate
 
 ## Repository Snapshot
 - `prisma/` — Database schema, migrations, generated client

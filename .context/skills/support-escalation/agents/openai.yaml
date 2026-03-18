@@ -1,0 +1,4 @@
+interface:
+  display_name: "Support Escalation"
+  short_description: "Triage support incidents and escalate clearly"
+  default_prompt: "Use $support-escalation to classify this support case, decide whether to escalate, and draft the internal escalation plus customer reply."

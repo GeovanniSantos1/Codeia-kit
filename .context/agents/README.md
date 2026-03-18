@@ -24,3 +24,5 @@ This directory contains ready-to-customize playbooks for AI agents collaborating
 ## Related Resources
 - [Documentation Index](../docs/README.md)
 - [Skills Index](../skills/README.md)
+- [Customer Support Skill](../skills/customer-support/SKILL.md)
+- [Support Escalation Skill](../skills/support-escalation/SKILL.md)
