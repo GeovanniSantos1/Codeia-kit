@@ -4,11 +4,31 @@ import * as React from "react";
 import { useAuth } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { PlanGrid } from "@/components/billing/plan-grid";
-import { usePublicPlans } from "@/hooks/use-public-plans";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { SimpleTopbar } from "@/components/app/simple-topbar";
-import { CreditCard, Sparkles, Shield, Zap } from "lucide-react";
+import { usePublicPlans } from "@/hooks/use-public-plans";
 import { Skeleton } from "@/components/ui/skeleton";
+import { CheckCircle2, CreditCard, Lock, Shield, Sparkles, Zap } from "lucide-react";
+import Link from "next/link";
+
+interface PlanFeature {
+  name: string;
+  included: boolean;
+}
+
+interface Plan {
+  id: string;
+  name: string;
+  description?: string | null;
+  priceMonthlyCents?: number | null;
+  badge?: string | null;
+  highlight?: boolean;
+  features?: PlanFeature[] | null;
+  ctaType?: string | null;
+  ctaLabel?: string | null;
+  ctaUrl?: string | null;
+}
 
 export default function SubscribePage() {
   const { isLoaded, isSignedIn } = useAuth();
@@ -23,68 +43,36 @@ export default function SubscribePage() {
   if (!isLoaded) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary" />
       </div>
     );
   }
 
   return (
-    <div className="min-h-dvh w-full bg-gradient-to-b from-background to-muted/20">
+    <div className="min-h-dvh w-full bg-gradient-to-b from-background via-background to-muted/30">
       <SimpleTopbar />
-      <main className="container mx-auto max-w-4xl px-4 py-10">
-        <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold mb-3">Escolha seu plano</h1>
-          <p className="text-muted-foreground max-w-lg mx-auto">
-            Selecione o plano ideal para suas necessidades. Todos os planos incluem acesso completo à plataforma.
+      <main className="container mx-auto max-w-3xl px-4 py-12">
+        <div className="text-center mb-10">
+          <Badge variant="outline" className="mb-4 text-xs font-medium px-3 py-1">
+            GG Empréstimos
+          </Badge>
+          <h1 className="text-4xl font-bold mb-3 tracking-tight">
+            Acesso à plataforma
+          </h1>
+          <p className="text-muted-foreground max-w-md mx-auto text-base">
+            Assine o plano mensal e tenha controle total dos seus empréstimos, clientes, parcelas e cobranças.
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-          <div className="flex items-center gap-3 p-4 rounded-lg bg-card border">
-            <div className="p-2 rounded-full bg-primary/10">
-              <Zap className="h-5 w-5 text-primary" />
-            </div>
-            <div>
-              <p className="font-medium text-sm">Acesso Imediato</p>
-              <p className="text-xs text-muted-foreground">Comece a usar agora</p>
-            </div>
-          </div>
-          <div className="flex items-center gap-3 p-4 rounded-lg bg-card border">
-            <div className="p-2 rounded-full bg-primary/10">
-              <Shield className="h-5 w-5 text-primary" />
-            </div>
-            <div>
-              <p className="font-medium text-sm">Pagamento Seguro</p>
-              <p className="text-xs text-muted-foreground">PIX, Boleto ou Cartão</p>
-            </div>
-          </div>
-          <div className="flex items-center gap-3 p-4 rounded-lg bg-card border">
-            <div className="p-2 rounded-full bg-primary/10">
-              <Sparkles className="h-5 w-5 text-primary" />
-            </div>
-            <div>
-              <p className="font-medium text-sm">Cancele a Qualquer Momento</p>
-              <p className="text-xs text-muted-foreground">Sem fidelidade</p>
-            </div>
-          </div>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-10">
+          <Pillar icon={Zap} title="Acesso Imediato" desc="Comece a usar agora mesmo" />
+          <Pillar icon={Shield} title="Pagamento Seguro" desc="PIX, Boleto ou Cartão" />
+          <Pillar icon={Sparkles} title="Sem Fidelidade" desc="Cancele quando quiser" />
         </div>
 
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <CreditCard className="h-5 w-5" />
-              Planos Disponíveis
-            </CardTitle>
-            <CardDescription>
-              Compare os planos e escolha o melhor para você. Você pode alterar seu plano a qualquer momento.
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <SubscribePlans />
-          </CardContent>
-        </Card>
+        <PlanCards />
 
-        <p className="text-center text-xs text-muted-foreground mt-6">
+        <p className="text-center text-xs text-muted-foreground mt-8">
           Ao assinar, você concorda com nossos termos de serviço e política de privacidade.
         </p>
       </main>
@@ -92,22 +80,145 @@ export default function SubscribePage() {
   );
 }
 
-function SubscribePlans() {
-  const { data, isLoading } = usePublicPlans()
-  
-  if (isLoading) {
-    return (
-      <div className="space-y-4">
-        <div className="flex justify-center">
-          <Skeleton className="h-10 w-48" />
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <Skeleton className="h-64" />
-          <Skeleton className="h-64" />
-        </div>
+function Pillar({ icon: Icon, title, desc }: { icon: React.ElementType; title: string; desc: string }) {
+  return (
+    <div className="flex items-center gap-3 p-4 rounded-xl bg-card border">
+      <div className="p-2 rounded-full bg-primary/10 shrink-0">
+        <Icon className="h-5 w-5 text-primary" />
       </div>
-    )
+      <div>
+        <p className="font-medium text-sm">{title}</p>
+        <p className="text-xs text-muted-foreground">{desc}</p>
+      </div>
+    </div>
+  );
+}
+
+function PlanCards() {
+  const { data, isLoading } = usePublicPlans();
+
+  if (isLoading) {
+    return <Skeleton className="h-72 w-full rounded-2xl" />;
   }
-  
-  return <PlanGrid plans={data?.plans || []} />
+
+  // Show only paid plans (>= R$ 5,00) on the subscribe page.
+  // Free plan access is managed by admin whitelist only.
+  const plans: Plan[] = (data?.plans ?? []).filter((p: Plan) => {
+    const cents = p.priceMonthlyCents;
+    return cents !== null && cents !== undefined && cents >= 500;
+  });
+
+  if (!plans.length) {
+    return (
+      <Card className="text-center py-10">
+        <CardContent>
+          <p className="text-muted-foreground">Nenhum plano disponível no momento.</p>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  return (
+    <div className="flex flex-col gap-4">
+      {plans.map((plan: Plan) => (
+        <PlanCard key={plan.id} plan={plan} />
+      ))}
+    </div>
+  );
+}
+
+function PlanCard({ plan }: { plan: Plan }) {
+  const price = plan.priceMonthlyCents
+    ? `R$ ${(plan.priceMonthlyCents / 100).toFixed(2).replace(".", ",")}`
+    : "Gratuito";
+
+  const features: PlanFeature[] = Array.isArray(plan.features) ? plan.features : [];
+
+  return (
+    <Card className={`relative overflow-hidden transition-all border-2 ${plan.highlight ? "border-primary shadow-lg shadow-primary/10" : "border-border"}`}>
+      {plan.badge && (
+        <div className="absolute top-4 right-4">
+          <Badge className="bg-primary text-primary-foreground text-xs">{plan.badge}</Badge>
+        </div>
+      )}
+      <CardHeader className="pb-4">
+        <div className="flex items-start justify-between gap-4">
+          <div>
+            <CardTitle className="text-xl flex items-center gap-2">
+              <CreditCard className="h-5 w-5 text-primary" />
+              Plano {plan.name}
+            </CardTitle>
+            {plan.description && (
+              <CardDescription className="mt-1 max-w-lg">{plan.description}</CardDescription>
+            )}
+          </div>
+          <div className="text-right shrink-0">
+            <p className="text-3xl font-bold">{price}</p>
+            {plan.priceMonthlyCents ? <p className="text-xs text-muted-foreground">por mês</p> : null}
+          </div>
+        </div>
+      </CardHeader>
+      <CardContent className="space-y-5">
+        {features.length > 0 && (
+          <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+            {features.map((f, i) => (
+              <li key={i} className="flex items-center gap-2 text-sm">
+                <CheckCircle2 className={`h-4 w-4 shrink-0 ${f.included ? "text-primary" : "text-muted-foreground opacity-40"}`} />
+                <span className={f.included ? "" : "line-through text-muted-foreground opacity-50"}>{f.name}</span>
+              </li>
+            ))}
+          </ul>
+        )}
+        <div className="pt-2">
+          {plan.ctaType === "checkout" ? (
+            <CheckoutButton plan={plan} />
+          ) : plan.ctaUrl ? (
+            <Button className="w-full" size="lg" asChild>
+              <Link href={plan.ctaUrl}>{plan.ctaLabel || "Entrar em contato"}</Link>
+            </Button>
+          ) : (
+            <Button className="w-full" size="lg" disabled>
+              <Lock className="h-4 w-4 mr-2" />
+              {plan.ctaLabel || "Contato"}
+            </Button>
+          )}
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
+function CheckoutButton({ plan }: { plan: Plan }) {
+  const [loading, setLoading] = React.useState(false);
+  const [error, setError] = React.useState<string | null>(null);
+
+  const handleCheckout = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const res = await fetch("/api/subscription/checkout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ planId: plan.id }),
+      });
+      if (!res.ok) throw new Error("Falha ao iniciar checkout");
+      const data = await res.json();
+      const url = data.url || data.checkoutUrl;
+      if (url) window.location.href = url;
+      else setError("URL de pagamento não disponível. Tente novamente.");
+    } catch {
+      setError("Erro ao processar. Tente novamente.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="space-y-2">
+      <Button className="w-full" size="lg" onClick={handleCheckout} disabled={loading}>
+        {loading ? "Aguarde…" : plan.ctaLabel || `Assinar por ${plan.priceMonthlyCents ? `R$ ${(plan.priceMonthlyCents / 100).toFixed(2).replace(".", ",")}` : "—"}/mês`}
+      </Button>
+      {error && <p className="text-sm text-destructive text-center">{error}</p>}
+    </div>
+  );
 }

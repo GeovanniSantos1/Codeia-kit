@@ -327,3 +327,13 @@ model NotificationLog {
   @@index([installmentId, type])
   @@index([userId, sentAt])
 }
+
+model FreeWhitelistedEmail {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  note      String?
+  addedBy   String
+  createdAt DateTime @default(now())
+
+  @@index([email])
+}
