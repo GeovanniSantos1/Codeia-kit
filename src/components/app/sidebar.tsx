@@ -14,7 +14,6 @@ import {
   MessageSquare,
   Bell,
   AlertTriangle,
-  Settings,
   Shield,
   Megaphone,
 } from 'lucide-react';
@@ -33,122 +32,226 @@ type SidebarProps = {
 };
 
 export const navigationItems = [
-  { name: 'Dashboard', href: '/dashboard', icon: Home },
-  { name: 'Clientes', href: '/clients', icon: Users },
-  { name: 'Empréstimos', href: '/loans', icon: HandCoins },
-  { name: 'Lançamentos', href: '/transactions', icon: ArrowLeftRight },
-  { name: 'Cobranças', href: '/cobrancas', icon: Megaphone },
-  { name: 'Mensagens', href: '/messages', icon: MessageSquare },
-  { name: 'Vence Hoje', href: '/alerts/today', icon: Bell },
-  { name: 'Inadimplentes', href: '/alerts/overdue', icon: AlertTriangle },
-  { name: 'Assinatura', href: '/billing', icon: CreditCard },
+  { name: 'Dashboard',     href: '/dashboard',    icon: Home,           color: '#00ffcc', num: '01' },
+  { name: 'Clientes',      href: '/clients',      icon: Users,          color: '#06b6d4', num: '02' },
+  { name: 'Empréstimos',   href: '/loans',        icon: HandCoins,      color: '#8b5cf6', num: '03' },
+  { name: 'Lançamentos',   href: '/transactions', icon: ArrowLeftRight, color: '#f59e0b', num: '04' },
+  { name: 'Cobranças',     href: '/cobrancas',    icon: Megaphone,      color: '#ff0055', num: '05' },
+  { name: 'Mensagens',     href: '/messages',     icon: MessageSquare,  color: '#10b981', num: '06' },
+  { name: 'Vence Hoje',    href: '/alerts/today', icon: Bell,           color: '#facc15', num: '07' },
+  { name: 'Inadimplentes', href: '/alerts/overdue', icon: AlertTriangle, color: '#ef4444', num: '08' },
+  { name: 'Assinatura',    href: '/billing',      icon: CreditCard,     color: '#a78bfa', num: '09' },
 ];
 
-const adminItem = { name: 'Painel Admin', href: '/admin', icon: Shield };
+const adminItem = { name: 'Painel Admin', href: '/admin', icon: Shield, color: '#ff6600', num: '10' };
 
+type NavItem = (typeof navigationItems)[0];
+
+// ─── Expanded nav item with kinetic shard aesthetics ─────────────────────────
+function KineticItem({ item, isActive }: { item: NavItem; isActive: boolean }) {
+  const [hovered, setHovered] = React.useState(false);
+  const Icon = item.icon as React.ComponentType<{ className?: string }>;
+  const lit = isActive || hovered;
+
+  return (
+    <Link
+      href={item.href}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      className="relative flex items-center gap-3 rounded-md px-3 py-2 transition-all duration-300"
+      style={{
+        background: lit
+          ? `linear-gradient(90deg, ${item.color}18, transparent 80%)`
+          : 'transparent',
+      }}
+    >
+      {/* Left accent bar */}
+      <div
+        className="absolute left-0 top-1/2 -translate-y-1/2 w-[2px] rounded-full transition-all duration-300"
+        style={{
+          height: isActive ? '70%' : hovered ? '45%' : '0%',
+          background: item.color,
+          boxShadow: lit ? `0 0 8px ${item.color}` : 'none',
+        }}
+      />
+
+      {/* Glow radial */}
+      {lit && (
+        <div
+          className="absolute inset-0 rounded-md pointer-events-none"
+          style={{
+            background: `radial-gradient(ellipse at 0% 50%, ${item.color}12, transparent 70%)`,
+          }}
+        />
+      )}
+
+      {/* Number */}
+      <span
+        className="text-[9px] font-mono w-4 shrink-0 transition-colors duration-300"
+        style={{ color: lit ? item.color : '#374151' }}
+      >
+        {item.num}
+      </span>
+
+      {/* Icon */}
+      <Icon
+        className="h-4 w-4 shrink-0 transition-colors duration-300"
+        style={{ color: lit ? item.color : '#6b7280' } as React.CSSProperties}
+      />
+
+      {/* Label */}
+      <span
+        className="text-sm font-semibold tracking-wide truncate transition-colors duration-300"
+        style={{ color: lit ? item.color : '#9ca3af' }}
+      >
+        {item.name}
+      </span>
+    </Link>
+  );
+}
+
+// ─── Sidebar ──────────────────────────────────────────────────────────────────
 export function Sidebar({ collapsed, onToggle }: SidebarProps) {
   const pathname = usePathname();
   const [isAdminUser, setIsAdminUser] = React.useState(false);
 
   React.useEffect(() => {
     fetch('/api/admin/verify')
-      .then((res) => (res.ok ? res.json() : null))
-      .then((data) => {
-        if (data?.isAdmin) setIsAdminUser(true);
-      })
+      .then((r) => (r.ok ? r.json() : null))
+      .then((d) => { if (d?.isAdmin) setIsAdminUser(true); })
       .catch(() => {});
   }, []);
 
-  const allItems = isAdminUser
-    ? [...navigationItems, adminItem]
-    : navigationItems;
+  const allItems = isAdminUser ? [...navigationItems, adminItem] : navigationItems;
 
   return (
     <aside
       className={cn(
-        'relative z-30 hidden md:flex md:flex-col border-r border-border/40 bg-card/30 text-card-foreground backdrop-blur-xl supports-[backdrop-filter]:bg-card/20 glass-panel transition-[width] duration-200 ease-in-out',
-        collapsed ? 'w-[64px]' : 'w-64',
-        'my-4 md:sticky md:top-4 md:h-[calc(100vh-2rem)] md:max-h-[calc(100vh-2rem)] md:overflow-hidden'
+        'relative z-30 hidden md:flex md:flex-col border-r text-card-foreground',
+        'transition-[width] duration-300 ease-in-out overflow-hidden',
+        collapsed ? 'w-[64px]' : 'w-60',
+        'my-4 md:sticky md:top-4 md:h-[calc(100vh-2rem)] md:max-h-[calc(100vh-2rem)]'
       )}
+      style={{
+        background: 'rgba(6, 6, 10, 0.94)',
+        backdropFilter: 'blur(28px)',
+        WebkitBackdropFilter: 'blur(28px)',
+        borderColor: 'rgba(255,255,255,0.07)',
+        clipPath: collapsed ? 'none' : 'polygon(0% 0%, 100% 1.5%, 98.5% 100%, 0% 98.5%)',
+        animation: 'shard-sidebar-float 10s ease-in-out infinite',
+      }}
       aria-label="Barra lateral principal"
     >
-      <div className="flex h-14 items-center px-2">
+      {/* Scan line */}
+      <div
+        className="absolute left-0 w-full h-px pointer-events-none z-20"
+        style={{
+          background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.12), transparent)',
+          animation: 'sidebar-scan 4s linear infinite',
+        }}
+        aria-hidden="true"
+      />
+
+      {/* HUD corner marks */}
+      <div className="absolute top-2 left-2 w-3 h-3 border-l border-t border-white/10 pointer-events-none" />
+      <div className="absolute top-2 right-2 w-3 h-3 border-r border-t border-white/10 pointer-events-none" />
+      <div className="absolute bottom-2 left-2 w-3 h-3 border-l border-b border-white/10 pointer-events-none" />
+      <div className="absolute bottom-2 right-2 w-3 h-3 border-r border-b border-white/10 pointer-events-none" />
+
+      {/* Header */}
+      <div className="flex h-16 items-center px-2 border-b border-white/5 shrink-0">
         {collapsed ? (
           <div className="flex flex-1 items-center justify-center">
             <Link href="/">
-              <img
-                src="/logo.png"
-                alt="GG Empréstimos"
-                className="h-20 w-20 object-cover object-left rounded"
-              />
+              <img src="/logo.png" alt="GG" className="h-8 w-8 object-cover object-left rounded" />
             </Link>
           </div>
         ) : (
-          <>
-            <Link href="/" className="flex flex-1 items-center pl-1">
-              <img
-                src="/logo.png"
-                alt="GG Empréstimos"
-                className="h-20 w-auto max-w-[180px] object-contain object-left"
-              />
-            </Link>
-          </>
+          <Link href="/" className="flex flex-1 items-center pl-2 gap-2 min-w-0">
+            <img src="/logo.png" alt="GG Empréstimos" className="h-8 w-8 shrink-0 object-cover object-left rounded" />
+            <div className="flex flex-col leading-tight min-w-0">
+              <span className="text-[10px] font-black tracking-[0.22em] text-white uppercase truncate">
+                GG EMPRÉSTIMOS
+              </span>
+              <span className="text-[8px] font-mono tracking-[0.15em]" style={{ color: '#00ffcc' }}>
+                SYS · ONLINE
+              </span>
+            </div>
+          </Link>
         )}
         <Button
           variant="ghost"
           size="icon"
-          aria-label={
-            collapsed ? 'Expandir barra lateral' : 'Recolher barra lateral'
-          }
+          className="shrink-0 text-white/30 hover:text-white hover:bg-white/5"
+          aria-label={collapsed ? 'Expandir barra lateral' : 'Recolher barra lateral'}
           onClick={onToggle}
         >
-          {collapsed ? (
-            <ChevronRight className="h-4 w-4" />
-          ) : (
-            <ChevronLeft className="h-4 w-4" />
-          )}
+          {collapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
         </Button>
       </div>
 
-      <ScrollArea className="flex-1 min-h-0">
-        <nav
-          className="flex flex-col gap-1 p-2"
-          aria-label="Navegação principal"
-        >
+      {/* Section label */}
+      {!collapsed && (
+        <div className="px-4 pt-3 pb-1 shrink-0">
+          <span className="text-[8px] font-mono tracking-[0.45em] text-white/15 uppercase">Módulos</span>
+        </div>
+      )}
+
+      {/* Nav */}
+      <ScrollArea className="flex-1 min-h-0 px-2 py-1">
+        <nav className="flex flex-col gap-0.5" aria-label="Navegação principal">
           {allItems.map((item) => {
-            const isActive =
-              pathname === item.href || pathname.startsWith(item.href + '/');
-            const link = (
-              <Link
-                key={item.name}
-                href={item.href}
-                aria-label={collapsed ? item.name : undefined}
-                className={cn(
-                  'flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors',
-                  collapsed && 'justify-center',
-                  isActive
-                    ? 'bg-accent text-accent-foreground'
-                    : 'hover:bg-accent hover:text-accent-foreground'
-                )}
-              >
-                <item.icon className="h-4 w-4" />
-                {!collapsed && <span>{item.name}</span>}
-              </Link>
-            );
+            const isActive = pathname === item.href || pathname.startsWith(item.href + '/');
+            const Icon = item.icon as React.ComponentType<{ className?: string }>;
 
-            if (!collapsed) return link;
+            if (collapsed) {
+              return (
+                <Tooltip key={item.name}>
+                  <TooltipTrigger asChild>
+                    <Link
+                      href={item.href}
+                      aria-label={item.name}
+                      className="flex items-center justify-center rounded-md p-2.5 transition-all duration-200"
+                      style={{
+                        background: isActive ? `${item.color}18` : 'transparent',
+                        boxShadow: isActive ? `inset 0 0 12px ${item.color}15` : 'none',
+                      }}
+                    >
+                      <Icon
+                        className="h-4 w-4 transition-colors duration-200"
+                        style={{ color: isActive ? item.color : '#4b5563' } as React.CSSProperties}
+                      />
+                    </Link>
+                  </TooltipTrigger>
+                  <TooltipContent side="right" align="center" className="font-mono text-xs">
+                    <span style={{ color: item.color }}>{item.num}</span> {item.name}
+                  </TooltipContent>
+                </Tooltip>
+              );
+            }
 
-            return (
-              <Tooltip key={item.name}>
-                <TooltipTrigger asChild>{link}</TooltipTrigger>
-                <TooltipContent side="right" align="center">
-                  {item.name}
-                </TooltipContent>
-              </Tooltip>
-            );
+            return <KineticItem key={item.name} item={item as NavItem} isActive={isActive} />;
           })}
         </nav>
       </ScrollArea>
+
+      {/* Bottom rule */}
+      {!collapsed && (
+        <div className="mx-4 border-t border-white/5 mt-1 mb-3 shrink-0" />
+      )}
+
+      <style>{`
+        @keyframes shard-sidebar-float {
+          0%, 100% { transform: translateY(0px) rotate(0deg); }
+          50% { transform: translateY(-2px) rotate(0.1deg); }
+        }
+        @keyframes sidebar-scan {
+          0%   { top: -1px; opacity: 0; }
+          5%   { opacity: 1; }
+          95%  { opacity: 1; }
+          100% { top: 100%; opacity: 0; }
+        }
+      `}</style>
     </aside>
   );
 }
