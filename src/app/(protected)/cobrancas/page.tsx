@@ -105,7 +105,7 @@ function SendButton({
   item: CollectionItem;
   templateType: NotificationTemplateType;
   label: string;
-  onSent: (installmentId: string) => void;
+  onSent: () => void;
 }) {
   const [sending, setSending] = useState(false);
   const { toast } = useToast();
@@ -128,7 +128,7 @@ function SendButton({
         type: templateType,
       });
 
-      onSent(item.id);
+      onSent();
     } catch {
       toast({
         title: "Erro ao registrar envio",
@@ -178,7 +178,7 @@ function GroupSection({
   sendLabel: string;
   badgeVariant: "default" | "secondary" | "destructive" | "outline";
   mode: "preventive" | "reactive";
-  onSent: (installmentId: string) => void;
+  onSent: () => void;
 }) {
   if (items.length === 0) return null;
 
@@ -255,7 +255,7 @@ function PreventiveTab() {
     queryFn: () => api.get("/api/collections/preventive"),
   });
 
-  function handleSent(installmentId: string) {
+  function handleSent() {
     queryClient.invalidateQueries({ queryKey: ["collections-preventive"] });
   }
 
@@ -277,13 +277,13 @@ function PreventiveTab() {
         </Card>
         <Card>
           <CardContent className="pt-6">
-            <p className="text-sm text-muted-foreground">Vence em 3 dias</p>
+            <p className="text-sm text-muted-foreground">Vence em 2–3 dias</p>
             <p className="text-2xl font-bold text-yellow-600">{next3D.length}</p>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="pt-6">
-            <p className="text-sm text-muted-foreground">Vence em 7 dias</p>
+            <p className="text-sm text-muted-foreground">Vence em 6–7 dias</p>
             <p className="text-2xl font-bold">{next7D.length}</p>
           </CardContent>
         </Card>
@@ -307,7 +307,7 @@ function PreventiveTab() {
             onSent={handleSent}
           />
           <GroupSection
-            title="Vence em 3 dias"
+            title="Vence em 2 a 3 dias"
             items={next3D}
             templateType="PREVENTIVE_3D"
             sendLabel="Lembrar"
@@ -316,7 +316,7 @@ function PreventiveTab() {
             onSent={handleSent}
           />
           <GroupSection
-            title="Vence em 7 dias"
+            title="Vence em 6 a 7 dias"
             items={next7D}
             templateType="PREVENTIVE_7D"
             sendLabel="Lembrar"
@@ -338,7 +338,7 @@ function ReactiveTab() {
     queryFn: () => api.get("/api/collections/reactive"),
   });
 
-  function handleSent(installmentId: string) {
+  function handleSent() {
     queryClient.invalidateQueries({ queryKey: ["collections-reactive"] });
   }
 
