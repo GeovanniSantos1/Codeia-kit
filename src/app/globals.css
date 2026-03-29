@@ -348,3 +348,13 @@
 .cl-internal-1fooy5r {
   z-index: 21;
 }
+
+@keyframes marquee-scroll {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+.testimonials-marquee {
+  width: max-content;
+  animation: marquee-scroll 40s linear infinite;
+}

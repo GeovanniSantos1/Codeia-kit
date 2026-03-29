@@ -2,12 +2,14 @@ import { Hero } from "@/components/marketing/hero"
 import { Pricing } from "@/components/marketing/pricing"
 import { getActivePlansSorted } from '@/lib/queries/plans'
 import { FAQ } from "@/components/marketing/faq"
+import { Testimonials } from "@/components/marketing/testimonials"
 
 export default async function LandingPage() {
   const plans = await getActivePlansSorted()
   return (
     <div className="min-h-screen">
       <Hero />
+      <Testimonials />
       <Pricing
         plans={plans.map((p) => ({
           id: p.id,

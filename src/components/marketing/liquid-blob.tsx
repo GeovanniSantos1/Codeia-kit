@@ -148,11 +148,12 @@ export function LiquidBlob() {
     <div
       className="absolute inset-0 w-full h-full overflow-hidden"
       aria-hidden="true"
-      style={{ filter: "blur(30px) contrast(12)", opacity: 0.65 }}
+      style={{ contain: "strict" }}
     >
       <canvas
         ref={canvasRef}
         className="block w-full h-full cursor-crosshair"
+        style={{ filter: "blur(28px) contrast(13)", opacity: 0.7 }}
       />
     </div>
   );
