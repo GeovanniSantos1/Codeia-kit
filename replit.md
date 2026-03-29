@@ -1,4 +1,4 @@
-# LoanManager — Gestão de Empréstimos
+# GG Empréstimos — Gestão de Empréstimos
 
 ## Overview
 A full-stack SaaS loan management app built with Next.js 16, Prisma, Clerk authentication, Asaas payments, and shadcn/ui. Replaces manual Excel spreadsheets for personal loan management with automated interest/penalty calculations, installment tracking, WhatsApp messaging, and real-time dashboards.

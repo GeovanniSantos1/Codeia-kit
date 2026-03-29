@@ -41,7 +41,7 @@ export function Topbar({ onToggleSidebar }: TopbarProps) {
             <SheetContent side="left" className="w-72 p-0 md:hidden">
               <SheetHeader className="p-4 text-left">
                 <div className="flex items-center justify-between">
-                  <SheetTitle>LoanManager</SheetTitle>
+                  <SheetTitle>GG Empréstimos</SheetTitle>
                 </div>
               </SheetHeader>
               <nav className="flex flex-col gap-1 p-2">
@@ -88,8 +88,7 @@ export function Topbar({ onToggleSidebar }: TopbarProps) {
 
         {/* Brand (mobile) */}
         <Link href="/" className="flex items-center gap-2 md:hidden">
-          <div className="flex h-6 w-6 items-center justify-center rounded bg-primary text-primary-foreground text-xs font-bold">$</div>
-          <span className="text-sm font-semibold">LoanManager</span>
+          <img src="/logo.png" alt="GG Empréstimos" className="h-7 w-auto max-w-[130px] object-contain" />
         </Link>
 
         <div className="hidden items-center gap-2 md:flex">

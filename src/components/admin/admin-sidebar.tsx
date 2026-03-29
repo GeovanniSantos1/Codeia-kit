@@ -146,10 +146,10 @@ export function AdminSidebar() {
       <SidebarFooter>
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton asChild tooltip="Voltar ao LoanManager">
+            <SidebarMenuButton asChild tooltip="Voltar ao GG Empréstimos">
               <Link href="/dashboard">
                 <ArrowLeft />
-                <span>Voltar ao LoanManager</span>
+                <span>Voltar ao GG Empréstimos</span>
               </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>

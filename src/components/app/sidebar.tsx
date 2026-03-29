@@ -15,7 +15,6 @@ import {
   Bell,
   AlertTriangle,
   Settings,
-  DollarSign,
   Shield,
   Megaphone,
 } from "lucide-react";
@@ -73,11 +72,10 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
     >
       <div className="flex h-14 items-center gap-2 px-3">
         <Link href="/" className="flex items-center gap-2">
-          <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary text-primary-foreground">
-            <DollarSign className="h-5 w-5" />
-          </div>
-          {!collapsed && (
-            <span className="text-lg font-semibold">LoanManager</span>
+          {collapsed ? (
+            <img src="/logo.png" alt="GG Empréstimos" className="h-8 w-8 object-contain" />
+          ) : (
+            <img src="/logo.png" alt="GG Empréstimos" className="h-9 w-auto max-w-[160px] object-contain" />
           )}
         </Link>
         <div className="ml-auto">

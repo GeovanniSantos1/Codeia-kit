@@ -115,11 +115,8 @@ export function PublicHeader() {
 
 const Logo = ({ className }: { className?: string }) => {
   return (
-    <div className={cn("flex items-center gap-2", className)}>
-      <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary text-primary-foreground">
-        <span className="text-lg font-bold">$</span>
-      </div>
-      <span className="text-lg font-semibold">LoanManager</span>
+    <div className={cn("flex items-center", className)}>
+      <img src="/logo.png" alt="GG Empréstimos" className="h-10 w-auto max-w-[180px] object-contain" />
     </div>
   )
 }

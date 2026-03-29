@@ -18,12 +18,12 @@ export type AnalyticsConfig = {
 }
 
 export const site = {
-  name: 'LoanManager — Gestão de Empréstimos',
-  shortName: 'LoanManager',
+  name: 'GG Empréstimos — Gestão de Empréstimos',
+  shortName: 'GG Empréstimos',
   description:
     'Gerencie seus empréstimos pessoais de forma simples e segura. Controle clientes, parcelas, juros, multas e fluxo de caixa em um único lugar.',
   url: process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:5000',
-  author: 'LoanManager',
+  author: 'GG Empréstimos',
   keywords: ['empréstimos', 'gestão financeira', 'controle de parcelas', 'fluxo de caixa', 'cobrança', 'SaaS'],
   ogImage: '/og-image.png',
   logo: {
