@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useToast } from "@/hooks/use-toast";
 import { api } from "@/lib/api-client";
 import { useSetPageMetadata } from "@/contexts/page-metadata";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -107,6 +108,7 @@ function SendButton({
   onSent: (installmentId: string) => void;
 }) {
   const [sending, setSending] = useState(false);
+  const { toast } = useToast();
 
   async function handleSend() {
     if (!item.clientWhatsapp) return;
@@ -128,6 +130,11 @@ function SendButton({
 
       onSent(item.id);
     } catch {
+      toast({
+        title: "Erro ao registrar envio",
+        description: "O WhatsApp foi aberto, mas não foi possível salvar o registro do envio.",
+        variant: "destructive",
+      });
     } finally {
       setSending(false);
     }

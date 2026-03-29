@@ -30,7 +30,7 @@ async function handleGetPreventive() {
         loan: { include: { client: true } },
         notificationLogs: {
           orderBy: { sentAt: "desc" },
-          take: 6,
+          take: 1,
         },
       },
       orderBy: { dueDate: "asc" },
