@@ -42,10 +42,13 @@ async function handleGetPreventive() {
       const diffMs = dueDate.getTime() - today.getTime();
       const daysUntilDue = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
 
-      let group: "1D" | "3D" | "7D";
+      let group: "1D" | "3D" | "7D" | null;
       if (daysUntilDue <= 1) group = "1D";
       else if (daysUntilDue <= 3) group = "3D";
-      else group = "7D";
+      else if (daysUntilDue >= 6 && daysUntilDue <= 7) group = "7D";
+      else group = null;
+
+      if (group === null) return null;
 
       const lastLog = inst.notificationLogs[0] ?? null;
 
@@ -64,7 +67,7 @@ async function handleGetPreventive() {
           ? { type: lastLog.type, sentAt: lastLog.sentAt.toISOString() }
           : null,
       };
-    });
+    }).filter(Boolean) as NonNullable<(typeof mapped)[number]>[];
 
     const groups = {
       "1D": mapped.filter((i) => i.group === "1D"),

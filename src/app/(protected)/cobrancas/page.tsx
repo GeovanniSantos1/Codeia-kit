@@ -135,10 +135,16 @@ function SendButton({
 
   if (!item.clientWhatsapp) {
     return (
-      <span className="flex items-center gap-1 text-xs text-muted-foreground">
-        <PhoneOff className="h-3 w-3" />
-        Sem WhatsApp
-      </span>
+      <div className="flex flex-col items-end gap-1">
+        <Button size="sm" variant="outline" disabled className="gap-1 opacity-50">
+          <MessageSquare className="h-3 w-3" />
+          {label}
+        </Button>
+        <span className="flex items-center gap-1 text-xs text-muted-foreground">
+          <PhoneOff className="h-3 w-3" />
+          Sem WhatsApp
+        </span>
+      </div>
     );
   }
 
@@ -156,6 +162,7 @@ function GroupSection({
   templateType,
   sendLabel,
   badgeVariant,
+  mode,
   onSent,
 }: {
   title: string;
@@ -163,9 +170,12 @@ function GroupSection({
   templateType: NotificationTemplateType;
   sendLabel: string;
   badgeVariant: "default" | "secondary" | "destructive" | "outline";
+  mode: "preventive" | "reactive";
   onSent: (installmentId: string) => void;
 }) {
   if (items.length === 0) return null;
+
+  const daysColLabel = mode === "preventive" ? "Dias Restantes" : "Dias Atraso";
 
   return (
     <div className="space-y-2">
@@ -182,6 +192,7 @@ function GroupSection({
               <TableHead>Cliente</TableHead>
               <TableHead>Parcela</TableHead>
               <TableHead>Vencimento</TableHead>
+              <TableHead>{daysColLabel}</TableHead>
               <TableHead>Valor</TableHead>
               <TableHead>Último envio</TableHead>
               <TableHead className="text-right">Ação</TableHead>
@@ -193,6 +204,15 @@ function GroupSection({
                 <TableCell className="font-medium">{inst.clientName}</TableCell>
                 <TableCell>#{inst.number}</TableCell>
                 <TableCell>{formatDate(inst.dueDate)}</TableCell>
+                <TableCell>
+                  {mode === "preventive" ? (
+                    <Badge variant="secondary">
+                      {inst.daysUntilDue === 0 ? "Hoje" : `${inst.daysUntilDue}d`}
+                    </Badge>
+                  ) : (
+                    <Badge variant="destructive">{inst.daysOverdue}d</Badge>
+                  )}
+                </TableCell>
                 <TableCell>{formatCurrency(inst.amount)}</TableCell>
                 <TableCell>
                   <LastNotificationBadge log={inst.lastNotification} />
@@ -276,6 +296,7 @@ function PreventiveTab() {
             templateType="PREVENTIVE_1D"
             sendLabel="Lembrar"
             badgeVariant="destructive"
+            mode="preventive"
             onSent={handleSent}
           />
           <GroupSection
@@ -284,6 +305,7 @@ function PreventiveTab() {
             templateType="PREVENTIVE_3D"
             sendLabel="Lembrar"
             badgeVariant="default"
+            mode="preventive"
             onSent={handleSent}
           />
           <GroupSection
@@ -292,6 +314,7 @@ function PreventiveTab() {
             templateType="PREVENTIVE_7D"
             sendLabel="Lembrar"
             badgeVariant="secondary"
+            mode="preventive"
             onSent={handleSent}
           />
         </div>
@@ -367,6 +390,7 @@ function ReactiveTab() {
             templateType="REACTIVE_1_3D"
             sendLabel="Cobrar"
             badgeVariant="default"
+            mode="reactive"
             onSent={handleSent}
           />
           <GroupSection
@@ -375,6 +399,7 @@ function ReactiveTab() {
             templateType="REACTIVE_4_7D"
             sendLabel="Cobrar"
             badgeVariant="destructive"
+            mode="reactive"
             onSent={handleSent}
           />
           <GroupSection
@@ -383,6 +408,7 @@ function ReactiveTab() {
             templateType="REACTIVE_8D_PLUS"
             sendLabel="Cobrar Urgente"
             badgeVariant="destructive"
+            mode="reactive"
             onSent={handleSent}
           />
         </div>
