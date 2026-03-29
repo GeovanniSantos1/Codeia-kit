@@ -32,18 +32,38 @@ type SidebarProps = {
 };
 
 export const navigationItems = [
-  { name: 'Dashboard',     href: '/dashboard',      icon: Home,           color: '#00ffcc' },
-  { name: 'Clientes',      href: '/clients',        icon: Users,          color: '#06b6d4' },
-  { name: 'Empréstimos',   href: '/loans',          icon: HandCoins,      color: '#8b5cf6' },
-  { name: 'Lançamentos',   href: '/transactions',   icon: ArrowLeftRight, color: '#f59e0b' },
-  { name: 'Cobranças',     href: '/cobrancas',      icon: Megaphone,      color: '#ff0055' },
-  { name: 'Mensagens',     href: '/messages',       icon: MessageSquare,  color: '#10b981' },
-  { name: 'Vence Hoje',    href: '/alerts/today',   icon: Bell,           color: '#facc15' },
-  { name: 'Inadimplentes', href: '/alerts/overdue', icon: AlertTriangle,  color: '#ef4444' },
-  { name: 'Assinatura',    href: '/billing',        icon: CreditCard,     color: '#a78bfa' },
+  { name: 'Dashboard', href: '/dashboard', icon: Home, color: '#00ffcc' },
+  { name: 'Clientes', href: '/clients', icon: Users, color: '#06b6d4' },
+  { name: 'Empréstimos', href: '/loans', icon: HandCoins, color: '#8b5cf6' },
+  {
+    name: 'Lançamentos',
+    href: '/transactions',
+    icon: ArrowLeftRight,
+    color: '#f59e0b',
+  },
+  { name: 'Cobranças', href: '/cobrancas', icon: Megaphone, color: '#ff0055' },
+  {
+    name: 'Mensagens',
+    href: '/messages',
+    icon: MessageSquare,
+    color: '#10b981',
+  },
+  { name: 'Vence Hoje', href: '/alerts/today', icon: Bell, color: '#facc15' },
+  {
+    name: 'Inadimplentes',
+    href: '/alerts/overdue',
+    icon: AlertTriangle,
+    color: '#ef4444',
+  },
+  { name: 'Assinatura', href: '/billing', icon: CreditCard, color: '#a78bfa' },
 ];
 
-const adminItem = { name: 'Painel Admin', href: '/admin', icon: Shield, color: '#ff6600' };
+const adminItem = {
+  name: 'Painel Admin',
+  href: '/admin',
+  icon: Shield,
+  color: '#ff6600',
+};
 
 type NavItem = (typeof navigationItems)[0];
 
@@ -110,11 +130,15 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
   React.useEffect(() => {
     fetch('/api/admin/verify')
       .then((r) => (r.ok ? r.json() : null))
-      .then((d) => { if (d?.isAdmin) setIsAdminUser(true); })
+      .then((d) => {
+        if (d?.isAdmin) setIsAdminUser(true);
+      })
       .catch(() => {});
   }, []);
 
-  const allItems = isAdminUser ? [...navigationItems, adminItem] : navigationItems;
+  const allItems = isAdminUser
+    ? [...navigationItems, adminItem]
+    : navigationItems;
 
   return (
     <aside
@@ -129,7 +153,9 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
         backdropFilter: 'blur(28px)',
         WebkitBackdropFilter: 'blur(28px)',
         borderColor: 'rgba(255,255,255,0.07)',
-        clipPath: collapsed ? 'none' : 'polygon(0% 0%, 100% 1.5%, 98.5% 100%, 0% 98.5%)',
+        clipPath: collapsed
+          ? 'none'
+          : 'polygon(0% 0%, 100% 1.5%, 98.5% 100%, 0% 98.5%)',
         animation: 'shard-sidebar-float 10s ease-in-out infinite',
       }}
       aria-label="Barra lateral principal"
@@ -138,7 +164,8 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
       <div
         className="absolute left-0 w-full h-px pointer-events-none z-20"
         style={{
-          background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.12), transparent)',
+          background:
+            'linear-gradient(90deg, transparent, rgba(255,255,255,0.12), transparent)',
           animation: 'sidebar-scan 4s linear infinite',
         }}
         aria-hidden="true"
@@ -155,29 +182,45 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
         {collapsed ? (
           <div className="flex flex-1 items-center justify-center">
             <Link href="/">
-              <img src="/logo.png" alt="GG" className="h-8 w-8 object-cover object-left rounded" />
+              <img
+                src="/logo.png"
+                alt="GG"
+                className="h-8 w-8 object-cover object-left rounded"
+              />
             </Link>
           </div>
         ) : (
           <Link href="/" className="flex flex-1 items-center pl-2">
-            <img src="/logo.png" alt="GG Empréstimos" className="h-10 w-auto max-w-[140px] object-contain object-left" />
+            <img
+              src="/logo.png"
+              alt="GG Empréstimos"
+              className="h-36 w-auto max-w-[200px] object-contain object-left"
+            />
           </Link>
         )}
         <Button
           variant="ghost"
           size="icon"
           className="shrink-0 text-white/30 hover:text-white hover:bg-white/5"
-          aria-label={collapsed ? 'Expandir barra lateral' : 'Recolher barra lateral'}
+          aria-label={
+            collapsed ? 'Expandir barra lateral' : 'Recolher barra lateral'
+          }
           onClick={onToggle}
         >
-          {collapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
+          {collapsed ? (
+            <ChevronRight className="h-4 w-4" />
+          ) : (
+            <ChevronLeft className="h-4 w-4" />
+          )}
         </Button>
       </div>
 
       {/* Section label */}
       {!collapsed && (
         <div className="px-4 pt-3 pb-1 shrink-0">
-          <span className="text-[8px] font-mono tracking-[0.45em] text-white/15 uppercase">Módulos</span>
+          <span className="text-[8px] font-mono tracking-[0.45em] text-white/15 uppercase">
+            Módulos
+          </span>
         </div>
       )}
 
@@ -185,8 +228,11 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
       <ScrollArea className="flex-1 min-h-0 px-2 py-1">
         <nav className="flex flex-col gap-0.5" aria-label="Navegação principal">
           {allItems.map((item) => {
-            const isActive = pathname === item.href || pathname.startsWith(item.href + '/');
-            const Icon = item.icon as React.ComponentType<{ className?: string }>;
+            const isActive =
+              pathname === item.href || pathname.startsWith(item.href + '/');
+            const Icon = item.icon as React.ComponentType<{
+              className?: string;
+            }>;
 
             if (collapsed) {
               return (
@@ -197,13 +243,21 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
                       aria-label={item.name}
                       className="flex items-center justify-center rounded-md p-2.5 transition-all duration-200"
                       style={{
-                        background: isActive ? `${item.color}18` : 'transparent',
-                        boxShadow: isActive ? `inset 0 0 12px ${item.color}15` : 'none',
+                        background: isActive
+                          ? `${item.color}18`
+                          : 'transparent',
+                        boxShadow: isActive
+                          ? `inset 0 0 12px ${item.color}15`
+                          : 'none',
                       }}
                     >
                       <Icon
                         className="h-4 w-4 transition-colors duration-200"
-                        style={{ color: isActive ? item.color : '#4b5563' } as React.CSSProperties}
+                        style={
+                          {
+                            color: isActive ? item.color : '#4b5563',
+                          } as React.CSSProperties
+                        }
                       />
                     </Link>
                   </TooltipTrigger>
@@ -214,7 +268,13 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
               );
             }
 
-            return <KineticItem key={item.name} item={item as NavItem} isActive={isActive} />;
+            return (
+              <KineticItem
+                key={item.name}
+                item={item as NavItem}
+                isActive={isActive}
+              />
+            );
           })}
         </nav>
       </ScrollArea>
