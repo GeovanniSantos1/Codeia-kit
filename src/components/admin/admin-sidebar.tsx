@@ -9,7 +9,6 @@ import {
   CreditCard,
   LayoutDashboard,
   HeartPlus,
-  Shield,
   SlidersHorizontal,
   Users,
   DollarSign,
@@ -87,12 +86,17 @@ export function AdminSidebar() {
       className={cn(devMode ? "mt-12 transition-[margin-top]" : "")}
     >
       <SidebarHeader className="py-3">
-        <div className="flex items-center gap-2">
-          <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
-            <Shield className="h-5 w-5" />
+        <Link href="/admin" className="flex items-center gap-2">
+          <img
+            src="/logo.png"
+            alt="GG Empréstimos"
+            className="h-10 w-10 shrink-0 object-cover object-left rounded"
+          />
+          <div className="flex flex-col leading-tight group-data-[collapsible=icon]:hidden">
+            <span className="text-sm font-bold tracking-tight">GG Empréstimos</span>
+            <span className="text-xs text-muted-foreground font-medium">Admin</span>
           </div>
-          <span className="text-base font-semibold tracking-tight group-data-[collapsible=icon]:hidden">Painel Admin</span>
-        </div>
+        </Link>
       </SidebarHeader>
 
       <SidebarContent>
