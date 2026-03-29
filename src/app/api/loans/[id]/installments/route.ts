@@ -3,7 +3,7 @@ import { auth } from "@clerk/nextjs/server";
 import { getUserFromClerkId } from "@/lib/auth-utils";
 import { db } from "@/lib/db";
 import { calculatePenalty, calculateDaysOverdue, decimalToNumber } from "@/lib/loans/calculations";
-import { InstallmentStatus } from "@prisma/client";
+import { InstallmentStatus } from "@/lib/prisma-types";
 import { z } from "zod";
 
 const payInstallmentSchema = z.object({
