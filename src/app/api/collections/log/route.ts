@@ -43,6 +43,46 @@ async function handlePostLog(request: Request) {
       return NextResponse.json({ error: "Installment not found" }, { status: 404 });
     }
 
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const dueDate = new Date(installment.dueDate);
+    dueDate.setHours(0, 0, 0, 0);
+    const diffDays = Math.ceil((dueDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
+
+    const isPreventive = type.startsWith("PREVENTIVE_");
+    const isReactive = type.startsWith("REACTIVE_");
+
+    if (isPreventive && diffDays < 0) {
+      return NextResponse.json(
+        { error: "Cannot use preventive type for an overdue installment" },
+        { status: 400 }
+      );
+    }
+    if (isReactive && diffDays >= 0) {
+      return NextResponse.json(
+        { error: "Cannot use reactive type for a non-overdue installment" },
+        { status: 400 }
+      );
+    }
+    if (type === "PREVENTIVE_1D" && (diffDays < 0 || diffDays > 1)) {
+      return NextResponse.json(
+        { error: "Type PREVENTIVE_1D requires installment due in 0–1 days" },
+        { status: 400 }
+      );
+    }
+    if (type === "PREVENTIVE_3D" && (diffDays < 2 || diffDays > 3)) {
+      return NextResponse.json(
+        { error: "Type PREVENTIVE_3D requires installment due in 2–3 days" },
+        { status: 400 }
+      );
+    }
+    if (type === "PREVENTIVE_7D" && (diffDays < 6 || diffDays > 7)) {
+      return NextResponse.json(
+        { error: "Type PREVENTIVE_7D requires installment due in 6–7 days" },
+        { status: 400 }
+      );
+    }
+
     const log = await db.notificationLog.create({
       data: {
         userId: user.id,
