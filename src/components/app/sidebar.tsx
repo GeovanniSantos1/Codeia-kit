@@ -32,18 +32,18 @@ type SidebarProps = {
 };
 
 export const navigationItems = [
-  { name: 'Dashboard',     href: '/dashboard',    icon: Home,           color: '#00ffcc', num: '01' },
-  { name: 'Clientes',      href: '/clients',      icon: Users,          color: '#06b6d4', num: '02' },
-  { name: 'Empréstimos',   href: '/loans',        icon: HandCoins,      color: '#8b5cf6', num: '03' },
-  { name: 'Lançamentos',   href: '/transactions', icon: ArrowLeftRight, color: '#f59e0b', num: '04' },
-  { name: 'Cobranças',     href: '/cobrancas',    icon: Megaphone,      color: '#ff0055', num: '05' },
-  { name: 'Mensagens',     href: '/messages',     icon: MessageSquare,  color: '#10b981', num: '06' },
-  { name: 'Vence Hoje',    href: '/alerts/today', icon: Bell,           color: '#facc15', num: '07' },
-  { name: 'Inadimplentes', href: '/alerts/overdue', icon: AlertTriangle, color: '#ef4444', num: '08' },
-  { name: 'Assinatura',    href: '/billing',      icon: CreditCard,     color: '#a78bfa', num: '09' },
+  { name: 'Dashboard',     href: '/dashboard',      icon: Home,           color: '#00ffcc' },
+  { name: 'Clientes',      href: '/clients',        icon: Users,          color: '#06b6d4' },
+  { name: 'Empréstimos',   href: '/loans',          icon: HandCoins,      color: '#8b5cf6' },
+  { name: 'Lançamentos',   href: '/transactions',   icon: ArrowLeftRight, color: '#f59e0b' },
+  { name: 'Cobranças',     href: '/cobrancas',      icon: Megaphone,      color: '#ff0055' },
+  { name: 'Mensagens',     href: '/messages',       icon: MessageSquare,  color: '#10b981' },
+  { name: 'Vence Hoje',    href: '/alerts/today',   icon: Bell,           color: '#facc15' },
+  { name: 'Inadimplentes', href: '/alerts/overdue', icon: AlertTriangle,  color: '#ef4444' },
+  { name: 'Assinatura',    href: '/billing',        icon: CreditCard,     color: '#a78bfa' },
 ];
 
-const adminItem = { name: 'Painel Admin', href: '/admin', icon: Shield, color: '#ff6600', num: '10' };
+const adminItem = { name: 'Painel Admin', href: '/admin', icon: Shield, color: '#ff6600' };
 
 type NavItem = (typeof navigationItems)[0];
 
@@ -84,14 +84,6 @@ function KineticItem({ item, isActive }: { item: NavItem; isActive: boolean }) {
           }}
         />
       )}
-
-      {/* Number */}
-      <span
-        className="text-[9px] font-mono w-4 shrink-0 transition-colors duration-300"
-        style={{ color: lit ? item.color : '#374151' }}
-      >
-        {item.num}
-      </span>
 
       {/* Icon */}
       <Icon
@@ -167,16 +159,8 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
             </Link>
           </div>
         ) : (
-          <Link href="/" className="flex flex-1 items-center pl-2 gap-2 min-w-0">
-            <img src="/logo.png" alt="GG Empréstimos" className="h-8 w-8 shrink-0 object-cover object-left rounded" />
-            <div className="flex flex-col leading-tight min-w-0">
-              <span className="text-[10px] font-black tracking-[0.22em] text-white uppercase truncate">
-                GG EMPRÉSTIMOS
-              </span>
-              <span className="text-[8px] font-mono tracking-[0.15em]" style={{ color: '#00ffcc' }}>
-                SYS · ONLINE
-              </span>
-            </div>
+          <Link href="/" className="flex flex-1 items-center pl-2">
+            <img src="/logo.png" alt="GG Empréstimos" className="h-10 w-auto max-w-[140px] object-contain object-left" />
           </Link>
         )}
         <Button
@@ -223,8 +207,8 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
                       />
                     </Link>
                   </TooltipTrigger>
-                  <TooltipContent side="right" align="center" className="font-mono text-xs">
-                    <span style={{ color: item.color }}>{item.num}</span> {item.name}
+                  <TooltipContent side="right" align="center">
+                    {item.name}
                   </TooltipContent>
                 </Tooltip>
               );
