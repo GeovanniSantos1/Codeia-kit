@@ -70,24 +70,36 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
       )}
       aria-label="Barra lateral principal"
     >
-      <div className="flex h-14 items-center gap-2 px-3">
-        <Link href="/" className="flex items-center gap-2">
-          {collapsed ? (
-            <img src="/logo.png" alt="GG Empréstimos" className="h-8 w-8 object-contain" />
-          ) : (
-            <img src="/logo.png" alt="GG Empréstimos" className="h-9 w-auto max-w-[160px] object-contain" />
-          )}
-        </Link>
-        <div className="ml-auto">
-          <Button
-            variant="ghost"
-            size="icon"
-            aria-label={collapsed ? "Expandir barra lateral" : "Recolher barra lateral"}
-            onClick={onToggle}
-          >
-            {collapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
-          </Button>
-        </div>
+      <div className="flex h-14 items-center px-2">
+        {collapsed ? (
+          <div className="flex flex-1 items-center justify-center">
+            <Link href="/">
+              <img
+                src="/logo.png"
+                alt="GG Empréstimos"
+                className="h-9 w-9 object-cover object-left rounded"
+              />
+            </Link>
+          </div>
+        ) : (
+          <>
+            <Link href="/" className="flex flex-1 items-center pl-1">
+              <img
+                src="/logo.png"
+                alt="GG Empréstimos"
+                className="h-10 w-auto max-w-[148px] object-contain object-left"
+              />
+            </Link>
+          </>
+        )}
+        <Button
+          variant="ghost"
+          size="icon"
+          aria-label={collapsed ? "Expandir barra lateral" : "Recolher barra lateral"}
+          onClick={onToggle}
+        >
+          {collapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
+        </Button>
       </div>
       
       <ScrollArea className="flex-1 min-h-0">
