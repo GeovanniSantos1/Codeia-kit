@@ -1,0 +1,213 @@
+Create a React component similar to this:
+
+Title: Efeito Liquid Blob 
+Description: Efeito Liquid Blob Motion , acompanha movimento do mouse
+
+Here is the reference code:
+
+```tsx
+const App = () => {
+  const canvasRef = useRef(null);
+  const requestRef = useRef();
+  const particlesRef = useRef([]);
+  const mouseRef = useRef({ x: -1000, y: -1000, active: false });
+  const widthRef = useRef(window.innerWidth);
+  const heightRef = useRef(window.innerHeight);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    const ctx = canvas.getContext('2d');
+    
+    // Configurações
+    const PARTICLE_COUNT = 15;
+    const MOUSE_RADIUS = 250;
+
+    // Função de redimensionamento
+    const handleResize = () => {
+      widthRef.current = window.innerWidth;
+      heightRef.current = window.innerHeight;
+      canvas.width = widthRef.current;
+      canvas.height = heightRef.current;
+    };
+
+    // Listeners de Rato (Mouse)
+    const handleMouseMove = (e) => {
+      mouseRef.current.x = e.clientX;
+      mouseRef.current.y = e.clientY;
+      mouseRef.current.active = true;
+    };
+
+    const handleClick = () => {
+      particlesRef.current.forEach(p => {
+        const dx = p.x - mouseRef.current.x;
+        const dy = p.y - mouseRef.current.y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        
+        if (dist < MOUSE_RADIUS * 1.5) {
+          const force = 20; 
+          const angle = Math.atan2(dy, dx);
+          p.vx += Math.cos(angle) * force;
+          p.vy += Math.sin(angle) * force;
+        }
+      });
+    };
+
+    window.addEventListener('resize', handleResize);
+    window.addEventListener('mousemove', handleMouseMove);
+    window.addEventListener('click', handleClick);
+    
+    // Inicializa o tamanho do canvas
+    handleResize();
+
+    // Classe Particle (Definida dentro do hook para acesso fácil ao contexto)
+    class Particle {
+      constructor() {
+        this.init();
+      }
+
+      init() {
+        this.x = Math.random() * widthRef.current;
+        this.y = Math.random() * heightRef.current;
+        this.radius = 30 + Math.random() * 50;
+        this.vx = (Math.random() - 0.5) * 2;
+        this.vy = (Math.random() - 0.5) * 2;
+        
+        // Cores vibrantes
+        const colors = ['#00d2ff', '#3a7bd5', '#ff00cc', '#333399'];
+        this.color = colors[Math.floor(Math.random() * colors.length)];
+        
+        this.friction = 0.96;
+      }
+
+      update() {
+        // Interação com o rato
+        if (mouseRef.current.active) {
+          const dx = mouseRef.current.x - this.x;
+          const dy = mouseRef.current.y - this.y;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+
+          if (dist < MOUSE_RADIUS) {
+            const angle = Math.atan2(dy, dx);
+            const force = (MOUSE_RADIUS - dist) / MOUSE_RADIUS;
+            this.vx += Math.cos(angle) * force * 0.8;
+            this.vy += Math.sin(angle) * force * 0.8;
+          }
+        }
+
+        this.x += this.vx;
+        this.y += this.vy;
+
+        // Atrito e movimento natural
+        if (Math.abs(this.vx) > 2 || Math.abs(this.vy) > 2) {
+          this.vx *= this.friction;
+          this.vy *= this.friction;
+        } else {
+          this.x += Math.sin(Date.now() * 0.001 + this.radius) * 0.5;
+          this.y += Math.cos(Date.now() * 0.001 + this.radius) * 0.5;
+        }
+
+        // Colisão com bordas
+        if (this.x < this.radius) {
+          this.x = this.radius;
+          this.vx *= -0.8;
+        }
+        if (this.x > widthRef.current - this.radius) {
+          this.x = widthRef.current - this.radius;
+          this.vx *= -0.8;
+        }
+        if (this.y < this.radius) {
+          this.y = this.radius;
+          this.vy *= -0.8;
+        }
+        if (this.y > heightRef.current - this.radius) {
+          this.y = heightRef.current - this.radius;
+          this.vy *= -0.8;
+        }
+      }
+
+      draw() {
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+        ctx.fillStyle = this.color;
+        ctx.fill();
+        ctx.closePath();
+      }
+    }
+
+    // Inicializar partículas
+    particlesRef.current = [];
+    for (let i = 0; i < PARTICLE_COUNT; i++) {
+      particlesRef.current.push(new Particle());
+    }
+
+    // Loop de Animação
+    const animate = () => {
+      ctx.clearRect(0, 0, widthRef.current, heightRef.current);
+      particlesRef.current.forEach(p => {
+        p.update();
+        p.draw();
+      });
+      requestRef.current = requestAnimationFrame(animate);
+    };
+
+    requestRef.current = requestAnimationFrame(animate);
+
+    // Cleanup
+    return () => {
+      window.removeEventListener('resize', handleResize);
+      window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('click', handleClick);
+      cancelAnimationFrame(requestRef.current);
+    };
+  }, []);
+
+  return (
+    <div className="relative w-full h-screen bg-[#111] overflow-hidden font-sans">
+      
+      {/* Interface de Texto */}
+      <div className="absolute top-5 left-5 text-white/70 z-10 pointer-events-none">
+        <h1 className="text-2xl font-bold m-0">Liquid Blobs (React)</h1>
+        <p className="text-sm mt-1">Mova o rato (mouse) para atrair o líquido.</p>
+        <p className="text-sm">Clique para espalhar.</p>
+      </div>
+
+      {/* Container do Canvas com Filtro Aplicado */}
+      <div 
+        className="w-full h-full relative bg-[#0f0f1a]"
+        style={{ filter: "url('#goo')" }} // Aplica o filtro SVG
+      >
+        <canvas ref={canvasRef} className="block" />
+      </div>
+
+      {/* Definição do Filtro SVG (Invisível no layout, mas usado pelo CSS acima)
+         Nota: Em JSX, atributos como stdDeviation são case-sensitive.
+      */}
+      <svg className="hidden">
+        <defs>
+          <filter id="goo">
+            <feGaussianBlur in="SourceGraphic" stdDeviation="12" result="blur" />
+            <feColorMatrix 
+              in="blur" 
+              mode="matrix" 
+              values="1 0 0 0 0  
+                      0 1 0 0 0  
+                      0 0 1 0 0  
+                      0 0 0 20 -8" 
+              result="goo" 
+            />
+            <feComposite in="SourceGraphic" in2="goo" operator="atop"/>
+          </filter>
+        </defs>
+      </svg>
+    </div>
+  );
+};
+
+export default App;
+```
+
+Please implement this component using React with TypeScript and Tailwind CSS for styling. Make sure to:
+1. Use proper TypeScript types
+2. Follow React best practices
+3. Make it responsive and accessible
+4. Use Tailwind CSS for styling

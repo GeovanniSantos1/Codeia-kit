@@ -1,0 +1,173 @@
+Create a React component similar to this:
+
+Title: Testimonails esitlo vidro
+
+
+Here is the reference code:
+
+```tsx
+const testimonials = [
+  {
+    id: 1,
+    quote: "A precisão técnica deste Studio elevou nosso produto a um novo patamar global, permitindo uma escalabilidade que não tínhamos anteriormente.",
+    author: "Ana Silva",
+    company: "Studio Alpha"
+  },
+  {
+    id: 2,
+    quote: "Minimalismo com propósito. Traduziram a complexidade do nosso ecossistema em uma interface intuitiva e extremamente performática.",
+    author: "Marcus Weber",
+    company: "Zeitgeist Inc."
+  },
+  {
+    id: 3,
+    quote: "A atenção aos detalhes tipográficos e ao uso do espaço negativo é simplesmente impecável. Um trabalho de classe mundial.",
+    author: "Elena Rossi",
+    company: "Nexus Tech"
+  },
+  {
+    id: 4,
+    quote: "O resultado final superou todas as nossas métricas de conversão. O design influenciou diretamente o nosso crescimento anual.",
+    author: "David Chen",
+    company: "Horizon Flow"
+  },
+  {
+    id: 5,
+    quote: "Design que parece vir do futuro. Fluidez e confiança imediata. Não poderíamos estar mais satisfeitos com a parceria.",
+    author: "Sofia Martins",
+    company: "Lumina Creative"
+  }
+];
+
+const TestimonialCard = ({ item }) => (
+  <div className="flex-shrink-0 w-[320px] md:w-[420px] mx-4 py-4">
+    <div className="relative h-full min-h-[300px] bg-white/10 backdrop-blur-xl border border-white/20 rounded-[32px] p-8 shadow-2xl flex flex-col justify-between group hover:bg-white/15 transition-all duration-500 hover:-translate-y-2">
+      {/* Reflexo de vidro */}
+      <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent pointer-events-none rounded-[32px]"></div>
+      
+      <div className="relative z-10">
+        <div className="mb-6 opacity-40">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="white">
+            <path d="M14.017 21L14.017 18C14.017 16.8954 14.9124 16 16.017 16H19.017C20.1216 16 21.017 15.1046 21.017 14V9C21.017 7.89543 20.1216 7 19.017 7H16.017C14.9124 7 14.017 7.89543 14.017 9V12M3 21L3 18C3 16.8954 3.89543 16 5 16H8C9.10457 16 10 15.1046 10 14V9C10 7.89543 9.10457 7 8 7H5C3.89543 7 3 7.89543 3 9V12" stroke="white" strokeWidth="1" />
+          </svg>
+        </div>
+        {/* Fix: whitespace-normal garante que o texto quebre linhas dentro do card */}
+        <p className="text-lg md:text-xl text-white font-light leading-relaxed mb-8 italic whitespace-normal">
+          "{item.quote}"
+        </p>
+      </div>
+
+      <div className="relative z-10 border-t border-white/10 pt-6">
+        <h4 className="text-white font-bold tracking-wide uppercase text-sm leading-none">{item.author}</h4>
+        <p className="text-purple-300 text-xs font-mono mt-2 uppercase tracking-[0.2em]">{item.company}</p>
+      </div>
+    </div>
+  </div>
+);
+
+const TestimonialCarousel = () => {
+  const marqueeRef = useRef(null);
+  const [gsapLoaded, setGsapLoaded] = useState(false);
+
+  useEffect(() => {
+    const script = document.createElement('script');
+    script.src = "https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js";
+    script.async = true;
+    script.onload = () => setGsapLoaded(true);
+    document.head.appendChild(script);
+    
+    return () => {
+      document.head.removeChild(script);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!gsapLoaded || !window.gsap || !marqueeRef.current) return;
+
+    const gsap = window.gsap;
+    const marquee = marqueeRef.current;
+    
+    // Calcula a largura real de metade do conteúdo (já que duplicamos a lista)
+    const scrollWidth = marquee.scrollWidth;
+    
+    const animation = gsap.to(marquee, {
+      x: `-${scrollWidth / 2}`,
+      duration: 35,
+      ease: "none",
+      repeat: -1,
+    });
+
+    const handleMouseEnter = () => gsap.to(animation, { timeScale: 0.15, duration: 0.6 });
+    const handleMouseLeave = () => gsap.to(animation, { timeScale: 1, duration: 0.6 });
+
+    marquee.addEventListener('mouseenter', handleMouseEnter);
+    marquee.addEventListener('mouseleave', handleMouseLeave);
+
+    return () => {
+      animation.kill();
+      marquee.removeEventListener('mouseenter', handleMouseEnter);
+      marquee.removeEventListener('mouseleave', handleMouseLeave);
+    };
+  }, [gsapLoaded]);
+
+  return (
+    <section className="relative min-h-screen w-full flex flex-col justify-center overflow-hidden bg-[#070708] font-sans">
+      
+      {/* Background Orbs */}
+      <div className="absolute top-[-10%] left-[-5%] w-[50%] h-[50%] bg-purple-600/15 rounded-full blur-[120px] animate-pulse"></div>
+      <div className="absolute bottom-[-10%] right-[-5%] w-[50%] h-[50%] bg-blue-600/10 rounded-full blur-[120px] animate-pulse"></div>
+
+      <div className="relative z-10 w-full">
+        <div className="container mx-auto px-6 mb-12 text-center md:text-left">
+          <div className="flex items-center gap-4 mb-4 justify-center md:justify-start">
+            <div className="w-12 h-[1px] bg-purple-500"></div>
+            <span className="text-purple-400 font-mono text-xs uppercase tracking-[0.4em]">Experiências Digitais</span>
+          </div>
+          <h2 className="text-5xl md:text-7xl font-bold text-white tracking-tighter leading-[0.9]">
+            A voz de quem <br />
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-white to-blue-400">
+              lidera o mercado.
+            </span>
+          </h2>
+        </div>
+
+        <div className="relative w-full overflow-hidden">
+          {/* Fades laterais */}
+          <div className="absolute inset-y-0 left-0 w-24 md:w-48 bg-gradient-to-r from-[#070708] to-transparent z-20 pointer-events-none"></div>
+          <div className="absolute inset-y-0 right-0 w-24 md:w-48 bg-gradient-to-l from-[#070708] to-transparent z-20 pointer-events-none"></div>
+
+          <div 
+            ref={marqueeRef}
+            className="flex whitespace-nowrap will-change-transform py-8"
+          >
+            {/* Duplicação para loop infinito */}
+            {[...testimonials, ...testimonials].map((item, index) => (
+              <TestimonialCard key={`${item.id}-${index}`} item={item} />
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Marca d'água de fundo */}
+      <div className="absolute bottom-10 right-10 opacity-[0.03] pointer-events-none select-none text-right">
+        <p className="text-[12vw] font-black text-white leading-none">GLASS</p>
+        <p className="text-[5vw] font-light text-white tracking-[1em] -mt-4 uppercase">Testimonials</p>
+      </div>
+    </section>
+  );
+};
+
+export default function App() {
+  return (
+    <div className="antialiased">
+      <TestimonialCarousel />
+    </div>
+  );
+}
+```
+
+Please implement this component using React with TypeScript and Tailwind CSS for styling. Make sure to:
+1. Use proper TypeScript types
+2. Follow React best practices
+3. Make it responsive and accessible
+4. Use Tailwind CSS for styling
