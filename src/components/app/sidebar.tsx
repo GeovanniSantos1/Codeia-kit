@@ -17,6 +17,7 @@ import {
   Settings,
   DollarSign,
   Shield,
+  Megaphone,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -37,6 +38,7 @@ export const navigationItems = [
   { name: "Clientes", href: "/clients", icon: Users },
   { name: "Empréstimos", href: "/loans", icon: HandCoins },
   { name: "Lançamentos", href: "/transactions", icon: ArrowLeftRight },
+  { name: "Cobranças", href: "/cobrancas", icon: Megaphone },
   { name: "Mensagens", href: "/messages", icon: MessageSquare },
   { name: "Vence Hoje", href: "/alerts/today", icon: Bell },
   { name: "Inadimplentes", href: "/alerts/overdue", icon: AlertTriangle },

@@ -208,6 +208,15 @@ enum TransactionType {
   SAIDA
 }
 
+enum NotificationLogType {
+  PREVENTIVE_7D
+  PREVENTIVE_3D
+  PREVENTIVE_1D
+  REACTIVE_1_3D
+  REACTIVE_4_7D
+  REACTIVE_8D_PLUS
+}
+
 model Client {
   id         String   @id @default(cuid())
   userId     String
@@ -271,7 +280,8 @@ model Installment {
   createdAt  DateTime          @default(now())
   updatedAt  DateTime          @updatedAt
 
-  loan Loan @relation(fields: [loanId], references: [id], onDelete: Cascade)
+  loan              Loan              @relation(fields: [loanId], references: [id], onDelete: Cascade)
+  notificationLogs  NotificationLog[]
 
   @@index([loanId])
   @@index([dueDate])
@@ -298,4 +308,20 @@ model Transaction {
   @@index([userId, date])
   @@index([type])
   @@index([clientId])
+}
+
+model NotificationLog {
+  id            String              @id @default(cuid())
+  userId        String
+  installmentId String
+  type          NotificationLogType
+  channel       String              @default("WHATSAPP")
+  sentAt        DateTime            @default(now())
+
+  installment Installment @relation(fields: [installmentId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([installmentId])
+  @@index([installmentId, type])
+  @@index([userId, sentAt])
 }
