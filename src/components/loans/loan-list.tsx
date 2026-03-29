@@ -14,6 +14,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { formatCurrency, formatDate, decimalToNumber } from "@/lib/loans/calculations";
 import { Eye } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 type LoanClient = {
   id: string;
@@ -67,6 +68,47 @@ function intervalLabel(interval: string) {
   return map[interval] || interval;
 }
 
+function getNextDueInstallment(installments: LoanInstallment[]): LoanInstallment | null {
+  const pending = installments
+    .filter((i) => i.status === "PENDING" || i.status === "OVERDUE")
+    .sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime());
+  return pending[0] ?? null;
+}
+
+function DueDateCell({ installments, loanStatus }: { installments: LoanInstallment[]; loanStatus: string }) {
+  if (loanStatus !== "ACTIVE") {
+    return <span className="text-xs text-muted-foreground">—</span>;
+  }
+
+  const next = getNextDueInstallment(installments);
+  if (!next) {
+    return <span className="text-xs text-muted-foreground">—</span>;
+  }
+
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const due = new Date(next.dueDate);
+  due.setHours(0, 0, 0, 0);
+  const diff = due.getTime() - today.getTime();
+  const daysDiff = Math.round(diff / (1000 * 60 * 60 * 24));
+
+  let colorClass: string;
+  let label: string;
+
+  if (daysDiff < 0) {
+    colorClass = "text-red-500 font-semibold";
+    label = `${formatDate(next.dueDate)} (${Math.abs(daysDiff)}d atraso)`;
+  } else if (daysDiff === 0) {
+    colorClass = "text-yellow-500 font-semibold";
+    label = `${formatDate(next.dueDate)} (Hoje)`;
+  } else {
+    colorClass = "text-emerald-500 font-medium";
+    label = formatDate(next.dueDate);
+  }
+
+  return <span className={cn("text-sm", colorClass)}>{label}</span>;
+}
+
 export function LoanList({ loans }: LoanListProps) {
   if (loans.length === 0) {
     return (
@@ -88,6 +130,7 @@ export function LoanList({ loans }: LoanListProps) {
             <TableHead>Parcelas</TableHead>
             <TableHead>Intervalo</TableHead>
             <TableHead>Status</TableHead>
+            <TableHead>Próx. Vencimento</TableHead>
             <TableHead>Progresso</TableHead>
             <TableHead className="w-20"></TableHead>
           </TableRow>
@@ -107,6 +150,9 @@ export function LoanList({ loans }: LoanListProps) {
                 <TableCell>{loan.installmentsCount}x</TableCell>
                 <TableCell>{intervalLabel(loan.interval)}</TableCell>
                 <TableCell>{statusBadge(loan.status)}</TableCell>
+                <TableCell>
+                  <DueDateCell installments={loan.installments} loanStatus={loan.status} />
+                </TableCell>
                 <TableCell>
                   <span className="text-sm text-muted-foreground">
                     {paidCount}/{loan.installmentsCount}
