@@ -35,6 +35,7 @@ model User {
   billingPeriodEnd      DateTime?
   cancellationScheduled Boolean  @default(false)
   cancellationDate      DateTime?
+  notificationLogs      NotificationLog[]
 
   @@index([email])
   @@index([name])
@@ -319,6 +320,7 @@ model NotificationLog {
   sentAt        DateTime            @default(now())
 
   installment Installment @relation(fields: [installmentId], references: [id], onDelete: Cascade)
+  user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
   @@index([installmentId])

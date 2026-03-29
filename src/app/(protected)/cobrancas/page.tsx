@@ -119,6 +119,7 @@ function SendButton({
         valor: formatCurrency(item.amount),
         vencimento: formatDate(item.dueDate),
         diasAtraso: item.daysOverdue,
+        diasRestantes: item.daysUntilDue,
       });
       const url = buildWhatsAppUrl(item.clientWhatsapp, message);
       window.open(url, "_blank");
