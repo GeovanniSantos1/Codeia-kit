@@ -54,6 +54,12 @@ export const siteMetadata: Metadata = {
   description: site.description,
   keywords: [...site.keywords],
   authors: [{ name: site.author }],
+  manifest: '/site.webmanifest',
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: 'black-translucent',
+    title: site.shortName,
+  },
   openGraph: {
     title: site.name,
     description: site.description,
@@ -73,7 +79,7 @@ export const siteMetadata: Metadata = {
       { url: '/favicon-16x16.png', type: 'image/png', sizes: '16x16' },
       { url: '/favicon-32x32.png', type: 'image/png', sizes: '32x32' },
     ],
-    apple: [{ url: '/apple-touch-icon.png' }],
+    apple: [{ url: '/apple-touch-icon.png', sizes: '180x180' }],
     shortcut: ['/apple-touch-icon.png'],
   },
 }
