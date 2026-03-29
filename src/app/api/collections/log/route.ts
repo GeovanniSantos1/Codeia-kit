@@ -82,6 +82,24 @@ async function handlePostLog(request: Request) {
         { status: 400 }
       );
     }
+    if (type === "REACTIVE_1_3D" && (diffDays > -1 || diffDays < -3)) {
+      return NextResponse.json(
+        { error: "Type REACTIVE_1_3D requires installment 1–3 days overdue" },
+        { status: 400 }
+      );
+    }
+    if (type === "REACTIVE_4_7D" && (diffDays > -4 || diffDays < -7)) {
+      return NextResponse.json(
+        { error: "Type REACTIVE_4_7D requires installment 4–7 days overdue" },
+        { status: 400 }
+      );
+    }
+    if (type === "REACTIVE_8D_PLUS" && diffDays > -8) {
+      return NextResponse.json(
+        { error: "Type REACTIVE_8D_PLUS requires installment 8+ days overdue" },
+        { status: 400 }
+      );
+    }
 
     const log = await db.notificationLog.create({
       data: {
