@@ -77,7 +77,7 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
               <img
                 src="/logo.png"
                 alt="GG Empréstimos"
-                className="h-9 w-9 object-cover object-left rounded"
+                className="h-10 w-10 object-cover object-left rounded"
               />
             </Link>
           </div>
@@ -87,7 +87,7 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
               <img
                 src="/logo.png"
                 alt="GG Empréstimos"
-                className="h-10 w-auto max-w-[148px] object-contain object-left"
+                className="h-12 w-auto max-w-[180px] object-contain object-left"
               />
             </Link>
           </>
