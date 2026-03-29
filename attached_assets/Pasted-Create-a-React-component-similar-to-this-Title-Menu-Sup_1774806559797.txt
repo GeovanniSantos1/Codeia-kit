@@ -1,0 +1,191 @@
+Create a React component similar to this:
+
+Title: Menu Superior Abstrato
+Description: Menu Superior Abstrato
+
+Here is the reference code:
+
+```tsx
+const KineticShardMenu = () => {
+  const [hoveredIdx, setHoveredIdx] = useState(null);
+  const [indicatorStyle, setIndicatorStyle] = useState({ left: 0, width: 0, opacity: 0 });
+  const itemsRef = useRef([]);
+
+  const menuItems = [
+    { id: '01', label: 'METAVERSO', color: '#00ffcc' },
+    { id: '02', label: 'ALGORITMO', color: '#ff0055' },
+    { id: '03', label: 'ENTROPIA', color: '#7000ff' },
+    { id: '04', label: 'SIMULADO', color: '#ffcc00' },
+  ];
+
+  // Lógica para mover a "gota" de destaque de forma fluida
+  const handleMouseEnter = (index) => {
+    const el = itemsRef.current[index];
+    if (el) {
+      setHoveredIdx(index);
+      setIndicatorStyle({
+        left: el.offsetLeft,
+        width: el.offsetWidth,
+        opacity: 1,
+        backgroundColor: menuItems[index].color
+      });
+    }
+  };
+
+  return (
+    <div style={{ width: '100%', background: '#080808', minHeight: '100vh', paddingTop: '40px' }}>
+      <style>{`
+        @keyframes shard-float {
+          0%, 100% { transform: translateY(0) rotate(0deg); }
+          50% { transform: translateY(-5px) rotate(0.5deg); }
+        }
+
+        .shard-nav {
+          position: relative;
+          margin: 0 auto;
+          padding: 0 40px;
+          height: 80px;
+          width: fit-content;
+          background: rgba(255, 255, 255, 0.03);
+          backdrop-filter: blur(25px);
+          -webkit-backdrop-filter: blur(25px);
+          
+          /* Forma Excêntrica Irregular */
+          clip-path: polygon(5% 0%, 100% 15%, 95% 100%, 0% 85%);
+          
+          border: 1px solid rgba(255, 255, 255, 0.1);
+          display: flex;
+          align-items: center;
+          gap: 20px;
+          animation: shard-float 8s infinite ease-in-out;
+          transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .shard-nav:hover {
+          clip-path: polygon(0% 15%, 95% 0%, 100% 85%, 5% 100%);
+          background: rgba(255, 255, 255, 0.07);
+        }
+
+        .nav-item {
+          position: relative;
+          padding: 10px 25px;
+          cursor: pointer;
+          z-index: 2;
+          display: flex;
+          flex-direction: column;
+          mix-blend-mode: difference;
+        }
+
+        .item-number {
+          font-family: 'Courier New', monospace;
+          font-size: 10px;
+          color: #666;
+          margin-bottom: 2px;
+        }
+
+        .item-text {
+          color: #fff;
+          font-family: 'Inter', sans-serif;
+          font-weight: 900;
+          font-size: 0.85rem;
+          letter-spacing: 4px;
+          transition: 0.4s;
+        }
+
+        /* A Gota de Mercúrio (Indicador) */
+        .liquid-indicator {
+          position: absolute;
+          height: 100%;
+          top: 0;
+          z-index: 1;
+          transition: all 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+          filter: blur(15px);
+          border-radius: 20px;
+        }
+
+        .scan-line {
+          position: absolute;
+          top: 0; left: 0; width: 100%; height: 2px;
+          background: linear-gradient(90deg, transparent, #fff, transparent);
+          opacity: 0.2;
+          animation: scan 3s infinite linear;
+        }
+
+        @keyframes scan {
+          0% { transform: translateY(0); }
+          100% { transform: translateY(80px); }
+        }
+
+        .social-trigger {
+          margin-left: 30px;
+          width: 40px;
+          height: 40px;
+          border: 1px solid #333;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          border-radius: 50%;
+          transition: 0.4s;
+          color: white;
+        }
+
+        .social-trigger:hover {
+          background: white;
+          color: black;
+          transform: rotate(90deg) scale(1.1);
+        }
+      `}</style>
+
+      <nav className="shard-nav" onMouseLeave={() => setIndicatorStyle(s => ({ ...s, opacity: 0 }))}>
+        <div className="scan-line" />
+        
+        {/* Logo Minimalista/Excêntrico */}
+        <div style={{ marginRight: '40px', borderLeft: '3px solid #fff', paddingLeft: '15px' }}>
+          <div style={{ color: '#fff', fontSize: '1.2rem', fontWeight: 'bold', lineHeight: 1 }}>Ø</div>
+        </div>
+
+        {/* Itens do Menu */}
+        <div style={{ display: 'flex', position: 'relative' }}>
+          {menuItems.map((item, idx) => (
+            <div
+              key={item.id}
+              ref={el => itemsRef.current[idx] = el}
+              className="nav-item"
+              onMouseEnter={() => handleMouseEnter(idx)}
+            >
+              <span className="item-number">{item.id}</span>
+              <span className="item-text" style={{ color: hoveredIdx === idx ? item.color : '#fff' }}>
+                {item.label}
+              </span>
+            </div>
+          ))}
+
+          {/* O Elemento Líquido que corre atrás do mouse */}
+          <div className="liquid-indicator" style={indicatorStyle} />
+        </div>
+
+        {/* Botão de Fechamento/Ação Irreverente */}
+        <div className="social-trigger">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
+          </svg>
+        </div>
+      </nav>
+
+      {/* Conteúdo de Background para mostrar a funcionalidade */}
+      <div style={{ textAlign: 'center', marginTop: '150px', color: '#222', userSelect: 'none' }}>
+        <h1 style={{ fontSize: '15vw', margin: 0, lineHeight: 0.8 }}>ABSTRACT</h1>
+        <h1 style={{ fontSize: '15vw', margin: 0, lineHeight: 0.8, WebkitTextStroke: '1px #333', color: 'transparent' }}>SYSTEM</h1>
+      </div>
+    </div>
+  );
+};
+
+export default KineticShardMenu;
+```
+
+Please implement this component using React with TypeScript and Tailwind CSS for styling. Make sure to:
+1. Use proper TypeScript types
+2. Follow React best practices
+3. Make it responsive and accessible
+4. Use Tailwind CSS for styling

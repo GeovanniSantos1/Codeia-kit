@@ -1,0 +1,546 @@
+Create a React component similar to this:
+
+Title: Botão quântico
+Description: Um botão interativo com movimentos e sons.
+
+Here is the reference code:
+
+```tsx
+import { Sparkles, Zap, Fingerprint, RefreshCw, Aperture, Activity, Radio, AlertTriangle } from 'lucide-react';
+
+/**
+ * MOTOR DE ÁUDIO SINTÉTICO (WEB AUDIO API)
+ * Gera sons em tempo real sem arquivos externos
+ */
+class AudioSynth {
+  constructor() {
+    this.ctx = null;
+    this.osc = null;
+    this.gain = null;
+    this.lfo = null;
+    this.isInit = false;
+  }
+
+  init() {
+    if (this.isInit) return;
+    const AudioContext = window.AudioContext || window.webkitAudioContext;
+    this.ctx = new AudioContext();
+    this.isInit = true;
+  }
+
+  // Som de zumbido ambiente (Drone)
+  playDrone(intensity) {
+    if (!this.isInit) this.init();
+    if (this.ctx.state === 'suspended') this.ctx.resume();
+
+    if (!this.osc) {
+      this.osc = this.ctx.createOscillator();
+      this.gain = this.ctx.createGain();
+      this.lfo = this.ctx.createOscillator();
+      const lfoGain = this.ctx.createGain();
+
+      this.osc.type = 'sawtooth';
+      this.lfo.type = 'sine';
+      this.lfo.frequency.value = 10; // Tremolo speed
+      lfoGain.gain.value = 500; // Tremolo depth
+
+      this.osc.connect(this.gain);
+      this.lfo.connect(lfoGain);
+      lfoGain.connect(this.osc.frequency);
+      
+      this.gain.connect(this.ctx.destination);
+      this.osc.start();
+      this.lfo.start();
+      this.gain.gain.value = 0;
+    }
+
+    // Modula frequência e volume baseada na distância do mouse
+    const now = this.ctx.currentTime;
+    this.osc.frequency.setTargetAtTime(50 + (intensity * 100), now, 0.1);
+    this.gain.gain.setTargetAtTime(intensity * 0.1, now, 0.1);
+  }
+
+  // Som de Carregamento (Riser)
+  playCharge(progress) {
+    if (!this.isInit || !this.osc) return;
+    const now = this.ctx.currentTime;
+    // Aumenta pitch drasticamente
+    this.osc.frequency.setTargetAtTime(100 + (progress * 20), now, 0.05);
+    // Adiciona distorção/volume
+    this.gain.gain.setTargetAtTime(0.1 + (progress * 0.002), now, 0.05);
+    // Acelera o LFO para criar tensão
+    this.lfo.frequency.setTargetAtTime(10 + (progress * 0.5), now, 0.1);
+  }
+
+  // Som de Explosão
+  triggerExplosion() {
+    if (!this.isInit) return;
+    const osc = this.ctx.createOscillator();
+    const gain = this.ctx.createGain();
+    
+    osc.type = 'triangle';
+    osc.frequency.setValueAtTime(200, this.ctx.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 1.5);
+    
+    gain.gain.setValueAtTime(0.5, this.ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 1.5);
+    
+    osc.connect(gain);
+    gain.connect(this.ctx.destination);
+    osc.start();
+    osc.stop(this.ctx.currentTime + 1.5);
+  }
+
+  stop() {
+    if (this.gain) {
+      this.gain.gain.setTargetAtTime(0, this.ctx.currentTime, 0.5);
+    }
+  }
+}
+
+/**
+ * UTILS
+ */
+const random = (min, max) => Math.random() * (max - min) + min;
+const synth = new AudioSynth();
+
+/**
+ * COMPONENTE PRINCIPAL DO BOTÃO
+ */
+const QuantumReactor = () => {
+  const btnRef = useRef(null);
+  const containerRef = useRef(null);
+  
+  // Estado Físico
+  const [position, setPosition] = useState({ x: 0, y: 0 });
+  const [rotation, setRotation] = useState({ x: 0, y: 0 });
+  const [isHovered, setIsHovered] = useState(false);
+  
+  // Estado Lógico
+  const [status, setStatus] = useState('idle');
+  const [charge, setCharge] = useState(0);
+  const [particles, setParticles] = useState([]);
+  const [glitchActive, setGlitchActive] = useState(false);
+
+  // Efeito de Partículas (Loop)
+  useEffect(() => {
+    let animationFrame;
+    const updateParticles = () => {
+      setParticles(prev => 
+        prev
+          .map(p => {
+            let newX = p.x;
+            let newY = p.y;
+            let newSpeed = p.speed;
+
+            // Implosão (durante carga alta)
+            if (p.type === 'implode') {
+               const angleToCenter = Math.atan2(-p.y, -p.x);
+               newX += Math.cos(angleToCenter) * p.speed;
+               newY += Math.sin(angleToCenter) * p.speed;
+               // Se chegar perto do centro, some
+               if (Math.abs(newX) < 5 && Math.abs(newY) < 5) return null;
+            } 
+            // Explosão normal
+            else {
+               newX += Math.cos(p.angle) * p.speed;
+               newY += Math.sin(p.angle) * p.speed;
+               newSpeed *= 0.95; // atrito
+            }
+
+            return {
+              ...p,
+              x: newX,
+              y: newY,
+              speed: newSpeed,
+              life: p.life - p.decay,
+              size: p.size * (p.type === 'implode' ? 0.9 : 0.96)
+            };
+          })
+          .filter(p => p !== null && p.life > 0)
+      );
+      animationFrame = requestAnimationFrame(updateParticles);
+    };
+    
+    if (particles.length > 0) {
+      animationFrame = requestAnimationFrame(updateParticles);
+    }
+    return () => cancelAnimationFrame(animationFrame);
+  }, [particles]);
+
+  // Manipulação do Mouse (Tilt 3D + Magnetismo)
+  const handleMouseMove = (e) => {
+    if (status === 'success' || status === 'cooldown') return;
+    
+    // Audio init no primeiro movimento
+    synth.init();
+
+    const rect = containerRef.current.getBoundingClientRect();
+    const centerX = rect.left + rect.width / 2;
+    const centerY = rect.top + rect.height / 2;
+    
+    const x = e.clientX - centerX;
+    const y = e.clientY - centerY;
+    
+    // Distância normalizada (0 a 1) para áudio
+    const dist = Math.sqrt(x * x + y * y);
+    const maxDist = 300;
+    const intensity = Math.max(0, 1 - dist / maxDist);
+    
+    // Tocar Drone se não estiver carregando
+    if (status !== 'charging') {
+      synth.playDrone(intensity);
+    }
+
+    if (dist < maxDist) {
+      // Efeito Tilt 3D
+      const rotateY = (x / (rect.width / 2)) * 20; // Max 20deg
+      const rotateX = -(y / (rect.height / 2)) * 20;
+
+      setRotation({ x: rotateX, y: rotateY });
+      setPosition({ x: x * 0.2, y: y * 0.2 }); // Movimento magnético
+      setIsHovered(true);
+    } else {
+      setRotation({ x: 0, y: 0 });
+      setPosition({ x: 0, y: 0 });
+      setIsHovered(false);
+      synth.stop();
+    }
+  };
+
+  const handleMouseLeave = () => {
+    setRotation({ x: 0, y: 0 });
+    setPosition({ x: 0, y: 0 });
+    setIsHovered(false);
+    synth.stop();
+    
+    if (status === 'charging') {
+      setStatus('idle');
+      setCharge(0);
+      setGlitchActive(false);
+    }
+  };
+
+  // Carregamento (Hold)
+  const handleMouseDown = () => {
+    if (status === 'success' || status === 'cooldown') return;
+    setStatus('charging');
+  };
+
+  const handleMouseUp = () => {
+    if (status === 'charging' && charge < 100) {
+      setStatus('idle');
+      setCharge(0);
+      setGlitchActive(false);
+      synth.playDrone(0.5); // Volta pro drone
+    }
+  };
+
+  // Loop de Lógica de Carga
+  useEffect(() => {
+    let interval;
+    if (status === 'charging') {
+      interval = setInterval(() => {
+        setCharge(prev => {
+          const newVal = prev + 1.5; // Carrega mais devagar para tensão
+          
+          synth.playCharge(newVal);
+
+          // Efeitos visuais baseados na carga
+          if (newVal > 50 && Math.random() > 0.8) setGlitchActive(true);
+          else setGlitchActive(false);
+
+          // Partículas de sucção (implosão)
+          if (newVal > 30 && Math.random() > 0.5) {
+             spawnImplosionParticles();
+          }
+
+          if (newVal >= 100) {
+            clearInterval(interval);
+            triggerSingularity();
+            return 100;
+          }
+          return newVal;
+        });
+      }, 16);
+    }
+    return () => clearInterval(interval);
+  }, [status]);
+
+  const spawnImplosionParticles = () => {
+    const angle = random(0, Math.PI * 2);
+    const distance = 100;
+    setParticles(prev => [
+      ...prev,
+      {
+        id: Date.now() + Math.random(),
+        x: Math.cos(angle) * distance,
+        y: Math.sin(angle) * distance,
+        angle: 0, // irrelevante para implosão calculado no loop
+        speed: random(5, 12),
+        size: random(1, 3),
+        color: Math.random() > 0.5 ? '#cyan' : '#white',
+        life: 0.5,
+        decay: 0.05,
+        type: 'implode'
+      }
+    ]);
+  };
+
+  const triggerSingularity = () => {
+    setStatus('success');
+    setGlitchActive(false);
+    synth.triggerExplosion();
+    
+    // Explosão massiva
+    const explosionColors = ['#ec4899', '#8b5cf6', '#06b6d4', '#f59e0b'];
+    const newParticles = Array.from({ length: 50 }).map((_, i) => ({
+      id: Date.now() + i,
+      x: 0,
+      y: 0,
+      angle: random(0, Math.PI * 2),
+      speed: random(5, 25),
+      size: random(2, 10),
+      color: explosionColors[Math.floor(random(0, explosionColors.length))],
+      life: 1.5,
+      decay: random(0.01, 0.03),
+      type: 'explode'
+    }));
+    
+    setParticles(newParticles);
+
+    setTimeout(() => {
+      setStatus('cooldown');
+      setTimeout(() => {
+        setStatus('idle');
+        setCharge(0);
+        setPosition({ x: 0, y: 0 });
+        setRotation({ x: 0, y: 0 });
+      }, 1500);
+    }, 4000);
+  };
+
+  // Styles dinâmicos
+  const containerStyle = {
+    transform: `
+      translate3d(${position.x}px, ${position.y}px, 0)
+      rotateX(${rotation.x}deg) 
+      rotateY(${rotation.y}deg)
+      scale(${status === 'charging' ? 0.98 + (Math.random() * 0.02) : 1})
+    `,
+    filter: glitchActive ? 'hue-rotate(90deg) blur(1px)' : 'none'
+  };
+
+  const getBorderColor = () => {
+    if (status === 'success') return 'border-emerald-500 shadow-[0_0_50px_#10b981]';
+    if (status === 'charging') return 'border-yellow-400 shadow-[0_0_30px_#facc15]';
+    return isHovered ? 'border-cyan-500 shadow-[0_0_20px_#06b6d4]' : 'border-slate-700';
+  };
+
+  return (
+    <div 
+      className="relative perspective-1000 w-96 h-96 flex items-center justify-center"
+      ref={containerRef}
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
+    >
+      
+      {/* HUD HOLOGRÁFICO - Apenas visual */}
+      <div className={`absolute inset-0 pointer-events-none transition-all duration-700 ${isHovered ? 'scale-100 opacity-100' : 'scale-75 opacity-20'}`}>
+        {/* Anel Externo Lento */}
+        <div className="absolute inset-0 border border-dashed border-slate-600 rounded-full animate-[spin_10s_linear_infinite]" />
+        
+        {/* Anel Médio Contra-rotativo */}
+        <div className="absolute inset-8 border border-slate-700 rounded-full animate-[spin_15s_linear_infinite_reverse] opacity-50" />
+        
+        {/* Crosshairs */}
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 h-4 w-px bg-cyan-500/50" />
+        <div className="absolute bottom-0 left-1/2 -translate-x-1/2 h-4 w-px bg-cyan-500/50" />
+        <div className="absolute left-0 top-1/2 -translate-y-1/2 w-4 h-px bg-cyan-500/50" />
+        <div className="absolute right-0 top-1/2 -translate-y-1/2 w-4 h-px bg-cyan-500/50" />
+
+        {/* Labels Tech */}
+        <div className="absolute -top-8 left-1/2 -translate-x-1/2 text-[10px] text-cyan-500/70 tracking-[0.5em] font-mono">
+          {status === 'idle' ? 'STANDBY' : status.toUpperCase()}
+        </div>
+        
+        {/* Dados em tempo real */}
+        <div className="absolute -right-12 top-1/2 text-[9px] text-slate-500 font-mono flex flex-col gap-1">
+           <span>X: {rotation.y.toFixed(1)}</span>
+           <span>Y: {rotation.x.toFixed(1)}</span>
+           <span>PWR: {charge.toFixed(0)}%</span>
+        </div>
+      </div>
+
+      {/* Partículas Container */}
+      <div className="absolute top-1/2 left-1/2 w-0 h-0 z-50 pointer-events-none">
+        {particles.map(p => (
+          <div
+            key={p.id}
+            className="absolute rounded-full"
+            style={{
+              left: p.x,
+              top: p.y,
+              width: `${p.size}px`,
+              height: `${p.size}px`,
+              backgroundColor: p.color,
+              opacity: p.life,
+              transform: `translate(-50%, -50%) scale(${p.life})`,
+              boxShadow: `0 0 ${p.size * 2}px ${p.color}`
+            }}
+          />
+        ))}
+      </div>
+
+      {/* NÚCLEO DO REATOR (BOTÃO) */}
+      <button
+        ref={btnRef}
+        onMouseDown={handleMouseDown}
+        onMouseUp={handleMouseUp}
+        onTouchStart={handleMouseDown}
+        onTouchEnd={handleMouseUp}
+        style={containerStyle}
+        className={`
+          relative w-48 h-48 rounded-full 
+          flex flex-col items-center justify-center 
+          transition-all duration-75 ease-out cursor-pointer select-none
+          backdrop-blur-xl bg-slate-900/90
+          border-2 ${getBorderColor()}
+          group z-20
+          ${status === 'success' ? 'scale-0 opacity-0' : 'scale-100 opacity-100'}
+        `}
+      >
+        {/* Preenchimento de Carga Radial */}
+        <div 
+          className="absolute inset-0 rounded-full opacity-30 transition-all duration-75"
+          style={{
+             background: `conic-gradient(from 0deg, ${charge > 80 ? '#ef4444' : '#06b6d4'} ${charge}%, transparent 0%)`,
+             transform: 'rotate(-90deg)'
+          }}
+        />
+
+        {/* Inner Circle (Preto) */}
+        <div className="absolute inset-2 bg-black rounded-full z-10 flex flex-col items-center justify-center overflow-hidden">
+          
+          {/* Efeito Noise de Fundo */}
+          <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-40 brightness-150 animate-pulse" />
+          
+          {/* Ícones e Estados */}
+          <div className="relative z-20 text-white flex flex-col items-center gap-2">
+            
+            {status === 'idle' && (
+              <>
+                <Fingerprint className={`w-8 h-8 text-cyan-400 ${isHovered ? 'animate-pulse' : 'opacity-50'}`} />
+                <span className="text-[10px] tracking-widest text-cyan-200/70">INICIAR</span>
+              </>
+            )}
+
+            {status === 'charging' && (
+              <>
+                <Activity className="w-10 h-10 text-yellow-400 animate-bounce" />
+                <div className="text-center">
+                  <span className="block text-2xl font-black text-yellow-500 font-mono tracking-tighter">
+                    {charge.toFixed(0)}%
+                  </span>
+                  <span className="text-[8px] text-yellow-200/60 uppercase tracking-widest animate-pulse">
+                    Potência Crítica
+                  </span>
+                </div>
+              </>
+            )}
+          </div>
+        </div>
+        
+        {/* Efeito de Glitch Overlay (apenas visual, fora do inner circle) */}
+        {glitchActive && (
+          <>
+            <div className="absolute inset-0 bg-red-500/20 translate-x-1 translate-y-1 rounded-full mix-blend-screen" />
+            <div className="absolute inset-0 bg-blue-500/20 -translate-x-1 -translate-y-1 rounded-full mix-blend-screen" />
+          </>
+        )}
+
+      </button>
+
+      {/* ESTADO DE SUCESSO */}
+      {status === 'success' && (
+        <div className="absolute inset-0 flex items-center justify-center z-10">
+          <div className="relative">
+             <div className="absolute inset-0 bg-white/50 blur-[50px] animate-pulse" />
+             <div className="relative bg-black/80 backdrop-blur-md border border-white/10 p-8 rounded-lg text-center transform animate-[zoom-in_0.2s_ease-out]">
+                <Aperture className="w-12 h-12 text-emerald-400 mx-auto mb-4 animate-[spin_4s_linear_infinite]" />
+                <h2 className="text-2xl font-bold text-white tracking-tighter mb-1">SISTEMA LIBERADO</h2>
+                <p className="text-emerald-400 text-xs font-mono">PROTOCOLO ÔMEGA ATIVO</p>
+             </div>
+          </div>
+        </div>
+      )}
+
+      {/* Warning de Alta Energia */}
+      {status === 'charging' && charge > 80 && (
+         <div className="absolute -bottom-20 left-1/2 -translate-x-1/2 flex items-center gap-2 text-red-500 animate-pulse font-mono text-xs whitespace-nowrap bg-red-950/50 px-3 py-1 rounded border border-red-500/30">
+            <AlertTriangle className="w-3 h-3" />
+            <span>AVISO: COLAPSO IMINENTE</span>
+         </div>
+      )}
+
+    </div>
+  );
+};
+
+export default function App() {
+  return (
+    <div className="min-h-screen bg-[#050505] text-slate-300 flex flex-col items-center justify-center overflow-hidden selection:bg-cyan-500/30">
+      
+      {/* Ambiente Retro-Futurista */}
+      <div className="absolute inset-0 pointer-events-none">
+        {/* Grid Floor */}
+        <div className="absolute inset-0 opacity-20" 
+           style={{
+             backgroundImage: `
+               linear-gradient(to right, #1e293b 1px, transparent 1px),
+               linear-gradient(to bottom, #1e293b 1px, transparent 1px)
+             `,
+             backgroundSize: '40px 40px',
+             maskImage: 'radial-gradient(circle at center, black, transparent 80%)'
+           }} 
+        />
+        
+        {/* Vignette & Scanlines */}
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_0%,#000_100%)] opacity-80" />
+        <div className="absolute inset-0 bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.25)_50%),linear-gradient(90deg,rgba(255,0,0,0.06),rgba(0,255,0,0.02),rgba(0,0,255,0.06))] z-50 bg-[length:100%_2px,3px_100%] pointer-events-none opacity-20" />
+      </div>
+
+      <div className="z-10 flex flex-col items-center gap-16 scale-75 md:scale-100">
+        <header className="text-center space-y-4">
+          <div className="flex items-center justify-center gap-2 text-cyan-500/50 mb-2">
+            <Radio className="w-4 h-4 animate-pulse" />
+            <span className="text-[10px] tracking-[0.3em] font-mono">SECURE CONNECTION ESTABLISHED</span>
+          </div>
+          <h1 className="text-5xl font-black text-transparent bg-clip-text bg-gradient-to-b from-white to-slate-500 tracking-tighter drop-shadow-[0_10px_10px_rgba(0,0,0,1)]">
+            INTERFACE QUÂNTICA
+          </h1>
+        </header>
+
+        <QuantumReactor />
+
+        <footer className="text-center opacity-40 text-xs font-mono max-w-xs leading-relaxed">
+          <p>ATENÇÃO: Interação prolongada pode causar instabilidade temporal local. Use fones de ouvido para telemetria auditiva.</p>
+        </footer>
+      </div>
+
+      <style>{`
+        @keyframes zoom-in {
+          0% { transform: scale(0.8); opacity: 0; }
+          100% { transform: scale(1); opacity: 1; }
+        }
+      `}</style>
+    </div>
+  );
+}
+```
+
+Please implement this component using React with TypeScript and Tailwind CSS for styling. Make sure to:
+1. Use proper TypeScript types
+2. Follow React best practices
+3. Make it responsive and accessible
+4. Use Tailwind CSS for styling
