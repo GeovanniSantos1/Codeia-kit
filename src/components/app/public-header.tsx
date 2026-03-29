@@ -169,7 +169,7 @@ export function PublicHeader() {
             {/* Logo */}
             <div className="flex w-full justify-between lg:w-auto">
               <Link href="/" aria-label={site.shortName} className="flex items-center">
-                <img src="/logo.png" alt="GG Empréstimos" className="h-10 w-auto max-w-[160px] object-contain" />
+                <img src="/logo.png" alt="GG Empréstimos" className="h-36 w-auto max-w-[200px] object-contain" />
               </Link>
 
               {/* Mobile hamburger */}
