@@ -1,0 +1,244 @@
+Create a React component similar to this:
+
+Title: Landing Page estilo Marvel Avengers
+Description: Landing Page estilo Marvel Avengers com som ao clicar no botão "Iniciar Protocolo"
+
+Here is the reference code:
+
+```tsx
+import { Shield, Zap, Target, ArrowRight, Activity, Cpu } from 'lucide-react';
+
+const AvengersCinematic = () => {
+  const [isExploding, setIsExploding] = useState(false);
+  const [btnText, setBtnText] = useState("INICIAR PROTOCOLO");
+
+  const audioUrl = "https://cdn.pixabay.com/audio/2024/01/02/audio_2e76a96686.mp3";
+
+  const handleProtocolStart = () => {
+    if (isExploding) return;
+
+    const audio = new Audio(audioUrl);
+    audio.volume = 0.6;
+    audio.play().catch((error) => console.log("Erro ao tocar áudio:", error));
+
+    setIsExploding(true);
+    setBtnText("CARREGANDO...");
+
+    setTimeout(() => {
+      setBtnText("ACESSO CONCEDIDO");
+    }, 2000);
+
+    setTimeout(() => {
+      setIsExploding(false);
+      setBtnText("INICIAR PROTOCOLO");
+    }, 4500);
+  };
+
+  return (
+    <div className={`marvel-wrapper ${isExploding ? 'shake-effect' : ''}`}>
+      {/* CSS EMBUTIDO AQUI */}
+      <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Oswald:wght@400;700&family=Rajdhani:wght@500;700&display=swap');
+
+        :root {
+          --primary-red: #ff0015;
+          --accent-cyan: #00f2ff;
+          --accent-yellow: #ffee00;
+          --dark-bg: #0b0b0b;
+        }
+
+        .marvel-wrapper {
+          position: relative;
+          min-height: 100vh;
+          background-color: var(--dark-bg);
+          font-family: 'Rajdhani', sans-serif;
+          color: white;
+          overflow-x: hidden;
+        }
+
+        /* TEXT GLOW EFFECTS */
+        .text-glow-pulse {
+          text-shadow: 0 0 10px rgba(255, 255, 255, 0.5), 0 0 20px rgba(255, 0, 21, 0.3);
+          animation: glow-pulse-anim 3s infinite alternate;
+        }
+        .text-glow-static { text-shadow: 0 0 5px rgba(255, 255, 255, 0.3); }
+        .glow-cyan { text-shadow: 0 0 10px var(--accent-cyan), 0 0 20px var(--accent-cyan); }
+
+        @keyframes glow-pulse-anim {
+          0% { text-shadow: 0 0 5px rgba(255, 255, 255, 0.5), 0 0 15px rgba(255, 0, 21, 0.4); }
+          100% { text-shadow: 0 0 10px rgba(255, 255, 255, 0.9), 0 0 30px rgba(255, 0, 21, 0.8), 0 0 50px rgba(255, 0, 21, 0.6); }
+        }
+
+        /* NAVBAR */
+        .navbar { display: flex; justify-content: space-between; padding: 2rem 4rem; align-items: center; z-index: 100; position: relative; }
+        .marvel-box { background: var(--primary-red); padding: 5px 10px; font-size: 1.5rem; letter-spacing: -1px; color: white; font-family: 'Oswald', sans-serif; border: 1px solid rgba(255,255,255,0.2); }
+        .nav-links { list-style: none; display: flex; gap: 2rem; }
+        .nav-links a { text-decoration: none; font-weight: 700; color: #888; text-transform: uppercase; font-size: 1rem; letter-spacing: 1px; transition: all 0.3s ease; padding: 5px 10px; border-radius: 4px; }
+        .nav-links a:hover { color: white; text-shadow: 0 0 5px var(--accent-cyan); background: rgba(0, 242, 255, 0.05); letter-spacing: 2px; }
+        .cta-link a { border: 1px solid #444; }
+        .cta-link a:hover { border-color: var(--primary-red); text-shadow: 0 0 10px var(--primary-red); background: rgba(255, 0, 21, 0.1); }
+
+        /* CINEMATICS */
+        .cinematic-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: radial-gradient(circle at center, transparent 0%, #000 100%); opacity: 0; pointer-events: none; z-index: 9998; transition: opacity 0.3s; }
+        .cinematic-overlay.active { animation: tunnel-vision 2s cubic-bezier(0.1, 0, 0.9, 1) forwards; }
+        .white-flash { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: white; opacity: 0; pointer-events: none; z-index: 9999; }
+        .white-flash.active { animation: big-bang 2.5s ease-out forwards; }
+        .shake-effect { animation: screen-shake 0.8s cubic-bezier(.36,.07,.19,.97) both; animation-delay: 1.2s; }
+
+        /* BUTTONS */
+        .btn-cyber { position: relative; background: var(--primary-red); border: none; padding: 1.2rem 3rem; color: white; font-weight: 800; font-family: 'Oswald', sans-serif; text-transform: uppercase; letter-spacing: 2px; cursor: pointer; clip-path: polygon(15% 0, 100% 0, 100% 70%, 85% 100%, 0 100%, 0 30%); overflow: hidden; transition: all 0.3s; z-index: 10000; display: flex; justify-content: center; align-items: center; }
+        .btn-cyber:hover { transform: scale(1.05); box-shadow: 0 0 15px rgba(255,0,21,0.5); }
+        .btn-cyber.charging { animation: button-recoil 0.2s forwards; pointer-events: none; background-color: #000; color: var(--accent-cyan); box-shadow: 0 0 40px var(--accent-cyan); border: 1px solid var(--accent-cyan); }
+        .energy-ring { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); border-radius: 50%; border: 2px solid white; opacity: 0; }
+        .energy-core { position: absolute; top:0; left:0; width:100%; height:100%; background:white; opacity:0; mix-blend-mode: overlay; }
+        .btn-cyber.charging .energy-ring { animation: ring-expansion 1.5s ease-out infinite; }
+        .btn-cyber.charging .energy-core { animation: core-overload 1.4s ease-in forwards; }
+        .spin-fast { animation: spin-icon 0.5s linear infinite; }
+
+        /* HERO SECTION */
+        .hero-section { height: 90vh; display: flex; align-items: center; padding: 0 4rem; }
+        .glitch-title { font-size: 7rem; line-height: 0.9; margin: 0; font-family: 'Oswald'; font-style: italic; color: white; }
+        .sub-glitch { font-size: 2rem; margin-bottom: 2rem; letter-spacing: 5px; text-transform: uppercase; color: #ddd; }
+        .button-group { display: flex; gap: 1rem; }
+        .btn-outline { background: transparent; border: 1px solid white; color: white; padding: 1rem 2rem; display: flex; align-items: center; gap: 10px; cursor: pointer; transition: 0.3s; font-family: 'Rajdhani'; font-weight: 700; }
+        .btn-outline:hover { background: white; color: black; }
+        .tech-badge { display: inline-flex; align-items: center; gap: 5px; color: var(--accent-cyan); border: 1px solid var(--accent-cyan); padding: 5px 10px; font-size: 0.8rem; margin-bottom: 1rem; background: rgba(0,242,255,0.1); }
+        .description { max-width: 500px; color: #aaa; margin-bottom: 2rem; border-left: 3px solid var(--accent-cyan); padding-left: 15px; }
+
+        /* BACKGROUNDS */
+        .bg-comic-dots { position: fixed; width: 100%; height: 100%; z-index: -1; opacity: 0.3; background-image: radial-gradient(#ffffff 1px, transparent 1px); background-size: 30px 30px; top:0; left:0; }
+        .bg-tech-grid { position: fixed; width: 100%; height: 100%; z-index: -2; opacity: 0.1; background: linear-gradient(90deg, #fff 1px, transparent 1px), linear-gradient(180deg, #fff 1px, transparent 1px); background-size: 100px 100px; top:0; left:0; }
+
+        /* CARDS */
+        .cards-section { padding: 4rem; }
+        .section-label { text-align: right; color: var(--primary-red); font-family: monospace; margin-bottom: 1rem; }
+        .grid-3d { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem; }
+        .card-3d-wrapper { height: 350px; perspective: 1000px; }
+        .card-content { background: rgba(30,30,30,0.7); backdrop-filter: blur(5px); height: 100%; padding: 2rem; border: 1px solid #444; transition: transform 0.5s; clip-path: polygon(0 0, 100% 0, 100% 85%, 85% 100%, 0 100%); position: relative; }
+        .card-3d-wrapper:hover .card-content { transform: rotateY(10deg) rotateX(5deg); border-color: var(--accent-cyan); box-shadow: -10px 10px 30px rgba(0,242,255,0.2); }
+        .card-top-decor { height: 4px; width: 100%; background: linear-gradient(90deg, var(--primary-red), transparent); position: absolute; top:0; left:0; }
+        .icon-glow.red { color: var(--primary-red); filter: drop-shadow(0 0 8px var(--primary-red)); margin-bottom: 1rem; }
+        .icon-glow.yellow { color: var(--accent-yellow); filter: drop-shadow(0 0 8px var(--accent-yellow)); margin-bottom: 1rem; }
+        .icon-glow.cyan { color: var(--accent-cyan); filter: drop-shadow(0 0 8px var(--accent-cyan)); margin-bottom: 1rem; }
+        .card-number { position: absolute; bottom: 10px; right: 10px; font-size: 3rem; opacity: 0.1; font-weight: 900; font-family: 'Oswald'; }
+
+        /* ANIMATIONS */
+        @keyframes tunnel-vision { 0% { opacity: 0; } 20% { opacity: 0.8; } 80% { opacity: 1; background: radial-gradient(circle at center, transparent 10%, #000 60%); } 100% { opacity: 0; } }
+        @keyframes big-bang { 0% { opacity: 0; } 50% { opacity: 1; background: white; } 100% { opacity: 0; } }
+        @keyframes screen-shake { 0% { transform: translate(0, 0); } 20% { transform: translate(4px, 2px); } 40% { transform: translate(-8px, -6px); } 60% { transform: translate(8px, 6px); } 100% { transform: translate(0, 0); } }
+        @keyframes ring-expansion { 0% { width: 0%; height: 0%; opacity: 1; } 100% { width: 200%; height: 500%; opacity: 0; } }
+        @keyframes core-overload { 0% { opacity: 0; } 80% { opacity: 1; } 100% { opacity: 0; } }
+        @keyframes spin-icon { 100% { transform: rotate(360deg); } }
+
+        @media (max-width: 768px) {
+          .hero-section { flex-direction: column; text-align: center; justify-content: center; padding: 1rem; }
+          .glitch-title { font-size: 4rem; }
+          .navbar { padding: 1rem; }
+          .nav-links { display: none; }
+        }
+      `}</style>
+      
+      {/* Overlays Visuais */}
+      <div className={`cinematic-overlay ${isExploding ? 'active' : ''}`}></div>
+      <div className={`white-flash ${isExploding ? 'active' : ''}`}></div>
+
+      {/* Backgrounds */}
+      <div className="bg-comic-dots"></div>
+      <div className="bg-tech-grid"></div>
+
+      {/* Navbar */}
+      <nav className="navbar">
+        <div className="logo-glitch" data-text="MARVEL">
+          <span className="marvel-box">MARVEL</span>
+        </div>
+        <ul className="nav-links">
+          <li><a href="#herois">HERÓIS</a></li>
+          <li><a href="#filmes">DOSSIÊS</a></li>
+          <li className="cta-link"><a href="#join">ALISTAR-SE</a></li>
+        </ul>
+      </nav>
+
+      {/* Hero Section */}
+      <header className="hero-section">
+        <div className="hero-content">
+          <div className="tech-badge">
+            <Activity size={16} /> <span>SISTEMA ONLINE // NÍVEL 7</span>
+          </div>
+          
+          <h1 className="glitch-title text-glow-pulse" data-text="AVENGERS">
+            AVENGERS
+          </h1>
+          
+          <h2 className="sub-glitch text-glow-static">
+            A INICIATIVA <span className="highlight-cyan glow-cyan">INFINITA</span>
+          </h2>
+          
+          <p className="description">
+            Ameaças de nível extinção detectadas. Ativação do Protocolo Ultra Secreto S.H.I.E.L.D. 7-1-0.
+          </p>
+          
+          <div className="button-group">
+            <button 
+              className={`btn-cyber ${isExploding ? 'charging' : ''}`} 
+              onClick={handleProtocolStart}
+            >
+              <div className="btn-content">
+                <Cpu size={20} className={isExploding ? 'spin-fast' : ''} />
+                <span className="btn-text">{btnText}</span>
+              </div>
+              <span className="energy-ring"></span>
+              <span className="energy-core"></span>
+            </button>
+            
+            <button className="btn-outline">
+              DADOS TÁTICOS <ArrowRight size={18} />
+            </button>
+          </div>
+        </div>
+      </header>
+
+      {/* Cards 3D */}
+      <section className="cards-section" id="herois">
+        <div className="section-label"><span>// ARQUIVOS CARREGADOS</span></div>
+        <div className="grid-3d">
+          <div className="card-3d-wrapper">
+            <div className="card-content">
+              <div className="card-top-decor"></div>
+              <Shield size={48} className="icon-glow red" />
+              <h3>CAPITÃO</h3>
+              <p>Liderança tática absoluta.</p>
+              <span className="card-number">01</span>
+            </div>
+          </div>
+          <div className="card-3d-wrapper">
+            <div className="card-content highlight-border">
+              <div className="card-top-decor"></div>
+              <Zap size={48} className="icon-glow yellow" />
+              <h3>THOR</h3>
+              <p>Nível de poder planetário.</p>
+              <span className="card-number">02</span>
+            </div>
+          </div>
+          <div className="card-3d-wrapper">
+            <div className="card-content">
+              <div className="card-top-decor"></div>
+              <Target size={48} className="icon-glow cyan" />
+              <h3>STARK</h3>
+              <p>Intelecto nível 12.</p>
+              <span className="card-number">03</span>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  );
+};
+
+export default AvengersCinematic;
+```
+
+Please implement this component using React with TypeScript and Tailwind CSS for styling. Make sure to:
+1. Use proper TypeScript types
+2. Follow React best practices
+3. Make it responsive and accessible
+4. Use Tailwind CSS for styling

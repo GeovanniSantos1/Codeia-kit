@@ -29,6 +29,30 @@ const transitionVariants = {
 export function Hero() {
   return (
     <>
+      <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Oswald:wght@400;700&family=Rajdhani:wght@500;700&display=swap');
+
+        .hero-title-avengers {
+          font-family: 'Oswald', sans-serif;
+          font-style: italic;
+          font-weight: 700;
+          animation: hero-glow-pulse 3s infinite alternate;
+        }
+
+        .hero-desc-avengers {
+          font-family: 'Rajdhani', sans-serif;
+          font-weight: 500;
+          border-left: 3px solid #00f2ff;
+          padding-left: 16px;
+          text-shadow: 0 0 4px rgba(255,255,255,0.15);
+        }
+
+        @keyframes hero-glow-pulse {
+          0%   { text-shadow: 0 0 6px rgba(255,255,255,0.4), 0 0 16px rgba(6,182,212,0.3); }
+          100% { text-shadow: 0 0 12px rgba(255,255,255,0.85), 0 0 32px rgba(6,182,212,0.7), 0 0 55px rgba(6,182,212,0.4); }
+        }
+      `}</style>
+
       <main className="overflow-hidden">
         <section className="relative min-h-screen">
           {/* Liquid Blob background — sits behind content */}
@@ -75,10 +99,10 @@ export function Hero() {
                     </div>
                   </Link>
 
-                  <h1 className="mt-8 max-w-4xl mx-auto text-balance text-6xl md:text-7xl lg:mt-16 xl:text-[5.25rem]">
+                  <h1 className="hero-title-avengers mt-8 max-w-4xl mx-auto text-balance text-6xl md:text-7xl lg:mt-16 xl:text-[5.25rem]">
                     Gestão de Empréstimos Simples e Segura
                   </h1>
-                  <p className="mx-auto mt-8 max-w-2xl text-balance text-lg">
+                  <p className="hero-desc-avengers mx-auto mt-8 max-w-2xl text-balance text-lg">
                     Substitua sua planilha por uma plataforma completa. Controle clientes, parcelas, juros, multas e fluxo de caixa — com alertas de vencimento e cobrança via WhatsApp.
                   </p>
                 </AnimatedGroup>
