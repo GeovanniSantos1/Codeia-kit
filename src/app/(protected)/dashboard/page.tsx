@@ -10,9 +10,8 @@ import {
   TransactionsChart,
   LoansEvolutionChart,
   InstallmentsStatusChart,
-  CreditUsageChart,
+  NewClientsChart,
 } from "@/components/charts/dashboard-charts";
-import { Card, CardContent } from "@/components/ui/card";
 
 export default function DashboardPage() {
   const { user } = useUser();
@@ -23,7 +22,7 @@ export default function DashboardPage() {
     transactionsSeries: { label: string; entrada: number; saida: number }[];
     loansSeries: { label: string; count: number; totalPrincipal: number }[];
     installmentsSeries: { label: string; paid: number; pending: number; overdue: number }[];
-    creditsSeries: { label: string; chat: number; image: number }[];
+    clientsSeries: { label: string; count: number }[];
   } | null>(null);
   const [loading, setLoading] = useState(true);
   const [chartsLoading, setChartsLoading] = useState(true);
@@ -91,11 +90,13 @@ export default function DashboardPage() {
       {chartsLoading ? (
         <div className="grid gap-6 md:grid-cols-2">
           {Array.from({ length: 4 }).map((_, i) => (
-            <Card key={i}>
-              <CardContent className="pt-6">
-                <div className="h-64 w-full animate-pulse rounded bg-muted" />
-              </CardContent>
-            </Card>
+            <div key={i} className="rounded-2xl border border-white/5 bg-[#0c0c0e] p-5 space-y-3 animate-pulse">
+              <div className="flex items-center justify-between">
+                <div className="h-3 w-32 bg-white/8 rounded" />
+                <div className="h-4 w-4 bg-white/5 rounded" />
+              </div>
+              <div className="h-64 w-full rounded-xl bg-white/5" />
+            </div>
           ))}
         </div>
       ) : charts ? (
@@ -103,7 +104,7 @@ export default function DashboardPage() {
           <TransactionsChart data={charts.transactionsSeries} />
           <LoansEvolutionChart data={charts.loansSeries} />
           <InstallmentsStatusChart data={charts.installmentsSeries} />
-          <CreditUsageChart data={charts.creditsSeries} />
+          <NewClientsChart data={charts.clientsSeries} />
         </div>
       ) : null}
     </div>

@@ -27,7 +27,7 @@ export async function getDashboardCharts(userId: string) {
   const now = new Date();
   const endOfRange = new Date(now.getFullYear(), now.getMonth() + 1, 1);
 
-  const [transactions, loans, installments, usageHistory] = await Promise.all([
+  const [transactions, loans, installments, clients] = await Promise.all([
     db.transaction.findMany({
       where: {
         userId,
@@ -50,12 +50,12 @@ export async function getDashboardCharts(userId: string) {
       },
       select: { status: true, amount: true, paidAmount: true, dueDate: true },
     }),
-    db.usageHistory.findMany({
+    db.client.findMany({
       where: {
         userId,
-        timestamp: { gte: sixMonthsAgo, lt: endOfRange },
+        createdAt: { gte: sixMonthsAgo, lt: endOfRange },
       },
-      select: { operationType: true, creditsUsed: true, timestamp: true },
+      select: { createdAt: true },
     }),
   ]);
 
@@ -115,25 +115,21 @@ export async function getDashboardCharts(userId: string) {
     return { label: getMonthLabel(m), paid, pending, overdue };
   });
 
-  // 4. Credit usage per month (AI chat vs image generation)
-  const creditsSeries = months.map((m) => {
+  // 4. New clients per month
+  const clientsSeries = months.map((m) => {
     const { start, end } = getMonthRange(m);
-    let chatCredits = 0;
-    let imageCredits = 0;
-    for (const u of usageHistory) {
-      const d = new Date(u.timestamp);
-      if (d >= start && d < end) {
-        if (u.operationType === "AI_TEXT_CHAT") chatCredits += u.creditsUsed;
-        else if (u.operationType === "AI_IMAGE_GENERATION") imageCredits += u.creditsUsed;
-      }
+    let count = 0;
+    for (const c of clients) {
+      const d = new Date(c.createdAt);
+      if (d >= start && d < end) count++;
     }
-    return { label: getMonthLabel(m), chat: chatCredits, image: imageCredits };
+    return { label: getMonthLabel(m), count };
   });
 
   return {
     transactionsSeries,
     loansSeries,
     installmentsSeries,
-    creditsSeries,
+    clientsSeries,
   };
 }

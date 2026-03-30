@@ -9,17 +9,16 @@ import {
   Tooltip,
   CartesianGrid,
   Legend,
-  LineChart,
-  Line,
   AreaChart,
   Area,
+  LineChart,
+  Line,
 } from "recharts";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   ArrowDownUp,
   Landmark,
   CalendarCheck,
-  Sparkles,
+  Users,
 } from "lucide-react";
 
 function formatBRL(value: number) {
@@ -45,18 +44,55 @@ function ChartTooltip({
   if (!active || !payload?.length) return null;
   const fmt = formatter || ((v: number) => v.toString());
   return (
-    <div className="rounded-md border border-border bg-popover px-3 py-2 text-xs text-foreground shadow-md">
-      <div className="mb-1 font-medium">{label}</div>
+    <div className="rounded-xl border border-white/10 bg-[#111114]/95 backdrop-blur-sm px-3 py-2.5 text-xs text-foreground shadow-xl">
+      <div className="mb-1.5 font-semibold text-white/80">{label}</div>
       {payload.map((p) => (
         <div key={p.name} className="flex items-center gap-2">
           <span
-            className="inline-block size-2 rounded-full"
+            className="inline-block h-2 w-2 rounded-full shrink-0"
             style={{ backgroundColor: p.color }}
           />
-          <span className="text-muted-foreground">{p.name}:</span>
-          <span className="font-medium">{fmt(p.value)}</span>
+          <span className="text-white/50">{p.name}:</span>
+          <span className="font-bold text-white">{fmt(p.value)}</span>
         </div>
       ))}
+    </div>
+  );
+}
+
+const AXIS_PROPS = {
+  tickLine: false,
+  axisLine: false,
+  tick: { fill: "rgba(255,255,255,0.35)", fontSize: 11 },
+};
+
+const GRID_PROPS = {
+  strokeDasharray: "4 4",
+  stroke: "rgba(255,255,255,0.06)",
+};
+
+function ChartCard({
+  title,
+  icon: Icon,
+  accent,
+  children,
+}: {
+  title: string;
+  icon: React.ElementType;
+  accent: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <div className={`rounded-2xl border ${accent} bg-[#0c0c0e] overflow-hidden`}>
+      <div className="flex items-center justify-between px-5 pt-4 pb-1">
+        <span className="text-[11px] font-bold uppercase tracking-[0.13em] text-muted-foreground">
+          {title}
+        </span>
+        <Icon className="h-4 w-4 text-muted-foreground/60" />
+      </div>
+      <div className="px-2 pb-4 pt-2">
+        {children}
+      </div>
     </div>
   );
 }
@@ -66,62 +102,44 @@ type TransactionPoint = { label: string; entrada: number; saida: number };
 
 export function TransactionsChart({ data }: { data: TransactionPoint[] }) {
   return (
-    <Card>
-      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-        <CardTitle className="text-sm font-medium">
-          Entradas vs Saidas
-        </CardTitle>
-        <ArrowDownUp className="h-4 w-4 text-muted-foreground" />
-      </CardHeader>
-      <CardContent>
-        <div className="h-64 w-full">
-          <ResponsiveContainer width="100%" height="100%">
-            <BarChart
-              data={data}
-              margin={{ top: 8, right: 12, left: 0, bottom: 8 }}
-            >
-              <CartesianGrid strokeDasharray="3 3" strokeOpacity={0.15} />
-              <XAxis
-                dataKey="label"
-                tickLine={false}
-                axisLine={false}
-                fontSize={12}
-              />
-              <YAxis
-                tickLine={false}
-                axisLine={false}
-                width={50}
-                tickFormatter={(v) => formatBRL(v)}
-                fontSize={11}
-              />
-              <Tooltip
-                cursor={{ fill: "hsl(var(--muted))", opacity: 0.2 }}
-                content={<ChartTooltip formatter={formatBRL} />}
-              />
-              <Legend
-                verticalAlign="top"
-                align="right"
-                iconType="circle"
-                iconSize={8}
-                wrapperStyle={{ fontSize: 12 }}
-              />
-              <Bar
-                dataKey="entrada"
-                name="Entrada"
-                fill="hsl(142, 71%, 45%)"
-                radius={[4, 4, 0, 0]}
-              />
-              <Bar
-                dataKey="saida"
-                name="Saida"
-                fill="hsl(0, 84%, 60%)"
-                radius={[4, 4, 0, 0]}
-              />
-            </BarChart>
-          </ResponsiveContainer>
-        </div>
-      </CardContent>
-    </Card>
+    <ChartCard title="Entradas vs Saídas" icon={ArrowDownUp} accent="border-cyan-500/15">
+      <div className="h-64 w-full">
+        <ResponsiveContainer width="100%" height="100%">
+          <BarChart data={data} margin={{ top: 6, right: 8, left: -4, bottom: 4 }}>
+            <defs>
+              <linearGradient id="entradaGrad" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stopColor="#10b981" stopOpacity={1} />
+                <stop offset="100%" stopColor="#059669" stopOpacity={0.8} />
+              </linearGradient>
+              <linearGradient id="saidaGrad" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stopColor="#f87171" stopOpacity={1} />
+                <stop offset="100%" stopColor="#dc2626" stopOpacity={0.8} />
+              </linearGradient>
+            </defs>
+            <CartesianGrid {...GRID_PROPS} />
+            <XAxis dataKey="label" {...AXIS_PROPS} />
+            <YAxis
+              {...AXIS_PROPS}
+              width={54}
+              tickFormatter={(v) => formatBRL(v)}
+            />
+            <Tooltip
+              cursor={{ fill: "rgba(255,255,255,0.04)" }}
+              content={<ChartTooltip formatter={formatBRL} />}
+            />
+            <Legend
+              verticalAlign="top"
+              align="right"
+              iconType="circle"
+              iconSize={7}
+              wrapperStyle={{ fontSize: 11, paddingBottom: 8, color: "rgba(255,255,255,0.5)" }}
+            />
+            <Bar dataKey="entrada" name="Entrada" fill="url(#entradaGrad)" radius={[5, 5, 0, 0]} maxBarSize={36} />
+            <Bar dataKey="saida" name="Saída" fill="url(#saidaGrad)" radius={[5, 5, 0, 0]} maxBarSize={36} />
+          </BarChart>
+        </ResponsiveContainer>
+      </div>
+    </ChartCard>
   );
 }
 
@@ -130,246 +148,147 @@ type LoanPoint = { label: string; count: number; totalPrincipal: number };
 
 export function LoansEvolutionChart({ data }: { data: LoanPoint[] }) {
   return (
-    <Card>
-      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-        <CardTitle className="text-sm font-medium">
-          Emprestimos por Mes
-        </CardTitle>
-        <Landmark className="h-4 w-4 text-muted-foreground" />
-      </CardHeader>
-      <CardContent>
-        <div className="h-64 w-full">
-          <ResponsiveContainer width="100%" height="100%">
-            <AreaChart
-              data={data}
-              margin={{ top: 8, right: 12, left: 0, bottom: 8 }}
-            >
-              <defs>
-                <linearGradient id="loanGrad" x1="0" y1="0" x2="0" y2="1">
-                  <stop
-                    offset="0%"
-                    stopColor="hsl(var(--primary))"
-                    stopOpacity={0.3}
-                  />
-                  <stop
-                    offset="100%"
-                    stopColor="hsl(var(--primary))"
-                    stopOpacity={0.02}
-                  />
-                </linearGradient>
-              </defs>
-              <CartesianGrid strokeDasharray="3 3" strokeOpacity={0.15} />
-              <XAxis
-                dataKey="label"
-                tickLine={false}
-                axisLine={false}
-                fontSize={12}
-              />
-              <YAxis
-                yAxisId="left"
-                tickLine={false}
-                axisLine={false}
-                width={30}
-                fontSize={11}
-                allowDecimals={false}
-              />
-              <YAxis
-                yAxisId="right"
-                orientation="right"
-                tickLine={false}
-                axisLine={false}
-                width={55}
-                tickFormatter={(v) => formatBRL(v)}
-                fontSize={11}
-              />
-              <Tooltip
-                content={
-                  <ChartTooltip
-                    formatter={(v) =>
-                      v >= 100 ? formatBRL(v) : v.toString()
-                    }
-                  />
-                }
-              />
-              <Legend
-                verticalAlign="top"
-                align="right"
-                iconType="circle"
-                iconSize={8}
-                wrapperStyle={{ fontSize: 12 }}
-              />
-              <Area
-                yAxisId="right"
-                type="monotone"
-                dataKey="totalPrincipal"
-                name="Volume (R$)"
-                stroke="hsl(var(--primary))"
-                fill="url(#loanGrad)"
-                strokeWidth={2}
-              />
-              <Line
-                yAxisId="left"
-                type="monotone"
-                dataKey="count"
-                name="Quantidade"
-                stroke="hsl(217, 91%, 60%)"
-                strokeWidth={2}
-                dot={{ r: 3.5, strokeWidth: 1 }}
-              />
-            </AreaChart>
-          </ResponsiveContainer>
-        </div>
-      </CardContent>
-    </Card>
+    <ChartCard title="Empréstimos por Mês" icon={Landmark} accent="border-violet-500/15">
+      <div className="h-64 w-full">
+        <ResponsiveContainer width="100%" height="100%">
+          <AreaChart data={data} margin={{ top: 6, right: 8, left: -4, bottom: 4 }}>
+            <defs>
+              <linearGradient id="loanVolGrad" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stopColor="#8b5cf6" stopOpacity={0.35} />
+                <stop offset="100%" stopColor="#8b5cf6" stopOpacity={0.02} />
+              </linearGradient>
+            </defs>
+            <CartesianGrid {...GRID_PROPS} />
+            <XAxis dataKey="label" {...AXIS_PROPS} />
+            <YAxis
+              yAxisId="left"
+              {...AXIS_PROPS}
+              width={28}
+              allowDecimals={false}
+            />
+            <YAxis
+              yAxisId="right"
+              orientation="right"
+              {...AXIS_PROPS}
+              width={56}
+              tickFormatter={(v) => formatBRL(v)}
+            />
+            <Tooltip
+              content={
+                <ChartTooltip
+                  formatter={(v) => (v >= 100 ? formatBRL(v) : v.toString())}
+                />
+              }
+            />
+            <Legend
+              verticalAlign="top"
+              align="right"
+              iconType="circle"
+              iconSize={7}
+              wrapperStyle={{ fontSize: 11, paddingBottom: 8, color: "rgba(255,255,255,0.5)" }}
+            />
+            <Area
+              yAxisId="right"
+              type="monotone"
+              dataKey="totalPrincipal"
+              name="Volume (R$)"
+              stroke="#8b5cf6"
+              fill="url(#loanVolGrad)"
+              strokeWidth={2.5}
+            />
+            <Line
+              yAxisId="left"
+              type="monotone"
+              dataKey="count"
+              name="Quantidade"
+              stroke="#60a5fa"
+              strokeWidth={2.5}
+              dot={{ r: 4, fill: "#60a5fa", strokeWidth: 0 }}
+              activeDot={{ r: 5 }}
+            />
+          </AreaChart>
+        </ResponsiveContainer>
+      </div>
+    </ChartCard>
   );
 }
 
 // --- Chart: Installments status per month ---
-type InstallmentPoint = {
-  label: string;
-  paid: number;
-  pending: number;
-  overdue: number;
-};
+type InstallmentPoint = { label: string; paid: number; pending: number; overdue: number };
 
-export function InstallmentsStatusChart({
-  data,
-}: {
-  data: InstallmentPoint[];
-}) {
+export function InstallmentsStatusChart({ data }: { data: InstallmentPoint[] }) {
   return (
-    <Card>
-      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-        <CardTitle className="text-sm font-medium">
-          Status das Parcelas
-        </CardTitle>
-        <CalendarCheck className="h-4 w-4 text-muted-foreground" />
-      </CardHeader>
-      <CardContent>
-        <div className="h-64 w-full">
-          <ResponsiveContainer width="100%" height="100%">
-            <BarChart
-              data={data}
-              margin={{ top: 8, right: 12, left: 0, bottom: 8 }}
-              stackOffset="sign"
-            >
-              <CartesianGrid strokeDasharray="3 3" strokeOpacity={0.15} />
-              <XAxis
-                dataKey="label"
-                tickLine={false}
-                axisLine={false}
-                fontSize={12}
-              />
-              <YAxis
-                tickLine={false}
-                axisLine={false}
-                width={30}
-                fontSize={11}
-                allowDecimals={false}
-              />
-              <Tooltip content={<ChartTooltip />} />
-              <Legend
-                verticalAlign="top"
-                align="right"
-                iconType="circle"
-                iconSize={8}
-                wrapperStyle={{ fontSize: 12 }}
-              />
-              <Bar
-                dataKey="paid"
-                name="Pagas"
-                stackId="a"
-                fill="hsl(142, 71%, 45%)"
-                radius={[0, 0, 0, 0]}
-              />
-              <Bar
-                dataKey="pending"
-                name="Pendentes"
-                stackId="a"
-                fill="hsl(45, 93%, 47%)"
-                radius={[0, 0, 0, 0]}
-              />
-              <Bar
-                dataKey="overdue"
-                name="Atrasadas"
-                stackId="a"
-                fill="hsl(0, 84%, 60%)"
-                radius={[4, 4, 0, 0]}
-              />
-            </BarChart>
-          </ResponsiveContainer>
-        </div>
-      </CardContent>
-    </Card>
+    <ChartCard title="Status das Parcelas" icon={CalendarCheck} accent="border-emerald-500/15">
+      <div className="h-64 w-full">
+        <ResponsiveContainer width="100%" height="100%">
+          <BarChart data={data} margin={{ top: 6, right: 8, left: -4, bottom: 4 }} stackOffset="sign">
+            <defs>
+              <linearGradient id="paidGrad" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stopColor="#10b981" stopOpacity={1} />
+                <stop offset="100%" stopColor="#059669" stopOpacity={0.8} />
+              </linearGradient>
+              <linearGradient id="pendGrad" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stopColor="#eab308" stopOpacity={1} />
+                <stop offset="100%" stopColor="#ca8a04" stopOpacity={0.8} />
+              </linearGradient>
+              <linearGradient id="overdGrad" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stopColor="#ef4444" stopOpacity={1} />
+                <stop offset="100%" stopColor="#b91c1c" stopOpacity={0.8} />
+              </linearGradient>
+            </defs>
+            <CartesianGrid {...GRID_PROPS} />
+            <XAxis dataKey="label" {...AXIS_PROPS} />
+            <YAxis {...AXIS_PROPS} width={28} allowDecimals={false} />
+            <Tooltip content={<ChartTooltip />} cursor={{ fill: "rgba(255,255,255,0.04)" }} />
+            <Legend
+              verticalAlign="top"
+              align="right"
+              iconType="circle"
+              iconSize={7}
+              wrapperStyle={{ fontSize: 11, paddingBottom: 8, color: "rgba(255,255,255,0.5)" }}
+            />
+            <Bar dataKey="paid" name="Pagas" stackId="a" fill="url(#paidGrad)" radius={[0, 0, 0, 0]} maxBarSize={36} />
+            <Bar dataKey="pending" name="Pendentes" stackId="a" fill="url(#pendGrad)" radius={[0, 0, 0, 0]} maxBarSize={36} />
+            <Bar dataKey="overdue" name="Atrasadas" stackId="a" fill="url(#overdGrad)" radius={[5, 5, 0, 0]} maxBarSize={36} />
+          </BarChart>
+        </ResponsiveContainer>
+      </div>
+    </ChartCard>
   );
 }
 
-// --- Chart: Credit/AI usage per month ---
-type CreditPoint = { label: string; chat: number; image: number };
+// --- Chart: New clients per month ---
+type ClientPoint = { label: string; count: number };
 
-export function CreditUsageChart({ data }: { data: CreditPoint[] }) {
-  const hasData = data.some((d) => d.chat > 0 || d.image > 0);
+export function NewClientsChart({ data }: { data: ClientPoint[] }) {
   return (
-    <Card>
-      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-        <CardTitle className="text-sm font-medium">Uso de Creditos IA</CardTitle>
-        <Sparkles className="h-4 w-4 text-muted-foreground" />
-      </CardHeader>
-      <CardContent>
-        {!hasData ? (
-          <div className="flex h-64 items-center justify-center text-sm text-muted-foreground">
-            Nenhum uso de creditos registrado
-          </div>
-        ) : (
-          <div className="h-64 w-full">
-            <ResponsiveContainer width="100%" height="100%">
-              <LineChart
-                data={data}
-                margin={{ top: 8, right: 12, left: 0, bottom: 8 }}
-              >
-                <CartesianGrid strokeDasharray="3 3" strokeOpacity={0.15} />
-                <XAxis
-                  dataKey="label"
-                  tickLine={false}
-                  axisLine={false}
-                  fontSize={12}
-                />
-                <YAxis
-                  tickLine={false}
-                  axisLine={false}
-                  width={30}
-                  fontSize={11}
-                  allowDecimals={false}
-                />
-                <Tooltip content={<ChartTooltip />} />
-                <Legend
-                  verticalAlign="top"
-                  align="right"
-                  iconType="circle"
-                  iconSize={8}
-                  wrapperStyle={{ fontSize: 12 }}
-                />
-                <Line
-                  type="monotone"
-                  dataKey="chat"
-                  name="Chat IA"
-                  stroke="hsl(262, 83%, 58%)"
-                  strokeWidth={2}
-                  dot={{ r: 3.5, strokeWidth: 1 }}
-                />
-                <Line
-                  type="monotone"
-                  dataKey="image"
-                  name="Geracao de Imagem"
-                  stroke="hsl(330, 81%, 60%)"
-                  strokeWidth={2}
-                  dot={{ r: 3.5, strokeWidth: 1 }}
-                />
-              </LineChart>
-            </ResponsiveContainer>
-          </div>
-        )}
-      </CardContent>
-    </Card>
+    <ChartCard title="Novos Clientes por Mês" icon={Users} accent="border-cyan-500/15">
+      <div className="h-64 w-full">
+        <ResponsiveContainer width="100%" height="100%">
+          <AreaChart data={data} margin={{ top: 6, right: 8, left: -4, bottom: 4 }}>
+            <defs>
+              <linearGradient id="clientGrad" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stopColor="#06b6d4" stopOpacity={0.4} />
+                <stop offset="100%" stopColor="#06b6d4" stopOpacity={0.02} />
+              </linearGradient>
+            </defs>
+            <CartesianGrid {...GRID_PROPS} />
+            <XAxis dataKey="label" {...AXIS_PROPS} />
+            <YAxis {...AXIS_PROPS} width={28} allowDecimals={false} />
+            <Tooltip content={<ChartTooltip formatter={(v) => `${v} cliente${v !== 1 ? "s" : ""}`} />} cursor={{ fill: "rgba(255,255,255,0.04)" }} />
+            <Area
+              type="monotone"
+              dataKey="count"
+              name="Novos clientes"
+              stroke="#06b6d4"
+              fill="url(#clientGrad)"
+              strokeWidth={2.5}
+              dot={{ r: 4, fill: "#06b6d4", strokeWidth: 0 }}
+              activeDot={{ r: 5, fill: "#22d3ee" }}
+            />
+          </AreaChart>
+        </ResponsiveContainer>
+      </div>
+    </ChartCard>
   );
 }
