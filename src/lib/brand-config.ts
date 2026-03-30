@@ -21,10 +21,20 @@ export const site = {
   name: 'GG Empréstimos — Gestão de Empréstimos',
   shortName: 'GG Empréstimos',
   description:
-    'Gerencie seus empréstimos pessoais de forma simples e segura. Controle clientes, parcelas, juros, multas e fluxo de caixa em um único lugar.',
+    'Gerencie empréstimos pessoais com cálculo automático de juros e multas, controle de parcelas, cobranças preventivas e reativas via WhatsApp, solicitações online de empréstimo e planos de assinatura.',
   url: process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:5000',
   author: 'GG Empréstimos',
-  keywords: ['empréstimos', 'gestão financeira', 'controle de parcelas', 'fluxo de caixa', 'cobrança', 'SaaS'],
+  keywords: [
+    'empréstimos pessoais',
+    'gestão financeira',
+    'controle de parcelas',
+    'fluxo de caixa',
+    'cobrança via WhatsApp',
+    'solicitação de empréstimo',
+    'juros e multas automáticos',
+    'SaaS financeiro',
+    'gestão de clientes',
+  ],
   ogImage: '/og-image.png',
   logo: {
     light: '/logo-light.svg',
@@ -55,6 +65,10 @@ export const siteMetadata: Metadata = {
   keywords: [...site.keywords],
   authors: [{ name: site.author }],
   manifest: '/site.webmanifest',
+  themeColor: [
+    { media: '(prefers-color-scheme: dark)', color: '#06b6d4' },
+    { media: '(prefers-color-scheme: light)', color: '#06b6d4' },
+  ],
   appleWebApp: {
     capable: true,
     statusBarStyle: 'black-translucent',

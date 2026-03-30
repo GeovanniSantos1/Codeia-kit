@@ -1,15 +1,35 @@
 {
   "name": "GG Empréstimos",
   "short_name": "GG Empréstimos",
-  "description": "Gerencie seus empréstimos pessoais de forma simples e segura.",
+  "description": "Gerencie empréstimos pessoais, parcelas, cobranças e solicitações com cálculo automático de juros e multas. Comunicação via WhatsApp integrada.",
   "start_url": "/dashboard",
+  "scope": "/",
   "display": "standalone",
   "orientation": "portrait",
-  "theme_color": "#111111",
-  "background_color": "#111111",
+  "theme_color": "#06b6d4",
+  "background_color": "#0a0a0a",
   "lang": "pt-BR",
-  "categories": ["finance", "business"],
+  "dir": "ltr",
+  "categories": ["finance", "business", "productivity"],
   "icons": [
+    {
+      "src": "/favicon-16x16.png",
+      "sizes": "16x16",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/favicon-32x32.png",
+      "sizes": "32x32",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png",
+      "purpose": "any"
+    },
     {
       "src": "/android-chrome-192x192.png",
       "sizes": "192x192",
@@ -28,5 +48,43 @@
       "type": "image/png",
       "purpose": "maskable"
     }
-  ]
+  ],
+  "shortcuts": [
+    {
+      "name": "Dashboard",
+      "short_name": "Início",
+      "description": "Visão geral dos empréstimos e indicadores",
+      "url": "/dashboard",
+      "icons": [{ "src": "/android-chrome-192x192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Clientes",
+      "short_name": "Clientes",
+      "description": "Consultar e gerenciar clientes",
+      "url": "/clients",
+      "icons": [{ "src": "/android-chrome-192x192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Empréstimos",
+      "short_name": "Empréstimos",
+      "description": "Ver e criar empréstimos",
+      "url": "/loans",
+      "icons": [{ "src": "/android-chrome-192x192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Cobranças",
+      "short_name": "Cobranças",
+      "description": "Parcelas em atraso e lembretes de cobrança",
+      "url": "/cobrancas",
+      "icons": [{ "src": "/android-chrome-192x192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Solicitações",
+      "short_name": "Solicitações",
+      "description": "Novas solicitações de empréstimo de clientes",
+      "url": "/admin/loan-requests",
+      "icons": [{ "src": "/android-chrome-192x192.png", "sizes": "192x192" }]
+    }
+  ],
+  "prefer_related_applications": false
 }
