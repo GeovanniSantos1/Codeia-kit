@@ -179,37 +179,33 @@ export async function POST(request: NextRequest) {
             });
         }
 
-        // Create Subscription with callback URL
-        const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:5000';
+        // Build callback only if a real external domain is configured
+        // Asaas requires the callback domain to be registered in "Minha Conta > Informações"
+        // In sandbox/localhost we skip the callback to avoid the "invalid_object" error
+        const appUrl = process.env.NEXT_PUBLIC_APP_URL || '';
+        const isRealDomain = appUrl && !appUrl.includes('localhost') && !appUrl.includes('127.0.0.1');
 
-        // IMPORTANT: Callback behavior with Asaas
-        // 1. If you have a webhook URL configured in Asaas dashboard (recommended):
-        //    - The webhook URL MUST match your NEXT_PUBLIC_APP_URL base
-        //    - Webhook: Receives payment EVENTS (PAYMENT_RECEIVED, etc.) at /api/webhooks/asaas
-        //    - Callback: Redirects USER after payment at /dashboard?payment=success
-        //    - Both URLs must be from the same domain
-        //
-        // 2. If you DON'T have a webhook URL configured:
-        //    - Payment events won't be automatically processed
-        //    - User will still be redirected after payment (callback works)
-        //    - You'll need to manually check payment status or rely on user actions
-
-        if (!process.env.NEXT_PUBLIC_APP_URL) {
-            console.warn('[Checkout] WARNING: NEXT_PUBLIC_APP_URL not configured - webhook and callback may not work correctly');
+        if (!isRealDomain) {
+            console.warn('[Checkout] No external domain configured — skipping callback URL. Set NEXT_PUBLIC_APP_URL to a registered Asaas domain to enable post-payment redirect.');
         }
 
-        const subscription = await asaasClient.createSubscription({
+        const subscriptionPayload: Parameters<typeof asaasClient.createSubscription>[0] = {
             customer: asaasCustomerId,
             value: price,
-            nextDueDate: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString().split('T')[0], // Tomorrow
+            nextDueDate: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString().split('T')[0],
             cycle: period === 'YEARLY' ? 'YEARLY' : 'MONTHLY',
             billingType,
-            externalReference: planId, // This will be the DB ID or the static plan ID
-            callback: {
+            externalReference: planId,
+        };
+
+        if (isRealDomain) {
+            subscriptionPayload.callback = {
                 successUrl: `${appUrl}/dashboard?payment=success&plan=${planId}`,
                 autoRedirect: true,
-            },
-        });
+            };
+        }
+
+        const subscription = await asaasClient.createSubscription(subscriptionPayload);
 
         // Get the first payment to redirect user
         // Asaas creates payments asynchronously, so we need to wait/retry
