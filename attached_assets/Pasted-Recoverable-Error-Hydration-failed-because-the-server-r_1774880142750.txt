@@ -1,0 +1,70 @@
+Recoverable Error
+
+
+Hydration failed because the server rendered text didn't match the client. As a result this tree will be regenerated on the client. This can happen if a SSR-ed Client Component used:
+- A server/client branch `if (typeof window !== 'undefined')`.
+- Variable input such as `Date.now()` or `Math.random()` which changes each time it's called.
+- Date formatting in a user's locale which doesn't match the server.
+- External changing data without sending a snapshot of it along with the HTML.
+- Invalid HTML tag nesting.
+
+It can also happen if the client has a browser extension installed which messes with the HTML before React loaded.
+
+See more info here: https://nextjs.org/docs/messages/react-hydration-error
+
+
+  ...
+    <SegmentViewNode type="page" pagePath="(public)/p...">
+      <SegmentTrieNode>
+      <LandingPage>
+        <div className="min-h-screen">
+          <Hero>
+          <Testimonials>
+          ...
+            <PlanPricingSection className="mt-24" tiers={[...]} title="Planos par..." subtitle="Escolha a ..." ...>
+              <section className="relative b...">
+                <div className="w-full mx-...">
+                  <PricingHeader>
+                  <div className="grid grid-...">
+                    <PricingCard tier={{...}} billingPeriod="monthly" renderAction={function renderAction}>
+                      <div className="relative h...">
+                        <div className="relative g...">
+                          <div className="p-8 flex-1">
+                            <div>
+                            <PriceDisplay priceLabel="R$ 0,00" billingSuffix="mês" hasPrice={true} description="">
+                              <div className="mb-6">
+                                <div className="flex items...">
+                                  <span className="text-4xl font-bold text-zinc-900 dark:text-zinc-100">
++                                   R$ 0,00
+-                                   R$0.00
+                                  ...
+                            ...
+                          ...
+                    ...
+          ...
+src/components/plans/price-display.tsx (12:9) @ PriceDisplay
+
+
+  10 |     <div className="mb-6">
+  11 |       <div className="flex items-baseline gap-2">
+> 12 |         <span className="text-4xl font-bold text-zinc-900 dark:text-zinc-100">
+     |         ^
+  13 |           {priceLabel}
+  14 |         </span>
+  15 |         {hasPrice && billingSuffix && (
+Call Stack
+20
+
+Show 12 ignore-listed frame(s)
+span
+<anonymous>
+PriceDisplay
+src/components/plans/price-display.tsx (12:9)
+PricingCard
+src/components/plans/pricing-card.tsx (65:11)
+<unknown>
+src/components/plans/plan-pricing-section.tsx (65:13)
+Array.map
+<anonymous>
+PlanPricingSection
+src/components/plans/plan-pricing-section.tsx (64:18)

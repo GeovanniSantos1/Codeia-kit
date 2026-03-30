@@ -33,11 +33,14 @@ export function formatCurrency(amountCents: number, currency?: string | null) {
   if (Number.isNaN(amountCents)) {
     return '-'
   }
-  const normalizedCurrency = (currency || 'USD').toUpperCase()
-  return (amountCents / 100).toLocaleString(undefined, {
+  const normalizedCurrency = (currency || 'BRL').toUpperCase()
+  const locale = normalizedCurrency === 'BRL' ? 'pt-BR' : 'en-US'
+  return new Intl.NumberFormat(locale, {
     style: 'currency',
-    currency: normalizedCurrency
-  })
+    currency: normalizedCurrency,
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }).format(amountCents / 100)
 }
 
 export function resolvePricing(
