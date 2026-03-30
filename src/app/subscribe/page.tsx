@@ -193,6 +193,7 @@ function CheckoutButton({ plan }: { plan: PublicPlan }) {
   const [error, setError] = React.useState<string | null>(null);
   const [cpfCnpj, setCpfCnpj] = React.useState("");
   const [paymentUrl, setPaymentUrl] = React.useState<string | null>(null);
+  const [verifying, setVerifying] = React.useState(false);
 
   const formatDoc = (value: string) => {
     const digits = value.replace(/\D/g, "").slice(0, 14);
@@ -239,21 +240,53 @@ function CheckoutButton({ plan }: { plan: PublicPlan }) {
     }
   };
 
+  const handleVerify = async () => {
+    setVerifying(true);
+    setError(null);
+    try {
+      const res = await fetch("/api/subscription/verify", { method: "POST" });
+      const data = await res.json();
+      if (data.verified) {
+        window.location.href = "/dashboard";
+      } else {
+        setError(data.message || "Pagamento ainda não confirmado. Aguarde e tente novamente.");
+      }
+    } catch {
+      setError("Erro ao verificar pagamento. Tente novamente.");
+    } finally {
+      setVerifying(false);
+    }
+  };
+
   if (paymentUrl) {
     return (
       <div className="space-y-3 text-center">
         <div className="rounded-lg border border-green-500/30 bg-green-500/10 p-4 text-sm text-green-400">
-          ✓ Assinatura criada! A página de pagamento foi aberta em uma nova aba.
+          ✓ Assinatura criada! Conclua o pagamento na aba do Asaas e depois clique em &quot;Já paguei&quot;.
         </div>
         <p className="text-xs text-muted-foreground">
-          Se a aba não abriu,{" "}
+          Link não abriu?{" "}
           <a href={paymentUrl} target="_blank" rel="noopener noreferrer" className="text-primary underline">
-            clique aqui para pagar
+            Clique aqui para pagar
           </a>
         </p>
-        <Button variant="outline" className="w-full" size="sm" onClick={() => window.open(paymentUrl, "_blank", "noopener,noreferrer")}>
+        <Button
+          className="w-full"
+          size="lg"
+          onClick={handleVerify}
+          disabled={verifying}
+        >
+          {verifying ? "Verificando…" : "✓ Já paguei — Acessar plataforma"}
+        </Button>
+        <Button
+          variant="outline"
+          className="w-full"
+          size="sm"
+          onClick={() => window.open(paymentUrl, "_blank", "noopener,noreferrer")}
+        >
           Abrir link de pagamento novamente
         </Button>
+        {error && <p className="text-sm text-destructive">{error}</p>}
       </div>
     );
   }
@@ -275,6 +308,14 @@ function CheckoutButton({ plan }: { plan: PublicPlan }) {
         {loading ? "Aguarde…" : plan.ctaLabel || `Assinar por ${plan.priceMonthlyCents ? `R$ ${(plan.priceMonthlyCents / 100).toFixed(2).replace(".", ",")}` : "—"}/mês`}
       </Button>
       {error && <p className="text-sm text-destructive text-center">{error}</p>}
+      <button
+        type="button"
+        onClick={handleVerify}
+        disabled={verifying}
+        className="w-full text-xs text-muted-foreground hover:text-primary transition-colors text-center py-1"
+      >
+        {verifying ? "Verificando…" : "Já realizei o pagamento → Verificar acesso"}
+      </button>
     </div>
   );
 }

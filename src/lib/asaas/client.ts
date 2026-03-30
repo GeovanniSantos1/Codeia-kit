@@ -96,6 +96,25 @@ export class AsaasClient {
     async listCustomerSubscriptions(customerId: string): Promise<{ data: AsaasSubscription[] }> {
         return this.request<{ data: AsaasSubscription[] }>(`/subscriptions?customer=${customerId}`);
     }
+
+    async listCustomerPayments(customerId: string, status?: string): Promise<{ data: AsaasPaymentRecord[] }> {
+        const qs = status ? `customer=${customerId}&status=${status}` : `customer=${customerId}`;
+        return this.request<{ data: AsaasPaymentRecord[] }>(`/payments?${qs}`);
+    }
+}
+
+export interface AsaasPaymentRecord {
+    id: string;
+    customer: string;
+    subscription?: string;
+    value: number;
+    netValue?: number;
+    billingType: string;
+    status: string;
+    dueDate: string;
+    paymentDate?: string;
+    externalReference?: string;
+    invoiceUrl?: string;
 }
 
 export const asaasClient = new AsaasClient();
