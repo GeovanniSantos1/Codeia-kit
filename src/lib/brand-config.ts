@@ -1,4 +1,4 @@
-import type { Metadata } from 'next'
+import type { Metadata, Viewport } from 'next'
 
 type LogoPaths = {
   light?: string
@@ -65,10 +65,6 @@ export const siteMetadata: Metadata = {
   keywords: [...site.keywords],
   authors: [{ name: site.author }],
   manifest: '/site.webmanifest',
-  themeColor: [
-    { media: '(prefers-color-scheme: dark)', color: '#06b6d4' },
-    { media: '(prefers-color-scheme: light)', color: '#06b6d4' },
-  ],
   appleWebApp: {
     capable: true,
     statusBarStyle: 'black-translucent',
@@ -96,4 +92,12 @@ export const siteMetadata: Metadata = {
     apple: [{ url: '/apple-touch-icon.png', sizes: '180x180' }],
     shortcut: ['/apple-touch-icon.png'],
   },
+}
+
+export const siteViewport: Viewport = {
+  themeColor: [
+    { media: '(prefers-color-scheme: dark)', color: '#06b6d4' },
+    { media: '(prefers-color-scheme: light)', color: '#06b6d4' },
+  ],
+  colorScheme: 'dark',
 }

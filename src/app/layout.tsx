@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
@@ -7,7 +7,7 @@ import { QueryProvider } from "@/components/providers/query-provider";
 import {
   ClerkProvider,
 } from "@clerk/nextjs";
-import { siteMetadata } from "@/lib/brand-config";
+import { siteMetadata, siteViewport } from "@/lib/brand-config";
 import { AnalyticsPixels } from "@/components/analytics/pixels";
 
 const geistSans = Geist({
@@ -21,6 +21,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = siteMetadata;
+export const viewport: Viewport = siteViewport;
 
 export default function RootLayout({
   children,
