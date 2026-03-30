@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { auth, currentUser } from '@clerk/nextjs/server'
 import { db } from '@/lib/db'
+import { isAdmin } from '@/lib/admin-utils'
 import { withApiLogging } from '@/lib/logging/api'
 
 async function handleSubscriptionStatus() {
@@ -10,6 +11,18 @@ async function handleSubscriptionStatus() {
 
     const clerkUser = await currentUser()
     const userEmail = clerkUser?.emailAddresses?.[0]?.emailAddress?.toLowerCase() ?? null
+
+    // 0. Admins always have full access
+    if (await isAdmin(userId)) {
+      return NextResponse.json({
+        isActive: true,
+        plan: 'Admin',
+        planId: 'admin',
+        planType: 'admin',
+        billingPeriodEnd: null,
+        cancellationScheduled: false,
+      })
+    }
 
     const user = await db.user.findUnique({
       where: { clerkId: userId },
