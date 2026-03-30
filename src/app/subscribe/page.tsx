@@ -191,21 +191,45 @@ function PlanCard({ plan }: { plan: PublicPlan }) {
 function CheckoutButton({ plan }: { plan: PublicPlan }) {
   const [loading, setLoading] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
+  const [cpfCnpj, setCpfCnpj] = React.useState("");
+
+  const formatDoc = (value: string) => {
+    const digits = value.replace(/\D/g, "").slice(0, 14);
+    if (digits.length <= 11) {
+      return digits
+        .replace(/(\d{3})(\d)/, "$1.$2")
+        .replace(/(\d{3})(\d)/, "$1.$2")
+        .replace(/(\d{3})(\d{1,2})$/, "$1-$2");
+    }
+    return digits
+      .replace(/(\d{2})(\d)/, "$1.$2")
+      .replace(/(\d{3})(\d)/, "$1.$2")
+      .replace(/(\d{3})(\d)/, "$1/$2")
+      .replace(/(\d{4})(\d{1,2})$/, "$1-$2");
+  };
 
   const handleCheckout = async () => {
+    const cleanDoc = cpfCnpj.replace(/\D/g, "");
+    if (!cleanDoc || (cleanDoc.length !== 11 && cleanDoc.length !== 14)) {
+      setError("Informe um CPF (11 dígitos) ou CNPJ (14 dígitos) válido.");
+      return;
+    }
     setLoading(true);
     setError(null);
     try {
-      const res = await fetch("/api/subscription/checkout", {
+      const res = await fetch("/api/checkout", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ planId: plan.id }),
+        body: JSON.stringify({ planId: plan.id, cpfCnpj: cleanDoc, billingType: "UNDEFINED" }),
       });
-      if (!res.ok) throw new Error("Falha ao iniciar checkout");
       const data = await res.json();
-      const url = data.url || data.checkoutUrl;
-      if (url) window.location.href = url;
-      else setError("URL de pagamento não disponível. Tente novamente.");
+      if (data.url) {
+        window.location.href = data.url;
+      } else if (data.success) {
+        window.location.href = "/dashboard";
+      } else {
+        setError(data.error || "Erro ao processar. Tente novamente.");
+      }
     } catch {
       setError("Erro ao processar. Tente novamente.");
     } finally {
@@ -214,7 +238,18 @@ function CheckoutButton({ plan }: { plan: PublicPlan }) {
   };
 
   return (
-    <div className="space-y-2">
+    <div className="space-y-3">
+      <div className="space-y-1">
+        <label className="text-xs font-medium text-muted-foreground">CPF ou CNPJ do titular</label>
+        <input
+          type="text"
+          inputMode="numeric"
+          placeholder="000.000.000-00"
+          value={cpfCnpj}
+          onChange={(e) => setCpfCnpj(formatDoc(e.target.value))}
+          className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
+        />
+      </div>
       <Button className="w-full" size="lg" onClick={handleCheckout} disabled={loading}>
         {loading ? "Aguarde…" : plan.ctaLabel || `Assinar por ${plan.priceMonthlyCents ? `R$ ${(plan.priceMonthlyCents / 100).toFixed(2).replace(".", ",")}` : "—"}/mês`}
       </Button>

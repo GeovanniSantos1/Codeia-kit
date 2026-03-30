@@ -1,6 +1,8 @@
 "use client"
 
 import { ArrowRight } from 'lucide-react'
+import { useAuth } from '@clerk/nextjs'
+import { useRouter } from 'next/navigation'
 import { PlanDisplay, PlanPricingSection, buildPlanTiers } from '@/components/plans'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
@@ -10,6 +12,8 @@ type PricingProps = {
 }
 
 export function Pricing({ plans }: PricingProps) {
+  const { isSignedIn } = useAuth()
+  const router = useRouter()
   const tiers = buildPlanTiers(plans)
 
   if (!tiers.length) {
@@ -57,6 +61,11 @@ export function Pricing({ plans }: PricingProps) {
           const planIdentifier = tier.plan.id // Use internal ID for mapping
 
           const handleSubscribe = async () => {
+            if (!isSignedIn) {
+              router.push(`/sign-in?redirect_url=${encodeURIComponent('/subscribe')}`)
+              return
+            }
+
             try {
               const response = await fetch('/api/checkout', {
                 method: 'POST',
@@ -68,11 +77,9 @@ export function Pricing({ plans }: PricingProps) {
               if (data.url) {
                 window.location.href = data.url;
               } else if (data.success) {
-                // Handle free plan or direct success
                 window.location.reload();
               } else {
                 console.error('Checkout failed:', data.error);
-                // You might want to show a toast here
               }
             } catch (error) {
               console.error('Checkout error:', error);
