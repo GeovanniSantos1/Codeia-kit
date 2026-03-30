@@ -185,8 +185,12 @@ export async function POST(request: NextRequest) {
         const appUrl = process.env.NEXT_PUBLIC_APP_URL || '';
         const isRealDomain = appUrl && !appUrl.includes('localhost') && !appUrl.includes('127.0.0.1');
 
-        if (!isRealDomain) {
-            console.warn('[Checkout] No external domain configured — skipping callback URL. Set NEXT_PUBLIC_APP_URL to a registered Asaas domain to enable post-payment redirect.');
+        // Only include callback in production Asaas (not sandbox).
+        // Sandbox requires domain registration in "Minha Conta > Informações" — skip to avoid 400.
+        const includeCallback = isRealDomain && !ASAAS_CONFIG.isSandbox;
+
+        if (!includeCallback) {
+            console.warn('[Checkout] Skipping callback URL — either no external domain configured or using Asaas sandbox. Callback is only sent in production with a registered domain.');
         }
 
         const subscriptionPayload: Parameters<typeof asaasClient.createSubscription>[0] = {
@@ -198,7 +202,7 @@ export async function POST(request: NextRequest) {
             externalReference: planId,
         };
 
-        if (isRealDomain) {
+        if (includeCallback) {
             subscriptionPayload.callback = {
                 successUrl: `${appUrl}/dashboard?payment=success&plan=${planId}`,
                 autoRedirect: true,
