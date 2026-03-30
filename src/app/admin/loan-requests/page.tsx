@@ -19,8 +19,34 @@ import {
 import {
   User, Briefcase, DollarSign, Shield, Phone, Mail, Calendar,
   MapPin, Building2, ClipboardList, CheckCircle2, XCircle, Clock, Eye,
+  MessageSquare,
 } from "lucide-react";
 import { toast } from "sonner";
+
+function buildWhatsAppUrl(phone: string, message: string) {
+  const clean = phone.replace(/\D/g, "");
+  const full = clean.startsWith("55") ? clean : `55${clean}`;
+  return `https://wa.me/${full}?text=${encodeURIComponent(message)}`;
+}
+
+function buildApprovedMessage(name: string, amount: string) {
+  return (
+    `Olá ${name}! 😊\n\n` +
+    `Temos uma ótima notícia: sua solicitação de empréstimo no valor de *${amount}* foi *APROVADA*! ✅\n\n` +
+    `Entre em contato para combinarmos os próximos passos e finalizar o processo.\n\n` +
+    `_GG Empréstimos_`
+  );
+}
+
+function buildRejectedMessage(name: string, amount: string, note?: string | null) {
+  const noteText = note ? `\n\nObservação: ${note}` : "";
+  return (
+    `Olá ${name},\n\n` +
+    `Informamos que sua solicitação de empréstimo no valor de *${amount}* não foi aprovada desta vez. ❌${noteText}\n\n` +
+    `Caso tenha dúvidas ou queira tentar novamente no futuro, fique à vontade para entrar em contato.\n\n` +
+    `_GG Empréstimos_`
+  );
+}
 
 interface Application {
   id: string;
@@ -111,12 +137,30 @@ function ApplicationDetail({ app, onClose }: { app: Application; onClose: () => 
   const updateMutation = useUpdateStatus();
   const [status, setStatus] = useState(app.status);
   const [note, setNote] = useState(app.adminNote || "");
+  const alreadyDecided = app.status === "approved" || app.status === "rejected";
+  const [savedStatus, setSavedStatus] = useState<string | null>(alreadyDecided ? app.status : null);
+  const [savedNote, setSavedNote] = useState<string>(alreadyDecided ? (app.adminNote || "") : "");
 
   const handleSave = () => {
     updateMutation.mutate({ id: app.id, status, adminNote: note }, {
-      onSuccess: onClose,
+      onSuccess: () => {
+        setSavedStatus(status);
+        setSavedNote(note);
+        toast.success("Decisão salva! Agora você pode notificar o cliente pelo WhatsApp.");
+      },
     });
   };
+
+  const handleWhatsApp = () => {
+    const message =
+      savedStatus === "approved"
+        ? buildApprovedMessage(app.fullName, app.loanAmount)
+        : buildRejectedMessage(app.fullName, app.loanAmount, savedNote || null);
+    const url = buildWhatsAppUrl(app.phone, message);
+    window.open(url, "_blank");
+  };
+
+  const canNotify = savedStatus === "approved" || savedStatus === "rejected";
 
   const formatCPF = (c: string) => c.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, "$1.$2.$3-$4");
   const formatCNPJ = (c: string) => c.replace(/(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/, "$1.$2.$3/$4-$5");
@@ -214,6 +258,34 @@ function ApplicationDetail({ app, onClose }: { app: Application; onClose: () => 
           </div>
           <Button className="w-full" onClick={handleSave} disabled={updateMutation.isPending}>
             {updateMutation.isPending ? "Salvando…" : "Salvar Decisão"}
+          </Button>
+
+          {canNotify && (
+            <div className={`rounded-lg border p-3 ${savedStatus === "approved" ? "border-green-500/40 bg-green-500/5" : "border-red-500/40 bg-red-500/5"}`}>
+              <p className="text-xs font-medium mb-2 flex items-center gap-1.5">
+                <MessageSquare className={`h-3.5 w-3.5 ${savedStatus === "approved" ? "text-green-600" : "text-red-600"}`} />
+                <span className={savedStatus === "approved" ? "text-green-700 dark:text-green-400" : "text-red-700 dark:text-red-400"}>
+                  {savedStatus === "approved"
+                    ? "✅ Aprovação salva — notifique o cliente!"
+                    : "❌ Reprovação salva — notifique o cliente"}
+                </span>
+              </p>
+              <p className="text-xs text-muted-foreground mb-3">
+                A mensagem já está formatada. Clique para abrir o WhatsApp com o número <strong>{app.phone}</strong>.
+              </p>
+              <Button
+                variant={savedStatus === "approved" ? "default" : "destructive"}
+                className="w-full gap-2"
+                onClick={handleWhatsApp}
+              >
+                <MessageSquare className="h-4 w-4" />
+                {savedStatus === "approved" ? "Enviar aprovação no WhatsApp" : "Enviar reprovação no WhatsApp"}
+              </Button>
+            </div>
+          )}
+
+          <Button variant="outline" className="w-full" onClick={onClose}>
+            Fechar
           </Button>
         </div>
       </Card>

@@ -7,14 +7,14 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { SimpleTopbar } from "@/components/app/simple-topbar";
-import { usePublicPlans } from "@/hooks/use-public-plans";
+import { usePublicPlans, type PublicPlan } from "@/hooks/use-public-plans";
 import { Skeleton } from "@/components/ui/skeleton";
 import { CheckCircle2, CreditCard, Lock, Shield, Sparkles, Zap } from "lucide-react";
 import Link from "next/link";
 
 interface PlanFeature {
   name: string;
-  included: boolean;
+  included?: boolean | null;
 }
 
 interface Plan {
@@ -103,7 +103,7 @@ function PlanCards() {
 
   // Show only paid plans (>= R$ 5,00) on the subscribe page.
   // Free plan access is managed by admin whitelist only.
-  const plans: Plan[] = (data?.plans ?? []).filter((p: Plan) => {
+  const plans: PublicPlan[] = (data?.plans ?? []).filter((p: PublicPlan) => {
     const cents = p.priceMonthlyCents;
     return cents !== null && cents !== undefined && cents >= 500;
   });
@@ -120,14 +120,14 @@ function PlanCards() {
 
   return (
     <div className="flex flex-col gap-4">
-      {plans.map((plan: Plan) => (
+      {plans.map((plan: PublicPlan) => (
         <PlanCard key={plan.id} plan={plan} />
       ))}
     </div>
   );
 }
 
-function PlanCard({ plan }: { plan: Plan }) {
+function PlanCard({ plan }: { plan: PublicPlan }) {
   const price = plan.priceMonthlyCents
     ? `R$ ${(plan.priceMonthlyCents / 100).toFixed(2).replace(".", ",")}`
     : "Gratuito";
@@ -188,7 +188,7 @@ function PlanCard({ plan }: { plan: Plan }) {
   );
 }
 
-function CheckoutButton({ plan }: { plan: Plan }) {
+function CheckoutButton({ plan }: { plan: PublicPlan }) {
   const [loading, setLoading] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
 
