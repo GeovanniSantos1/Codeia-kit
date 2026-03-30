@@ -124,6 +124,12 @@ export function Hero() {
                       </Link>
                     </Button>
                   </div>
+                  <Button asChild size="lg" variant="outline" className="h-10.5 rounded-xl px-5 border-cyan-500/60 text-cyan-600 dark:text-cyan-400 hover:bg-cyan-500/10">
+                    <Link href="/solicitar-emprestimo">
+                      <DollarSign className="h-4 w-4 mr-1.5" />
+                      <span className="text-nowrap">Solicitar Empréstimo</span>
+                    </Link>
+                  </Button>
                   <Button asChild size="lg" variant="ghost" className="h-10.5 rounded-xl px-5">
                     <Link href="#pricing">
                       <span className="text-nowrap">Ver preços</span>

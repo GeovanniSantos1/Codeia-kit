@@ -328,6 +328,39 @@ model NotificationLog {
   @@index([userId, sentAt])
 }
 
+model LoanApplicationRequest {
+  id        String   @id @default(cuid())
+  // Personal info
+  fullName  String
+  email     String
+  phone     String
+  cpf       String
+  birthDate String
+  address   String?
+  // Employment
+  isClt     Boolean  @default(false)
+  companyName  String?
+  companyCnpj  String?
+  jobPosition  String?
+  monthlyIncome String
+  occupation   String?
+  // Loan
+  loanAmount    String
+  loanPurpose   String   @db.Text
+  loanTermMonths Int?
+  // Guarantee
+  guaranteeDescription String @db.Text
+  // Status
+  status    String   @default("pending")
+  adminNote String?  @db.Text
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([status])
+  @@index([createdAt])
+  @@index([email])
+}
+
 model FreeWhitelistedEmail {
   id        String   @id @default(cuid())
   email     String   @unique
