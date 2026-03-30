@@ -192,6 +192,7 @@ function CheckoutButton({ plan }: { plan: PublicPlan }) {
   const [loading, setLoading] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
   const [cpfCnpj, setCpfCnpj] = React.useState("");
+  const [paymentUrl, setPaymentUrl] = React.useState<string | null>(null);
 
   const formatDoc = (value: string) => {
     const digits = value.replace(/\D/g, "").slice(0, 14);
@@ -224,7 +225,8 @@ function CheckoutButton({ plan }: { plan: PublicPlan }) {
       });
       const data = await res.json();
       if (data.url) {
-        window.location.href = data.url;
+        setPaymentUrl(data.url);
+        window.open(data.url, "_blank", "noopener,noreferrer");
       } else if (data.success) {
         window.location.href = "/dashboard";
       } else {
@@ -236,6 +238,25 @@ function CheckoutButton({ plan }: { plan: PublicPlan }) {
       setLoading(false);
     }
   };
+
+  if (paymentUrl) {
+    return (
+      <div className="space-y-3 text-center">
+        <div className="rounded-lg border border-green-500/30 bg-green-500/10 p-4 text-sm text-green-400">
+          ✓ Assinatura criada! A página de pagamento foi aberta em uma nova aba.
+        </div>
+        <p className="text-xs text-muted-foreground">
+          Se a aba não abriu,{" "}
+          <a href={paymentUrl} target="_blank" rel="noopener noreferrer" className="text-primary underline">
+            clique aqui para pagar
+          </a>
+        </p>
+        <Button variant="outline" className="w-full" size="sm" onClick={() => window.open(paymentUrl, "_blank", "noopener,noreferrer")}>
+          Abrir link de pagamento novamente
+        </Button>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-3">
