@@ -21,7 +21,6 @@ export async function POST(
       where: { id, userId: user.id },
       include: {
         loans: {
-          where: { status: "ACTIVE" },
           include: {
             installments: {
               select: { status: true, amount: true },
@@ -40,14 +39,15 @@ export async function POST(
     let totalOverdueInstallments = 0;
 
     for (const loan of client.loans) {
+      const isActive = loan.status === "ACTIVE";
       for (const inst of loan.installments) {
         if (inst.status === "PAID") {
           totalPaidInstallments++;
         } else if (inst.status === "OVERDUE") {
           totalOverdueInstallments++;
-          totalActiveDebt += Number(inst.amount);
-        } else if (inst.status === "PENDING") {
-          totalActiveDebt += Number(inst.amount);
+          if (isActive) totalActiveDebt += Number(inst.amount);
+        } else if (inst.status === "PENDING" || inst.status === "PARTIALLY_PAID") {
+          if (isActive) totalActiveDebt += Number(inst.amount);
         }
       }
     }
@@ -63,20 +63,23 @@ export async function POST(
       totalOverdueInstallments,
     });
 
-    const updated = await db.client.update({
-      where: { id },
+    const updated = await db.client.updateMany({
+      where: { id, userId: user.id },
       data: {
         riskScore: result.score,
         riskLevel: result.level,
       },
     });
 
+    if (updated.count === 0) {
+      return NextResponse.json({ error: "Cliente não encontrado" }, { status: 404 });
+    }
+
     return NextResponse.json({
       success: true,
       score: result.score,
       level: result.level,
       breakdown: result.breakdown,
-      client: updated,
     });
   } catch (error) {
     console.error("Failed to calculate risk score:", error);

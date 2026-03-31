@@ -139,7 +139,15 @@ export function LoanForm({ clients, onSubmit, isLoading }: LoanFormProps) {
             <div className="flex items-center gap-2 mt-1">
               <span className="text-xs text-muted-foreground">Risco:</span>
               <span
-                className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold border ${getRiskLevelColor(selectedClient.riskLevel)}`}
+                className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold border cursor-help ${getRiskLevelColor(selectedClient.riskLevel)}`}
+                title={[
+                  `Score de risco: ${selectedClient.riskScore ?? "N/A"}/100`,
+                  `Nível: ${RISK_LEVEL_LABELS[selectedClient.riskLevel]}`,
+                  selectedClient.riskLevel === "LOW" ? "Risco baixo — cliente com bom histórico de crédito." :
+                  selectedClient.riskLevel === "MEDIUM" ? "Risco médio — avalie com cautela antes de aprovar." :
+                  selectedClient.riskLevel === "HIGH" ? "Risco alto — este cliente apresenta fatores de risco relevantes." :
+                  "Risco muito alto — avaliar cuidadosamente antes de conceder crédito.",
+                ].join("\n")}
               >
                 {selectedClient.riskScore != null ? `${selectedClient.riskScore}/100 — ` : ""}
                 {RISK_LEVEL_LABELS[selectedClient.riskLevel]}
