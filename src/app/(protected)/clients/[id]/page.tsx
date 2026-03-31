@@ -161,7 +161,7 @@ function RiskAnalysisSection({
   const [currentLevel, setCurrentLevel] = React.useState<RiskLevel | null>(client.riskLevel);
   const [breakdown, setBreakdown] = React.useState<Record<string, number> | null>(null);
 
-  async function handleSave() {
+  async function handleSave(): Promise<boolean> {
     setIsSaving(true);
     try {
       await api.put(`/api/clients/${client.id}`, {
@@ -174,9 +174,11 @@ function RiskAnalysisSection({
       });
       toast({ title: "Dados de risco salvos!" });
       onUpdated();
+      return true;
     } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : "Erro ao salvar";
+      const message = err instanceof Error ? err.message : "Erro ao salvar dados";
       toast({ title: message, variant: "destructive" });
+      return false;
     } finally {
       setIsSaving(false);
     }
@@ -185,7 +187,10 @@ function RiskAnalysisSection({
   async function handleCalculate() {
     setIsCalculating(true);
     try {
-      await handleSave();
+      const saved = await handleSave();
+      if (!saved) {
+        return;
+      }
       const res = await api.post<{
         score: number;
         level: RiskLevel;
