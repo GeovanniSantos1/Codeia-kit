@@ -47,6 +47,7 @@ type LoanFormProps = {
     interestRate: number;
     installmentsCount: number;
     interval: string;
+    customIntervalDays?: number;
     penaltyPerDay: number;
   }) => void;
   isLoading?: boolean;
@@ -61,28 +62,37 @@ export function LoanForm({ clients, onSubmit, isLoading }: LoanFormProps) {
   const [interestRate, setInterestRate] = React.useState("");
   const [installmentsCount, setInstallmentsCount] = React.useState("");
   const [interval, setInterval] = React.useState<IntervalType>("MONTHLY");
+  const [customIntervalDays, setCustomIntervalDays] = React.useState("10");
   const [penaltyPerDay, setPenaltyPerDay] = React.useState("0");
 
   const principalNum = parseFloat(principal) || 0;
   const interestRateNum = parseFloat(interestRate) || 0;
   const installmentsCountNum = parseInt(installmentsCount) || 0;
+  const customDaysNum = parseInt(customIntervalDays) || 10;
+  const isCustom = interval === "CUSTOM";
 
   const preview = React.useMemo(() => {
     if (principalNum <= 0 || installmentsCountNum <= 0 || !loanDate) return [];
+    if (isCustom && customDaysNum <= 0) return [];
     return generateInstallments({
       loanDate: new Date(loanDate + "T12:00:00"),
       principal: principalNum,
       interestRate: interestRateNum,
       installmentsCount: installmentsCountNum,
       interval,
+      customIntervalDays: isCustom ? customDaysNum : undefined,
     });
-  }, [principalNum, interestRateNum, installmentsCountNum, interval, loanDate]);
+  }, [principalNum, interestRateNum, installmentsCountNum, interval, loanDate, customDaysNum, isCustom]);
 
   const totalDebt =
     principalNum > 0 ? calculateTotalDebt(principalNum, interestRateNum) : 0;
 
   const canSubmit =
-    clientId && principalNum > 0 && installmentsCountNum > 0 && loanDate;
+    clientId &&
+    principalNum > 0 &&
+    installmentsCountNum > 0 &&
+    loanDate &&
+    (!isCustom || customDaysNum > 0);
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -94,6 +104,7 @@ export function LoanForm({ clients, onSubmit, isLoading }: LoanFormProps) {
       interestRate: interestRateNum,
       installmentsCount: installmentsCountNum,
       interval,
+      customIntervalDays: isCustom ? customDaysNum : undefined,
       penaltyPerDay: parseFloat(penaltyPerDay) || 0,
     });
   }
@@ -125,6 +136,9 @@ export function LoanForm({ clients, onSubmit, isLoading }: LoanFormProps) {
             value={loanDate}
             onChange={(e) => setLoanDate(e.target.value)}
           />
+          <p className="text-xs text-muted-foreground">
+            Datas retroativas são permitidas
+          </p>
         </div>
 
         <div className="space-y-2">
@@ -167,7 +181,7 @@ export function LoanForm({ clients, onSubmit, isLoading }: LoanFormProps) {
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="interval">Intervalo</Label>
+          <Label htmlFor="interval">Intervalo entre parcelas</Label>
           <Select
             value={interval}
             onValueChange={(v) => setInterval(v as IntervalType)}
@@ -176,13 +190,32 @@ export function LoanForm({ clients, onSubmit, isLoading }: LoanFormProps) {
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="DAILY">Diário</SelectItem>
-              <SelectItem value="WEEKLY">Semanal</SelectItem>
-              <SelectItem value="BIWEEKLY">Quinzenal</SelectItem>
-              <SelectItem value="MONTHLY">Mensal</SelectItem>
+              <SelectItem value="DAILY">Diário (1 dia)</SelectItem>
+              <SelectItem value="WEEKLY">Semanal (7 dias)</SelectItem>
+              <SelectItem value="BIWEEKLY">Quinzenal (15 dias)</SelectItem>
+              <SelectItem value="MONTHLY">Mensal (30 dias)</SelectItem>
+              <SelectItem value="CUSTOM">Personalizado (N dias)</SelectItem>
             </SelectContent>
           </Select>
         </div>
+
+        {isCustom && (
+          <div className="space-y-2">
+            <Label htmlFor="customIntervalDays">Dias entre parcelas</Label>
+            <Input
+              id="customIntervalDays"
+              type="number"
+              min="1"
+              max="365"
+              placeholder="10"
+              value={customIntervalDays}
+              onChange={(e) => setCustomIntervalDays(e.target.value)}
+            />
+            <p className="text-xs text-muted-foreground">
+              Ex: 10, 20, 45 dias entre cada parcela
+            </p>
+          </div>
+        )}
 
         <div className="space-y-2">
           <Label htmlFor="penaltyPerDay">Multa por dia de atraso (%)</Label>

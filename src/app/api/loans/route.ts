@@ -11,9 +11,13 @@ const createLoanSchema = z.object({
   principal: z.number().positive(),
   interestRate: z.number().min(0),
   installmentsCount: z.number().int().min(1).max(30),
-  interval: z.enum(["DAILY", "WEEKLY", "BIWEEKLY", "MONTHLY"]),
+  interval: z.enum(["DAILY", "WEEKLY", "BIWEEKLY", "MONTHLY", "CUSTOM"]),
+  customIntervalDays: z.number().int().min(1).max(365).optional(),
   penaltyPerDay: z.number().min(0).default(0),
-});
+}).refine(
+  (data) => data.interval !== "CUSTOM" || (data.customIntervalDays != null && data.customIntervalDays > 0),
+  { message: "customIntervalDays é obrigatório para intervalo personalizado", path: ["customIntervalDays"] }
+);
 
 export async function GET(req: NextRequest) {
   try {
@@ -97,6 +101,7 @@ export async function POST(req: NextRequest) {
       interestRate: data.interestRate,
       installmentsCount: data.installmentsCount,
       interval: data.interval,
+      customIntervalDays: data.customIntervalDays,
     });
 
     const loan = await db.loan.create({
@@ -108,6 +113,7 @@ export async function POST(req: NextRequest) {
         interestRate: data.interestRate,
         installmentsCount: data.installmentsCount,
         interval: data.interval,
+        customIntervalDays: data.customIntervalDays ?? null,
         penaltyPerDay: data.penaltyPerDay,
         installments: {
           create: installments.map((inst) => ({

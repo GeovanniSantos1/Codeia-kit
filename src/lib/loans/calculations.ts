@@ -1,6 +1,6 @@
 import { Decimal } from "@prisma/client/runtime/library";
 
-export type IntervalType = "DAILY" | "WEEKLY" | "BIWEEKLY" | "MONTHLY";
+export type IntervalType = "DAILY" | "WEEKLY" | "BIWEEKLY" | "MONTHLY" | "CUSTOM";
 
 export function calculateInterest(principal: number, interestRate: number): number {
   return principal * (interestRate / 100);
@@ -17,7 +17,8 @@ export function calculateInstallmentAmount(totalDebt: number, installmentsCount:
 export function calculateDueDates(
   loanDate: Date,
   installmentsCount: number,
-  interval: IntervalType
+  interval: IntervalType,
+  customIntervalDays?: number
 ): Date[] {
   const dates: Date[] = [];
   for (let i = 1; i <= installmentsCount; i++) {
@@ -34,6 +35,9 @@ export function calculateDueDates(
         break;
       case "MONTHLY":
         date.setMonth(date.getMonth() + i);
+        break;
+      case "CUSTOM":
+        date.setDate(date.getDate() + i * (customIntervalDays ?? 30));
         break;
     }
     dates.push(date);
@@ -66,13 +70,15 @@ export function generateInstallments(params: {
   interestRate: number;
   installmentsCount: number;
   interval: IntervalType;
+  customIntervalDays?: number;
 }) {
   const totalDebt = calculateTotalDebt(params.principal, params.interestRate);
   const amount = calculateInstallmentAmount(totalDebt, params.installmentsCount);
   const dueDates = calculateDueDates(
     params.loanDate,
     params.installmentsCount,
-    params.interval
+    params.interval,
+    params.customIntervalDays
   );
 
   return dueDates.map((dueDate, index) => ({
