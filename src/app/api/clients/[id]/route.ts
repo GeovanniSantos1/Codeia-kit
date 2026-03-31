@@ -18,6 +18,12 @@ const UpdateClientSchema = z.object({
   reserve: z.number().optional().nullable(),
   line: z.number().int().optional().nullable(),
   notes: z.string().optional().nullable(),
+  creditBureau: z.enum(["CLEAN", "RESTRICTED", "NEGATIVE"]).optional().nullable(),
+  employmentType: z.enum(["CLT", "PUBLIC", "SELF_EMPLOYED", "RETIRED", "UNEMPLOYED"]).optional().nullable(),
+  monthlyIncome: z.number().min(0).optional().nullable(),
+  dependents: z.number().int().min(0).max(20).optional().nullable(),
+  bankType: z.enum(["LARGE_BANK", "DIGITAL_BANK", "NO_BANK"]).optional().nullable(),
+  creditNotes: z.string().optional().nullable(),
 });
 
 async function handleClientGet(
@@ -100,6 +106,12 @@ async function handleClientUpdate(
         reserve: data.reserve !== undefined ? data.reserve : existing.reserve,
         line: data.line !== undefined ? data.line : existing.line,
         notes: data.notes !== undefined ? data.notes : existing.notes,
+        creditBureau: data.creditBureau !== undefined ? data.creditBureau : existing.creditBureau,
+        employmentType: data.employmentType !== undefined ? data.employmentType : existing.employmentType,
+        monthlyIncome: data.monthlyIncome !== undefined ? data.monthlyIncome : existing.monthlyIncome,
+        dependents: data.dependents !== undefined ? data.dependents : existing.dependents,
+        bankType: data.bankType !== undefined ? data.bankType : existing.bankType,
+        creditNotes: data.creditNotes !== undefined ? data.creditNotes : existing.creditNotes,
       },
     });
 

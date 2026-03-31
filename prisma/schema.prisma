@@ -219,6 +219,33 @@ enum NotificationLogType {
   REACTIVE_8D_PLUS
 }
 
+enum CreditBureau {
+  CLEAN
+  RESTRICTED
+  NEGATIVE
+}
+
+enum EmploymentType {
+  CLT
+  PUBLIC
+  SELF_EMPLOYED
+  RETIRED
+  UNEMPLOYED
+}
+
+enum BankType {
+  LARGE_BANK
+  DIGITAL_BANK
+  NO_BANK
+}
+
+enum RiskLevel {
+  LOW
+  MEDIUM
+  HIGH
+  VERY_HIGH
+}
+
 model Client {
   id         String   @id @default(cuid())
   userId     String
@@ -234,6 +261,14 @@ model Client {
   reserve    Decimal? @db.Decimal(12, 2)
   line       Int?
   notes      String?  @db.Text
+  creditBureau    CreditBureau?
+  employmentType  EmploymentType?
+  monthlyIncome   Decimal?        @db.Decimal(12, 2)
+  dependents      Int?
+  bankType        BankType?
+  creditNotes     String?         @db.Text
+  riskScore       Int?
+  riskLevel       RiskLevel?
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
 
@@ -243,6 +278,7 @@ model Client {
   @@index([userId])
   @@index([name])
   @@index([cpf])
+  @@index([riskLevel])
 }
 
 model Loan {

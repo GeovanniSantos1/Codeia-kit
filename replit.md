@@ -37,11 +37,17 @@ A full-stack SaaS loan management app built with Next.js 16, Prisma, Clerk authe
 - `prisma/` — Schema and migrations
 
 ## Database Models (LoanManager-specific)
-- **Client** — Customer with personal, banking, and PIX data
-- **Loan** — Loan record with principal, interest rate, interval, penalty
+- **Client** — Customer with personal, banking, PIX data + credit risk fields (creditBureau, employmentType, monthlyIncome, dependents, bankType, creditNotes, riskScore, riskLevel)
+- **Loan** — Loan record with principal, interest rate, interval (supports CUSTOM N-day intervals), penalty
 - **Installment** — Individual installment with due date, status, penalty tracking
 - **Transaction** — Cash flow entry (ENTRADA/SAIDA)
-- Enums: `LoanInterval`, `LoanStatus`, `InstallmentStatus`, `TransactionType`
+- Enums: `LoanInterval` (DAILY/WEEKLY/BIWEEKLY/MONTHLY/CUSTOM), `LoanStatus`, `InstallmentStatus`, `TransactionType`, `CreditBureau` (CLEAN/RESTRICTED/NEGATIVE), `EmploymentType` (CLT/PUBLIC/SELF_EMPLOYED/RETIRED/UNEMPLOYED), `BankType` (LARGE_BANK/DIGITAL_BANK/NO_BANK), `RiskLevel` (LOW/MEDIUM/HIGH/VERY_HIGH)
+
+## Credit Risk Scoring Module
+- **Library**: `src/lib/loans/risk-score.ts` — `calculateRiskScore()` scores 0–100 across 6 factors: credit bureau (30pt), employment (25pt), income vs debt (20pt), payment history on platform (15pt), bank type (5pt), dependents (5pt)
+- **API**: `POST /api/clients/[id]/risk` — fetches installment stats, calculates score, saves riskScore + riskLevel
+- **UI**: Client detail page has "Análise de Risco" tab with form + "Calcular Score" button + breakdown chart
+- **Loan form**: Shows risk badge + warning when selecting a high-risk client
 
 ## Business Logic
 - Located in `src/lib/loans/calculations.ts`

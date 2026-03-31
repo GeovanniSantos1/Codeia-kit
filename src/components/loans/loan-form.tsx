@@ -32,10 +32,17 @@ import {
   calculateTotalDebt,
   type IntervalType,
 } from "@/lib/loans/calculations";
+import {
+  type RiskLevel,
+  RISK_LEVEL_LABELS,
+  getRiskLevelColor,
+} from "@/lib/loans/risk-score";
 
 type Client = {
   id: string;
   name: string;
+  riskScore?: number | null;
+  riskLevel?: RiskLevel | null;
 };
 
 type LoanFormProps = {
@@ -64,6 +71,8 @@ export function LoanForm({ clients, onSubmit, isLoading }: LoanFormProps) {
   const [interval, setInterval] = React.useState<IntervalType>("MONTHLY");
   const [customIntervalDays, setCustomIntervalDays] = React.useState("10");
   const [penaltyPerDay, setPenaltyPerDay] = React.useState("0");
+
+  const selectedClient = clients.find((c) => c.id === clientId) ?? null;
 
   const principalNum = parseFloat(principal) || 0;
   const interestRateNum = parseFloat(interestRate) || 0;
@@ -126,6 +135,20 @@ export function LoanForm({ clients, onSubmit, isLoading }: LoanFormProps) {
               ))}
             </SelectContent>
           </Select>
+          {selectedClient?.riskLevel && (
+            <div className="flex items-center gap-2 mt-1">
+              <span className="text-xs text-muted-foreground">Risco:</span>
+              <span
+                className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold border ${getRiskLevelColor(selectedClient.riskLevel)}`}
+              >
+                {selectedClient.riskScore != null ? `${selectedClient.riskScore}/100 — ` : ""}
+                {RISK_LEVEL_LABELS[selectedClient.riskLevel]}
+              </span>
+              {(selectedClient.riskLevel === "HIGH" || selectedClient.riskLevel === "VERY_HIGH") && (
+                <span className="text-xs text-destructive font-medium">⚠ Atenção</span>
+              )}
+            </div>
+          )}
         </div>
 
         <div className="space-y-2">
