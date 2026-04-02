@@ -65,7 +65,29 @@ async function handleSubscriptionStatus() {
       }
     }
 
-    // 3. No active plan and not whitelisted
+    // 3. Check if user has an active access invite
+    if (userEmail) {
+      const now = new Date()
+      const invite = await db.accessInvite.findFirst({
+        where: {
+          email: userEmail,
+          status: 'ACTIVE',
+          OR: [{ expiresAt: null }, { expiresAt: { gt: now } }],
+        },
+      })
+      if (invite) {
+        return NextResponse.json({
+          isActive: true,
+          plan: invite.planLabel || 'Convite',
+          planId: `invite-${invite.id}`,
+          planType: 'invite',
+          billingPeriodEnd: invite.expiresAt?.toISOString() || null,
+          cancellationScheduled: false,
+        })
+      }
+    }
+
+    // 4. No active plan and not whitelisted
     return NextResponse.json({
       isActive: false,
       plan: 'none',

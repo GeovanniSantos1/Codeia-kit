@@ -408,3 +408,29 @@ model FreeWhitelistedEmail {
 
   @@index([email])
 }
+
+enum InviteStatus {
+  ACTIVE
+  REVOKED
+  EXPIRED
+}
+
+model AccessInvite {
+  id          String       @id @default(cuid())
+  email       String
+  planLabel   String?
+  notes       String?      @db.Text
+  status      InviteStatus @default(ACTIVE)
+  expiresAt   DateTime?
+  grantedBy   String
+  revokedBy   String?
+  revokedAt   DateTime?
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  @@unique([email, status])
+  @@index([email])
+  @@index([status])
+  @@index([expiresAt])
+  @@index([grantedBy])
+}

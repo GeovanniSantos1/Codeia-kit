@@ -14,6 +14,7 @@ import {
   DollarSign,
   UserCheck,
   ClipboardList,
+  TicketCheck,
 } from "lucide-react";
 import {
   Sidebar,
@@ -43,6 +44,7 @@ const overview: Item[] = [
 const management: Item[] = [
   { title: "Usuários", href: "/admin/users", icon: Users },
   { title: "Solicitações de Empréstimo", href: "/admin/loan-requests", icon: ClipboardList },
+  { title: "Convites de Acesso", href: "/admin/convites", icon: TicketCheck },
   { title: "Acesso Gratuito", href: "/admin/free-access", icon: UserCheck },
   { title: "Créditos", href: "/admin/credits", icon: CreditCard },
   { title: "Armazenamento", href: "/admin/storage", icon: CreditCard },
