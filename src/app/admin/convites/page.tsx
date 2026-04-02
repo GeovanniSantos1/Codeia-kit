@@ -23,7 +23,7 @@ import {
 import { Skeleton } from "@/components/ui/skeleton";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
-  TicketCheck, Plus, Ban, Trash2, CalendarClock, ShieldCheck, Clock, Mail,
+  TicketCheck, Plus, Ban, Trash2, CalendarClock, ShieldCheck, Clock, Mail, SendHorizonal,
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -133,6 +133,25 @@ function useDeleteInvite() {
   });
 }
 
+function useResendInvite() {
+  return useMutation({
+    mutationFn: async (id: string) => {
+      const res = await fetch(`/api/admin/invites/${id}`, { method: "POST" });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Falha ao reenviar e-mail");
+      return data as { emailStatus: string; message: string };
+    },
+    onSuccess: (result) => {
+      if (result.emailStatus === "sent") {
+        toast.success("E-mail reenviado com sucesso!");
+      } else if (result.emailStatus === "already_registered") {
+        toast.info(result.message);
+      }
+    },
+    onError: (err: Error) => toast.error(err.message),
+  });
+}
+
 function fmt(date: string | null) {
   if (!date) return "—";
   return new Date(date).toLocaleDateString("pt-BR", {
@@ -153,6 +172,7 @@ export default function ConvitesPage() {
   const createMutation = useCreateInvite();
   const revokeMutation = useRevokeInvite();
   const deleteMutation = useDeleteInvite();
+  const resendMutation = useResendInvite();
 
   const [email, setEmail] = useState("");
   const [planLabel, setPlanLabel] = useState("");
@@ -414,20 +434,36 @@ export default function ConvitesPage() {
                           <TableCell>
                             <div className="flex items-center justify-end gap-1">
                               {inv.computedStatus === "ACTIVE" && (
-                                <Tooltip>
-                                  <TooltipTrigger asChild>
-                                    <Button
-                                      variant="ghost"
-                                      size="icon"
-                                      className="h-8 w-8 text-yellow-600 hover:text-yellow-700"
-                                      onClick={() => setRevokeTarget(inv)}
-                                      disabled={revokeMutation.isPending}
-                                    >
-                                      <Ban className="h-4 w-4" />
-                                    </Button>
-                                  </TooltipTrigger>
-                                  <TooltipContent>Revogar acesso</TooltipContent>
-                                </Tooltip>
+                                <>
+                                  <Tooltip>
+                                    <TooltipTrigger asChild>
+                                      <Button
+                                        variant="ghost"
+                                        size="icon"
+                                        className="h-8 w-8 text-blue-500 hover:text-blue-600"
+                                        onClick={() => resendMutation.mutate(inv.id)}
+                                        disabled={resendMutation.isPending}
+                                      >
+                                        <SendHorizonal className="h-4 w-4" />
+                                      </Button>
+                                    </TooltipTrigger>
+                                    <TooltipContent>Reenviar e-mail de convite</TooltipContent>
+                                  </Tooltip>
+                                  <Tooltip>
+                                    <TooltipTrigger asChild>
+                                      <Button
+                                        variant="ghost"
+                                        size="icon"
+                                        className="h-8 w-8 text-yellow-600 hover:text-yellow-700"
+                                        onClick={() => setRevokeTarget(inv)}
+                                        disabled={revokeMutation.isPending}
+                                      >
+                                        <Ban className="h-4 w-4" />
+                                      </Button>
+                                    </TooltipTrigger>
+                                    <TooltipContent>Revogar acesso</TooltipContent>
+                                  </Tooltip>
+                                </>
                               )}
                               <Tooltip>
                                 <TooltipTrigger asChild>
