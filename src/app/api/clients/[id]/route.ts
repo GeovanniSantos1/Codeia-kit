@@ -166,6 +166,12 @@ export const PUT = withApiLogging(handleClientUpdate, {
   feature: "clients",
 });
 
+export const PATCH = withApiLogging(handleClientUpdate, {
+  method: "PATCH",
+  route: "/api/clients/[id]",
+  feature: "clients",
+});
+
 export const DELETE = withApiLogging(handleClientDelete, {
   method: "DELETE",
   route: "/api/clients/[id]",
