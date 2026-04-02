@@ -53,6 +53,13 @@ import {
   BANK_TYPE_LABELS,
   getRiskLevelColor,
 } from "@/lib/loans/risk-score";
+import {
+  type ClientTier,
+  CLIENT_TIER_LABELS,
+  CLIENT_TIER_DESCRIPTION,
+  CLIENT_TIER_EMOJI,
+  getTierColor,
+} from "@/lib/loans/client-tier";
 
 interface Loan {
   id: string;
@@ -86,6 +93,7 @@ interface ClientDetail {
   creditNotes: string | null;
   riskScore: number | null;
   riskLevel: RiskLevel | null;
+  tier: ClientTier | null;
   loans: Loan[];
 }
 
@@ -135,6 +143,83 @@ function RiskScoreBadge({ level, score }: { level: RiskLevel | null; score: numb
     <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold border ${colorClass}`}>
       {score}/100 — {RISK_LEVEL_LABELS[level]}
     </span>
+  );
+}
+
+const TIER_ORDER: ClientTier[] = ["INICIANTE", "MAU_PAGADOR", "BOM_PAGADOR", "OURO", "BLOQUEADO"];
+
+function TierSection({
+  client,
+  onUpdated,
+}: {
+  client: ClientDetail;
+  onUpdated: () => void;
+}) {
+  const [selected, setSelected] = React.useState<ClientTier>(client.tier ?? "INICIANTE");
+  const [isSaving, setIsSaving] = React.useState(false);
+
+  async function handleSave() {
+    setIsSaving(true);
+    try {
+      await api.patch(`/api/clients/${client.id}`, { tier: selected });
+      toast({ title: "Nível do cliente atualizado!" });
+      onUpdated();
+    } catch {
+      toast({ title: "Erro ao salvar nível", variant: "destructive" });
+    } finally {
+      setIsSaving(false);
+    }
+  }
+
+  const tierColor = getTierColor(selected);
+
+  return (
+    <div className="space-y-4">
+      <p className="text-sm text-muted-foreground">
+        Define o nível de confiança deste cliente com base no seu histórico na plataforma.
+      </p>
+
+      <div className="grid grid-cols-1 sm:grid-cols-5 gap-2">
+        {TIER_ORDER.map((t) => {
+          const c = getTierColor(t);
+          const isActive = selected === t;
+          return (
+            <button
+              key={t}
+              type="button"
+              onClick={() => setSelected(t)}
+              className={`flex flex-col items-center gap-1.5 p-3 rounded-lg border-2 transition-all text-center cursor-pointer ${
+                isActive
+                  ? `${c.bg} ${c.border} ${c.text}`
+                  : "border-border/40 hover:border-border"
+              }`}
+            >
+              <span className="text-2xl">{CLIENT_TIER_EMOJI[t]}</span>
+              <span className="text-xs font-semibold leading-tight">{CLIENT_TIER_LABELS[t]}</span>
+            </button>
+          );
+        })}
+      </div>
+
+      <div className={`rounded-lg border p-3 ${tierColor.bg} ${tierColor.border}`}>
+        <p className={`text-sm ${tierColor.text}`}>
+          <strong>{CLIENT_TIER_EMOJI[selected]} {CLIENT_TIER_LABELS[selected]}:</strong>{" "}
+          {CLIENT_TIER_DESCRIPTION[selected]}
+        </p>
+      </div>
+
+      <div className="flex justify-end">
+        <button
+          type="button"
+          onClick={handleSave}
+          disabled={isSaving || selected === (client.tier ?? "INICIANTE")}
+          className="inline-flex items-center gap-2 px-4 py-2 rounded-md bg-primary text-primary-foreground text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed hover:bg-primary/90 transition-colors"
+        >
+          <Save className="h-4 w-4" />
+          {isSaving ? "Salvando..." : "Salvar Nível"}
+        </button>
+      </div>
+    </div>
   );
 }
 
@@ -446,6 +531,15 @@ export default function ClientDetailPage() {
           </Link>
         </Button>
         <div className="flex items-center gap-2">
+          {(() => {
+            const t = client.tier ?? "INICIANTE";
+            const c = getTierColor(t);
+            return (
+              <span className={`inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-1 rounded-full border ${c.badge}`}>
+                {CLIENT_TIER_EMOJI[t]} {CLIENT_TIER_LABELS[t]}
+              </span>
+            );
+          })()}
           {client.riskLevel && (
             <RiskScoreBadge level={client.riskLevel} score={client.riskScore} />
           )}
@@ -477,6 +571,9 @@ export default function ClientDetailPage() {
       <Tabs defaultValue="info" className="w-full">
         <TabsList>
           <TabsTrigger value="info">Informações</TabsTrigger>
+          <TabsTrigger value="tier" className="flex items-center gap-1.5">
+            ⭐ Nível
+          </TabsTrigger>
           <TabsTrigger value="risk" className="flex items-center gap-1.5">
             <ShieldCheck className="h-4 w-4" />
             Análise de Risco
@@ -536,6 +633,22 @@ export default function ClientDetailPage() {
               </CardContent>
             </Card>
           )}
+        </TabsContent>
+
+        <TabsContent value="tier" className="pt-4">
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                ⭐ Nível do Cliente na Plataforma
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <TierSection
+                client={client}
+                onUpdated={() => queryClient.invalidateQueries({ queryKey: ["client", clientId] })}
+              />
+            </CardContent>
+          </Card>
         </TabsContent>
 
         <TabsContent value="risk" className="pt-4">

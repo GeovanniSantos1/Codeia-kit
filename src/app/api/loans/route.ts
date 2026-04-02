@@ -52,7 +52,7 @@ export async function GET(req: NextRequest) {
       db.loan.findMany({
         where,
         include: {
-          client: { select: { id: true, name: true, whatsapp: true } },
+          client: { select: { id: true, name: true, whatsapp: true, tier: true } },
           installments: { orderBy: { number: "asc" } },
         },
         orderBy: { createdAt: "desc" },

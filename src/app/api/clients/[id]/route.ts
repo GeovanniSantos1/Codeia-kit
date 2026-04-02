@@ -24,6 +24,7 @@ const UpdateClientSchema = z.object({
   dependents: z.number().int().min(0).max(20).optional().nullable(),
   bankType: z.enum(["LARGE_BANK", "DIGITAL_BANK", "NO_BANK"]).optional().nullable(),
   creditNotes: z.string().optional().nullable(),
+  tier: z.enum(["INICIANTE", "MAU_PAGADOR", "BOM_PAGADOR", "OURO", "BLOQUEADO"]).optional().nullable(),
 });
 
 async function handleClientGet(
@@ -112,6 +113,7 @@ async function handleClientUpdate(
         dependents: data.dependents !== undefined ? data.dependents : existing.dependents,
         bankType: data.bankType !== undefined ? data.bankType : existing.bankType,
         creditNotes: data.creditNotes !== undefined ? data.creditNotes : existing.creditNotes,
+        tier: data.tier !== undefined ? data.tier : existing.tier,
       },
     });
 

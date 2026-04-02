@@ -219,6 +219,14 @@ enum NotificationLogType {
   REACTIVE_8D_PLUS
 }
 
+enum ClientTier {
+  INICIANTE
+  MAU_PAGADOR
+  BOM_PAGADOR
+  OURO
+  BLOQUEADO
+}
+
 enum CreditBureau {
   CLEAN
   RESTRICTED
@@ -269,6 +277,7 @@ model Client {
   creditNotes     String?         @db.Text
   riskScore       Int?
   riskLevel       RiskLevel?
+  tier            ClientTier? @default(INICIANTE)
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
 
@@ -279,6 +288,7 @@ model Client {
   @@index([name])
   @@index([cpf])
   @@index([riskLevel])
+  @@index([tier])
 }
 
 model Loan {
