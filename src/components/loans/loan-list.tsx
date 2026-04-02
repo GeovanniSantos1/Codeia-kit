@@ -70,7 +70,7 @@ function intervalLabel(interval: string) {
 
 function getNextDueInstallment(installments: LoanInstallment[]): LoanInstallment | null {
   const pending = installments
-    .filter((i) => i.status === "PENDING" || i.status === "OVERDUE")
+    .filter((i) => i.status === "PENDING" || i.status === "OVERDUE" || i.status === "PARTIALLY_PAID")
     .sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime());
   return pending[0] ?? null;
 }
