@@ -1,15 +1,20 @@
 import { NextRequest, NextResponse } from "next/server";
-import { auth } from "@clerk/nextjs/server";
+import { auth, createClerkClient } from "@clerk/nextjs/server";
 import { z } from "zod";
 import { db } from "@/lib/db";
 import { isAdmin } from "@/lib/admin-utils";
 import { withApiLogging } from "@/lib/logging/api";
+
+export const runtime = "nodejs";
+
+const clerk = createClerkClient({ secretKey: process.env.CLERK_SECRET_KEY as string });
 
 const CreateInviteSchema = z.object({
   email: z.string().email("E-mail inválido"),
   planLabel: z.string().optional(),
   notes: z.string().optional(),
   expiresAt: z.string().datetime().optional().nullable(),
+  sendEmail: z.boolean().default(true),
 });
 
 async function handleGetInvites() {
@@ -51,7 +56,7 @@ async function handleCreateInvite(req: NextRequest) {
     );
   }
 
-  const { email, planLabel, notes, expiresAt } = parsed.data;
+  const { email, planLabel, notes, expiresAt, sendEmail } = parsed.data;
   const normalizedEmail = email.toLowerCase().trim();
 
   const existing = await db.accessInvite.findFirst({
@@ -75,7 +80,35 @@ async function handleCreateInvite(req: NextRequest) {
     },
   });
 
-  return NextResponse.json({ invite }, { status: 201 });
+  let emailStatus: "sent" | "already_registered" | "skipped" | "failed" = "skipped";
+  let emailMessage: string | null = null;
+
+  if (sendEmail) {
+    try {
+      const existingUsers = await clerk.users.getUserList({ emailAddress: [normalizedEmail] });
+
+      if (existingUsers?.data?.length) {
+        emailStatus = "already_registered";
+        emailMessage = "Usuário já possui conta no sistema — acesso liberado sem reenvio de e-mail.";
+      } else {
+        await clerk.invitations.createInvitation({
+          emailAddress: normalizedEmail,
+          redirectUrl: process.env.NEXT_PUBLIC_APP_URL
+            ? `${process.env.NEXT_PUBLIC_APP_URL}/sign-up`
+            : undefined,
+        });
+        emailStatus = "sent";
+        emailMessage = "E-mail de convite enviado com sucesso via Clerk.";
+      }
+    } catch (err: unknown) {
+      console.error("Clerk invitation error:", err);
+      const e = err as { errors?: Array<{ message?: string }>; message?: string };
+      emailStatus = "failed";
+      emailMessage = e?.errors?.[0]?.message || e?.message || "Falha ao enviar e-mail de convite.";
+    }
+  }
+
+  return NextResponse.json({ invite, emailStatus, emailMessage }, { status: 201 });
 }
 
 export const GET = withApiLogging(handleGetInvites, {

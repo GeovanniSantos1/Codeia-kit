@@ -21,8 +21,9 @@ import {
   Tooltip, TooltipContent, TooltipProvider, TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
-  TicketCheck, Plus, Ban, Trash2, CalendarClock, ShieldCheck, Clock,
+  TicketCheck, Plus, Ban, Trash2, CalendarClock, ShieldCheck, Clock, Mail,
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -65,6 +66,7 @@ function useCreateInvite() {
       planLabel: string;
       notes: string;
       expiresAt: string | null;
+      sendEmail: boolean;
     }) => {
       const res = await fetch("/api/admin/invites", {
         method: "POST",
@@ -75,11 +77,23 @@ function useCreateInvite() {
         const err = await res.json();
         throw new Error(err.error || "Falha ao criar convite");
       }
-      return res.json();
+      return res.json() as Promise<{
+        invite: AccessInvite;
+        emailStatus: "sent" | "already_registered" | "skipped" | "failed";
+        emailMessage: string | null;
+      }>;
     },
-    onSuccess: () => {
+    onSuccess: (result) => {
       qc.invalidateQueries({ queryKey: ["admin", "invites"] });
-      toast.success("Convite de acesso criado com sucesso");
+      if (result.emailStatus === "sent") {
+        toast.success("Convite criado e e-mail enviado com sucesso!");
+      } else if (result.emailStatus === "already_registered") {
+        toast.success("Acesso liberado — usuário já tem conta e pode entrar agora.");
+      } else if (result.emailStatus === "failed") {
+        toast.warning(`Acesso liberado, mas falha ao enviar e-mail: ${result.emailMessage}`);
+      } else {
+        toast.success("Convite de acesso criado (sem envio de e-mail).");
+      }
     },
     onError: (err: Error) => toast.error(err.message),
   });
@@ -144,6 +158,7 @@ export default function ConvitesPage() {
   const [planLabel, setPlanLabel] = useState("");
   const [notes, setNotes] = useState("");
   const [expiresAt, setExpiresAt] = useState("");
+  const [sendEmail, setSendEmail] = useState(true);
   const [revokeTarget, setRevokeTarget] = useState<AccessInvite | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<AccessInvite | null>(null);
 
@@ -156,6 +171,7 @@ export default function ConvitesPage() {
         planLabel: planLabel.trim(),
         notes: notes.trim(),
         expiresAt: expiresAt ? new Date(expiresAt).toISOString() : null,
+        sendEmail,
       },
       {
         onSuccess: () => {
@@ -266,8 +282,26 @@ export default function ConvitesPage() {
                     rows={2}
                   />
                 </div>
+                <div className="flex items-start gap-3 rounded-lg border p-3 bg-muted/40">
+                  <Checkbox
+                    id="send-email"
+                    checked={sendEmail}
+                    onCheckedChange={(v) => setSendEmail(!!v)}
+                    disabled={createMutation.isPending}
+                    className="mt-0.5"
+                  />
+                  <div className="space-y-0.5">
+                    <Label htmlFor="send-email" className="text-sm font-medium flex items-center gap-1.5 cursor-pointer">
+                      <Mail className="h-3.5 w-3.5" />
+                      Enviar e-mail de convite
+                    </Label>
+                    <p className="text-xs text-muted-foreground">
+                      O Clerk envia automaticamente um e-mail com link de cadastro. Se o usuário já tiver conta, o acesso é liberado sem reenvio.
+                    </p>
+                  </div>
+                </div>
                 <Button type="submit" className="w-full" disabled={createMutation.isPending}>
-                  {createMutation.isPending ? "Criando…" : "Criar Convite de Acesso"}
+                  {createMutation.isPending ? "Criando…" : sendEmail ? "Criar Convite e Enviar E-mail" : "Criar Convite de Acesso"}
                 </Button>
               </form>
             </CardContent>
@@ -286,6 +320,9 @@ export default function ConvitesPage() {
               </p>
               <p>
                 <strong className="text-foreground">Validade:</strong> se definir uma data de expiração, o acesso cessa automaticamente após esse prazo. Sem validade = acesso permanente até revogar.
+              </p>
+              <p>
+                <strong className="text-foreground">E-mail automático:</strong> ao marcar "Enviar e-mail de convite", o Clerk dispara um e-mail com link de cadastro. Se o usuário já tiver conta, o acesso é liberado diretamente, sem reenvio.
               </p>
               <p>
                 <strong className="text-foreground">Revogar:</strong> bloqueia o acesso imediatamente. O usuário será redirecionado para a página de assinatura no próximo acesso.
