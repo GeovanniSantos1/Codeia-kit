@@ -15,7 +15,7 @@ import { Button } from "@/components/ui/button";
 import { formatCurrency, formatDate, decimalToNumber } from "@/lib/loans/calculations";
 import { Eye } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { type ClientTier, getTierColor, CLIENT_TIER_LABELS, CLIENT_TIER_EMOJI } from "@/lib/loans/client-tier";
+import { type ClientTier, getTierColor } from "@/lib/loans/client-tier";
 
 type LoanClient = {
   id: string;
@@ -145,21 +145,13 @@ export function LoanList({ loans }: LoanListProps) {
 
             const tier = loan.client.tier ?? "INICIANTE";
             const tierColor = getTierColor(tier);
-            const showTier = loan.status === "ACTIVE";
 
             return (
               <TableRow key={loan.id}>
                 <TableCell>
-                  <div className="flex flex-col gap-0.5">
-                    <span className={cn("font-medium", showTier && tierColor.name)}>
-                      {loan.client.name}
-                    </span>
-                    {showTier && (
-                      <span className={cn("inline-flex items-center gap-1 text-[11px] font-medium px-1.5 py-0.5 rounded-full border w-fit", tierColor.badge)}>
-                        {CLIENT_TIER_EMOJI[tier]} {CLIENT_TIER_LABELS[tier]}
-                      </span>
-                    )}
-                  </div>
+                  <span className={cn("font-medium", tierColor.name)}>
+                    {loan.client.name}
+                  </span>
                 </TableCell>
                 <TableCell>{formatDate(loan.loanDate)}</TableCell>
                 <TableCell className="text-right">{formatCurrency(principal)}</TableCell>
