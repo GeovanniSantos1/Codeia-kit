@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "engines": {
-    "node": ">=22.0.0"
+    "node": ">=24.0.0"
   },
   "scripts": {
     "dev": "prisma generate && next dev -p 5000 -H 0.0.0.0",
@@ -30,7 +30,8 @@
     "db:studio": "prisma studio"
   },
   "dependencies": {
-    "@ai-sdk/react": "^2.0.55",
+    "@ai-sdk/openai": "^4.0.42",
+    "@ai-sdk/react": "^4.0.69",
     "@clerk/backend": "^2.15.0",
     "@clerk/nextjs": "^6.37.0",
     "@ducanh2912/next-pwa": "^10.2.9",
@@ -55,9 +56,10 @@
     "@replit/object-storage": "^1.0.0",
     "@tanstack/react-query": "^5.82.0",
     "@vercel/blob": "^2.0.0",
-    "ai": "^5.0.55",
+    "ai": "^7.0.66",
     "class-variance-authority": "0.7.1",
     "clsx": "^2.1.1",
+    "eve": "^0.38.3",
     "framer-motion": "12.23.12",
     "lucide-react": "0.525.0",
     "next": "^16.1.6",

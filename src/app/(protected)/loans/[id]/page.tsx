@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { useParams, useRouter } from "next/navigation";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { api } from "@/lib/api-client";
 import { usePageConfig } from "@/hooks/use-page-config";
@@ -23,6 +23,7 @@ import {
   decimalToNumber,
 } from "@/lib/loans/calculations";
 import { ArrowLeft, XCircle } from "lucide-react";
+import { buildLoansListHref, parseLoanListFilters } from "@/lib/loans/list-filters";
 
 function statusBadge(status: string) {
   switch (status) {
@@ -47,16 +48,22 @@ function intervalLabel(interval: string) {
   return map[interval] || interval;
 }
 
-export default function LoanDetailPage() {
+function LoanDetailPageContent() {
   const { id } = useParams<{ id: string }>();
   const router = useRouter();
+  const searchParams = useSearchParams();
   const queryClient = useQueryClient();
   const { toast } = useToast();
   const [payingInstallment, setPayingInstallment] = React.useState<any>(null);
 
+  const loansListHref = React.useMemo(
+    () => buildLoansListHref(parseLoanListFilters(searchParams)),
+    [searchParams]
+  );
+
   usePageConfig("Detalhes do Empréstimo", "", [
     { label: "Dashboard", href: "/dashboard" },
-    { label: "Empréstimos", href: "/loans" },
+    { label: "Empréstimos", href: loansListHref },
     { label: "Detalhes" },
   ]);
 
@@ -157,7 +164,7 @@ export default function LoanDetailPage() {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <Button variant="ghost" size="sm" onClick={() => router.push("/loans")}>
+        <Button variant="ghost" size="sm" onClick={() => router.push(loansListHref)}>
           <ArrowLeft className="h-4 w-4 mr-1" />
           Voltar
         </Button>
@@ -260,5 +267,27 @@ export default function LoanDetailPage() {
         isLoading={payMutation.isPending}
       />
     </div>
+  );
+}
+
+function LoanDetailPageSkeleton() {
+  return (
+    <div className="space-y-4">
+      <Skeleton className="h-8 w-64" />
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        {Array.from({ length: 4 }).map((_, i) => (
+          <Skeleton key={i} className="h-24" />
+        ))}
+      </div>
+      <Skeleton className="h-64 w-full" />
+    </div>
+  );
+}
+
+export default function LoanDetailPage() {
+  return (
+    <React.Suspense fallback={<LoanDetailPageSkeleton />}>
+      <LoanDetailPageContent />
+    </React.Suspense>
   );
 }

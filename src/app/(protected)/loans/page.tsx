@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import Link from "next/link";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 import { api } from "@/lib/api-client";
 import { usePageConfig } from "@/hooks/use-page-config";
@@ -18,27 +19,46 @@ import { LoanList } from "@/components/loans/loan-list";
 import { Plus } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { CLIENT_TIER_LABELS, CLIENT_TIER_EMOJI } from "@/lib/loans/client-tier";
+import {
+  type LoanListFilters,
+  buildLoanListSearchParams,
+  buildLoanListApiQuery,
+  parseLoanListFilters,
+} from "@/lib/loans/list-filters";
 
-export default function LoansPage() {
+function LoansPageContent() {
   usePageConfig("Empréstimos", "Gerencie todos os seus empréstimos", [
     { label: "Dashboard", href: "/dashboard" },
     { label: "Empréstimos" },
   ]);
 
-  const [status, setStatus] = React.useState<string>("all");
-  const [overdue, setOverdue] = React.useState(false);
-  const [clientSearch, setClientSearch] = React.useState("");
-  const [tierFilter, setTierFilter] = React.useState<string>("all");
-  const [page, setPage] = React.useState(1);
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
 
-  const queryParams = React.useMemo(() => {
-    const params = new URLSearchParams();
-    params.set("page", String(page));
-    params.set("limit", "20");
-    if (status !== "all") params.set("status", status);
-    if (overdue) params.set("overdue", "true");
-    return params.toString();
-  }, [status, overdue, page]);
+  const filters = React.useMemo(
+    () => parseLoanListFilters(searchParams),
+    [searchParams]
+  );
+
+  const listQuery = React.useMemo(
+    () => buildLoanListSearchParams(filters).toString(),
+    [filters]
+  );
+
+  const updateFilters = React.useCallback(
+    (updates: Partial<LoanListFilters>) => {
+      const next: LoanListFilters = { ...filters, ...updates };
+      const qs = buildLoanListSearchParams(next).toString();
+      router.replace(qs ? `${pathname}?${qs}` : pathname);
+    },
+    [filters, pathname, router]
+  );
+
+  const queryParams = React.useMemo(
+    () => buildLoanListApiQuery(filters),
+    [filters]
+  );
 
   const { data, isLoading } = useQuery({
     queryKey: ["loans", queryParams],
@@ -49,8 +69,12 @@ export default function LoansPage() {
   const pagination = data?.pagination;
 
   const filteredLoans = loans.filter((l: any) => {
-    if (clientSearch && !l.client.name.toLowerCase().includes(clientSearch.toLowerCase())) return false;
-    if (tierFilter !== "all" && (l.client.tier ?? "INICIANTE") !== tierFilter) return false;
+    if (filters.clientSearch && !l.client.name.toLowerCase().includes(filters.clientSearch.toLowerCase())) {
+      return false;
+    }
+    if (filters.tierFilter !== "all" && (l.client.tier ?? "INICIANTE") !== filters.tierFilter) {
+      return false;
+    }
     return true;
   });
 
@@ -60,17 +84,13 @@ export default function LoansPage() {
         <div className="flex flex-wrap gap-3 items-center">
           <Input
             placeholder="Buscar por cliente..."
-            value={clientSearch}
-            onChange={(e) => setClientSearch(e.target.value)}
+            value={filters.clientSearch}
+            onChange={(e) => updateFilters({ clientSearch: e.target.value, page: 1 })}
             className="w-60"
           />
           <Select
-            value={status}
-            onValueChange={(v) => {
-              setStatus(v);
-              setOverdue(false);
-              setPage(1);
-            }}
+            value={filters.status}
+            onValueChange={(v) => updateFilters({ status: v, overdue: false, page: 1 })}
           >
             <SelectTrigger className="w-40">
               <SelectValue placeholder="Status" />
@@ -83,8 +103,8 @@ export default function LoansPage() {
             </SelectContent>
           </Select>
           <Select
-            value={tierFilter}
-            onValueChange={(v) => { setTierFilter(v); setPage(1); }}
+            value={filters.tierFilter}
+            onValueChange={(v) => updateFilters({ tierFilter: v, page: 1 })}
           >
             <SelectTrigger className="w-44">
               <SelectValue placeholder="Nível do cliente" />
@@ -99,13 +119,15 @@ export default function LoansPage() {
             </SelectContent>
           </Select>
           <Button
-            variant={overdue ? "default" : "outline"}
+            variant={filters.overdue ? "default" : "outline"}
             size="sm"
-            onClick={() => {
-              setOverdue(!overdue);
-              setStatus("all");
-              setPage(1);
-            }}
+            onClick={() =>
+              updateFilters({
+                overdue: !filters.overdue,
+                status: "all",
+                page: 1,
+              })
+            }
           >
             Inadimplentes
           </Button>
@@ -125,7 +147,7 @@ export default function LoansPage() {
           ))}
         </div>
       ) : (
-        <LoanList loans={filteredLoans} />
+        <LoanList loans={filteredLoans} listQuery={listQuery} />
       )}
 
       {pagination && pagination.totalPages > 1 && (
@@ -133,24 +155,45 @@ export default function LoansPage() {
           <Button
             variant="outline"
             size="sm"
-            disabled={page <= 1}
-            onClick={() => setPage((p) => p - 1)}
+            disabled={filters.page <= 1}
+            onClick={() => updateFilters({ page: filters.page - 1 })}
           >
             Anterior
           </Button>
           <span className="flex items-center text-sm text-muted-foreground px-3">
-            Página {page} de {pagination.totalPages}
+            Página {filters.page} de {pagination.totalPages}
           </span>
           <Button
             variant="outline"
             size="sm"
-            disabled={page >= pagination.totalPages}
-            onClick={() => setPage((p) => p + 1)}
+            disabled={filters.page >= pagination.totalPages}
+            onClick={() => updateFilters({ page: filters.page + 1 })}
           >
             Próxima
           </Button>
         </div>
       )}
     </div>
+  );
+}
+
+function LoansPageSkeleton() {
+  return (
+    <div className="space-y-6">
+      <Skeleton className="h-10 w-full max-w-2xl" />
+      <div className="space-y-3">
+        {Array.from({ length: 5 }).map((_, i) => (
+          <Skeleton key={i} className="h-14 w-full" />
+        ))}
+      </div>
+    </div>
+  );
+}
+
+export default function LoansPage() {
+  return (
+    <React.Suspense fallback={<LoansPageSkeleton />}>
+      <LoansPageContent />
+    </React.Suspense>
   );
 }
