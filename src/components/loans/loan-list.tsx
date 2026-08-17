@@ -45,6 +45,7 @@ type Loan = {
 
 type LoanListProps = {
   loans: Loan[];
+  listQuery?: string;
 };
 
 function statusBadge(status: string) {
@@ -111,7 +112,7 @@ function DueDateCell({ installments, loanStatus }: { installments: LoanInstallme
   return <span className={cn("text-sm", colorClass)}>{label}</span>;
 }
 
-export function LoanList({ loans }: LoanListProps) {
+export function LoanList({ loans, listQuery }: LoanListProps) {
   if (loans.length === 0) {
     return (
       <div className="text-center py-12 text-muted-foreground">
@@ -169,7 +170,7 @@ export function LoanList({ loans }: LoanListProps) {
                 </TableCell>
                 <TableCell>
                   <Button size="sm" variant="ghost" asChild>
-                    <Link href={`/loans/${loan.id}`}>
+                    <Link href={listQuery ? `/loans/${loan.id}?${listQuery}` : `/loans/${loan.id}`}>
                       <Eye className="h-4 w-4" />
                     </Link>
                   </Button>
