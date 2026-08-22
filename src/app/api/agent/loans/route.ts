@@ -3,6 +3,7 @@ import { db } from "@/lib/db";
 import { decimalToNumber } from "@/lib/loans/calculations";
 import { agentError, agentUnauthorized, verifyAgentInternalAuth } from "@/lib/agent/auth";
 import { resolveLoanOwnerUserId } from "@/lib/agent/owner";
+import { createLoanForUser } from "@/lib/agent/services";
 
 export async function GET(req: NextRequest) {
   if (!verifyAgentInternalAuth(req)) return agentUnauthorized();
@@ -77,5 +78,42 @@ export async function GET(req: NextRequest) {
 }
 
 export async function POST(req: NextRequest) {
-  return GET(req);
+  if (!verifyAgentInternalAuth(req)) return agentUnauthorized();
+
+  try {
+    const userId = await resolveLoanOwnerUserId();
+    const body = await req.json();
+    const result = await createLoanForUser(userId, body);
+
+    if ("error" in result && !("loan" in result)) {
+      return NextResponse.json(
+        { error: result.error, details: result.details },
+        { status: result.status }
+      );
+    }
+
+    const { loan } = result;
+    return NextResponse.json(
+      {
+        success: true,
+        id: loan.id,
+        cliente: loan.client.name,
+        clienteId: loan.client.id,
+        status: loan.status,
+        principal: decimalToNumber(loan.principal),
+        jurosPercentual: decimalToNumber(loan.interestRate),
+        parcelas: loan.installmentsCount,
+        intervalo: loan.interval,
+        installments: loan.installments.map((inst) => ({
+          numero: inst.number,
+          vencimento: inst.dueDate.toISOString(),
+          valor: decimalToNumber(inst.amount),
+        })),
+      },
+      { status: result.status }
+    );
+  } catch (error) {
+    console.error("[Agent API] create loan:", error);
+    return agentError(error instanceof Error ? error.message : "Erro interno");
+  }
 }
