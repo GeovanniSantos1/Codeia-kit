@@ -44,3 +44,35 @@ export async function agentFetch(
 
   return response.json();
 }
+
+export async function agentMutate(
+  method: "POST" | "PUT" | "DELETE",
+  path: string,
+  body?: unknown
+): Promise<unknown> {
+  const secret = process.env.AGENT_INTERNAL_SECRET?.trim();
+  if (!secret) {
+    throw new Error("AGENT_INTERNAL_SECRET não configurado.");
+  }
+
+  const url = new URL(path, `${getAgentApiBaseUrl()}/`);
+
+  const response = await fetch(url.toString(), {
+    method,
+    headers: {
+      Authorization: `Bearer ${secret}`,
+      Accept: "application/json",
+      ...(body !== undefined ? { "Content-Type": "application/json" } : {}),
+    },
+    ...(body !== undefined ? { body: JSON.stringify(body) } : {}),
+    cache: "no-store",
+  });
+
+  if (!response.ok) {
+    const text = await response.text();
+    throw new Error(`Falha na API interna (${response.status}): ${text}`);
+  }
+
+  if (response.status === 204) return null;
+  return response.json();
+}
