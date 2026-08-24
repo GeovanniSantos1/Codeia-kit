@@ -22,7 +22,8 @@ import {
   formatDate,
   decimalToNumber,
 } from "@/lib/loans/calculations";
-import { ArrowLeft, XCircle } from "lucide-react";
+import { ArrowLeft, Pencil, XCircle } from "lucide-react";
+import Link from "next/link";
 import { buildLoansListHref, parseLoanListFilters } from "@/lib/loans/list-filters";
 
 function statusBadge(status: string) {
@@ -60,6 +61,11 @@ function LoanDetailPageContent() {
     () => buildLoansListHref(parseLoanListFilters(searchParams)),
     [searchParams]
   );
+
+  const editHref = React.useMemo(() => {
+    const qs = searchParams.toString();
+    return qs ? `/loans/${id}/edit?${qs}` : `/loans/${id}/edit`;
+  }, [id, searchParams]);
 
   usePageConfig("Detalhes do Empréstimo", "", [
     { label: "Dashboard", href: "/dashboard" },
@@ -169,14 +175,30 @@ function LoanDetailPageContent() {
           Voltar
         </Button>
         {loan.status === "ACTIVE" && (
-          <Button
-            variant="destructive"
-            size="sm"
-            onClick={() => cancelMutation.mutate()}
-            isLoading={cancelMutation.isPending}
-          >
-            <XCircle className="h-4 w-4 mr-1" />
-            Cancelar Empréstimo
+          <div className="flex gap-2">
+            <Button size="sm" variant="outline" asChild>
+              <Link href={editHref}>
+                <Pencil className="h-4 w-4 mr-1" />
+                Editar
+              </Link>
+            </Button>
+            <Button
+              variant="destructive"
+              size="sm"
+              onClick={() => cancelMutation.mutate()}
+              isLoading={cancelMutation.isPending}
+            >
+              <XCircle className="h-4 w-4 mr-1" />
+              Cancelar Empréstimo
+            </Button>
+          </div>
+        )}
+        {loan.status === "PAID_OFF" && (
+          <Button size="sm" variant="outline" asChild>
+            <Link href={editHref}>
+              <Pencil className="h-4 w-4 mr-1" />
+              Editar
+            </Link>
           </Button>
         )}
       </div>
