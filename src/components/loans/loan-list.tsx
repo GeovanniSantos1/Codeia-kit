@@ -13,7 +13,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { formatCurrency, formatDate, decimalToNumber } from "@/lib/loans/calculations";
-import { Eye } from "lucide-react";
+import { Eye, Pencil } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { type ClientTier, getTierColor } from "@/lib/loans/client-tier";
 
@@ -135,7 +135,7 @@ export function LoanList({ loans, listQuery }: LoanListProps) {
             <TableHead>Status</TableHead>
             <TableHead>Próx. Vencimento</TableHead>
             <TableHead>Progresso</TableHead>
-            <TableHead className="w-20"></TableHead>
+            <TableHead className="w-24"></TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -169,11 +169,26 @@ export function LoanList({ loans, listQuery }: LoanListProps) {
                   </span>
                 </TableCell>
                 <TableCell>
-                  <Button size="sm" variant="ghost" asChild>
-                    <Link href={listQuery ? `/loans/${loan.id}?${listQuery}` : `/loans/${loan.id}`}>
-                      <Eye className="h-4 w-4" />
-                    </Link>
-                  </Button>
+                  <div className="flex items-center gap-1">
+                    <Button size="sm" variant="ghost" asChild>
+                      <Link href={listQuery ? `/loans/${loan.id}?${listQuery}` : `/loans/${loan.id}`}>
+                        <Eye className="h-4 w-4" />
+                      </Link>
+                    </Button>
+                    {loan.status !== "CANCELLED" && (
+                      <Button size="sm" variant="ghost" asChild>
+                        <Link
+                          href={
+                            listQuery
+                              ? `/loans/${loan.id}/edit?${listQuery}`
+                              : `/loans/${loan.id}/edit`
+                          }
+                        >
+                          <Pencil className="h-4 w-4" />
+                        </Link>
+                      </Button>
+                    )}
+                  </div>
                 </TableCell>
               </TableRow>
             );
